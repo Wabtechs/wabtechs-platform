@@ -6,7 +6,7 @@ import { db } from "@/lib/prisma";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, FileText, Headphones, Layers, Mail, Users, ExternalLink } from "lucide-react";
+import { BarChart3, FileText, Headphones, Layers, Mail, Users } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Dashboard" };

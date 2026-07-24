@@ -47,3 +47,5 @@ prisma/migrations/
 
 # old site backup
 _backup-old-site/
+
+.vercel

@@ -6,7 +6,7 @@ import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Pencil } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { DeletePostButton } from "./delete-button";
 

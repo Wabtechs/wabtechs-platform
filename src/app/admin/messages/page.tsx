@@ -6,7 +6,7 @@ import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Mail, CheckCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Messages de contact" };
