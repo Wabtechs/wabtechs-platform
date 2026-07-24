@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/shared/page-header";
-import { PostList } from "@/components/blog/post-list";
-import { TagFilter } from "@/components/blog/tag-filter";
+import { BlogClient } from "@/components/blog/blog-client";
 import { getAllPosts, getAllTags } from "@/lib/mdx";
 
 export const metadata: Metadata = {
@@ -25,20 +22,7 @@ export default function BlogPage() {
           description="Articles techniques, tutoriels et retours d'expérience."
         />
 
-        <div className="mt-12 mx-auto max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Rechercher un article..." className="pl-10" />
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <TagFilter tags={tags} selectedTag={null} onSelect={() => {}} />
-        </div>
-
-        <div className="mt-12">
-          <PostList posts={posts} />
-        </div>
+        <BlogClient posts={posts} tags={tags} />
       </div>
     </div>
   );
