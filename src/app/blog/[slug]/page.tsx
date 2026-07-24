@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { compileMDX } from "next-mdx-remote/rsc";
 import { ArrowLeft } from "lucide-react";
-import { serialize } from "next-mdx-remote/serialize";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PostHeader } from "@/components/blog/post-header";
-import { MDXContent } from "@/components/blog/mdx-content";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/mdx";
 import { PostCard } from "@/components/blog/post-card";
+import { mdxComponents } from "@/components/blog/mdx-components";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -48,7 +48,17 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
-  const mdxSource = await serialize(post.content);
+  const { content } = await compileMDX({
+    source: post.content,
+    components: mdxComponents,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [],
+        rehypePlugins: [],
+      },
+    },
+  });
+
   const relatedPosts = getRelatedPosts(slug, 3);
 
   return (
@@ -65,7 +75,9 @@ export default async function BlogPostPage({
           <article className="mx-auto max-w-3xl">
             <PostHeader post={post.meta} />
             <div className="mt-12">
-              <MDXContent source={mdxSource} />
+              <article className="prose prose-neutral dark:prose-invert max-w-none">
+                {content}
+              </article>
             </div>
 
             {post.meta.tags.length > 0 && (
