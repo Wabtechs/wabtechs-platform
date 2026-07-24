@@ -1,0 +1,57 @@
+---
+title: "Getting Started"
+description: "Premiers pas avec la plateforme WabTechs."
+order: 1
+---
+
+## Installation
+
+### Prérequis
+
+- Node.js 22+
+- npm, yarn ou pnpm
+- PostgreSQL
+
+### Cloner le projet
+
+```bash
+git clone https://github.com/wabtechs/wabtechs-platform.git
+cd wabtechs-platform
+```
+
+### Installer les dépendances
+
+```bash
+npm install
+```
+
+### Configurer l'environnement
+
+```bash
+cp .env.example .env
+```
+
+Éditez `.env` avec vos paramètres de base de données.
+
+### Lancer le projet
+
+```bash
+npm run dev
+```
+
+Ouvrez [http://localhost:3000](http://localhost:3000).
+
+## Structure du projet
+
+Le projet suit une architecture feature-based :
+
+- `src/app/` — Routes et pages
+- `src/components/` — Composants UI
+- `src/features/` — Modules fonctionnels
+- `src/lib/` — Utilitaires
+- `src/hooks/` — Hooks React
+- `src/content/` — Contenu MDX
+
+## Prochaines étapes
+
+Consultez le guide [Architecture](/docs/architecture) pour comprendre les conventions du projet.

@@ -1,0 +1,56 @@
+---
+title: "TypeScript Strict Mode : Le guide définitif"
+description: "Tout ce que vous devez savoir pour activer et utiliser le mode strict."
+date: "2026-07-05"
+tags: ["TypeScript", "Guide", "Best Practices"]
+author: "Emmanuel Mulonda Johannes"
+readTime: 12
+---
+
+## Activer le mode strict
+
+Dans `tsconfig.json` :
+
+```json
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+Cela active toutes les options strictes :
+
+- `strictNullChecks`
+- `strictFunctionTypes`
+- `strictBindCallApply`
+- `noImplicitAny`
+- `noUnusedLocals`
+- `noUnusedParameters`
+
+## Les erreurs courantes
+
+### null/undefined
+
+```typescript
+// ❌ Erreur : User | null
+const user = await getUser();
+console.log(user.name); // Erreur !
+
+// ✅ Garde
+const user = await getUser();
+if (user) {
+  console.log(user.name);
+}
+```
+
+### noUncheckedIndexedAccess
+
+```typescript
+const arr = [1, 2, 3];
+const first = arr[0]; // type: number | undefined
+```
+
+## Conclusion
+
+Le mode strict n'est pas optionnel pour un projet sérieux. Activez-le dès le début.

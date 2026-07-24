@@ -1,0 +1,38 @@
+---
+title: "API Reference"
+description: "Référence complète de l'API."
+order: 3
+---
+
+## Routes API
+
+### Posts
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/posts` | Liste des articles |
+| GET | `/api/posts/[slug]` | Détail d'un article |
+| POST | `/api/posts` | Créer un article |
+| PUT | `/api/posts/[slug]` | Modifier un article |
+| DELETE | `/api/posts/[slug]` | Supprimer un article |
+
+### Comments
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/api/posts/[slug]/comments` | Commentaires d'un article |
+| POST | `/api/posts/[slug]/comments` | Ajouter un commentaire |
+
+## Authentification
+
+Toutes les routes API protégées nécessitent un header :
+
+```
+Authorization: Bearer <token>
+```
+
+## Rate Limiting
+
+- **Lire** : 100 requêtes / minute
+- **Écrire** : 20 requêtes / minute
+- **Recherche** : 30 requêtes / minute

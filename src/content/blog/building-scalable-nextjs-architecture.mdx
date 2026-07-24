@@ -1,0 +1,75 @@
+---
+title: "Construire une architecture scalable avec Next.js App Router"
+description: "Découvrez les patterns avancés pour structurer vos applications Next.js en production."
+date: "2026-07-15"
+tags: ["Next.js", "Architecture", "TypeScript"]
+author: "Emmanuel Mulonda Johannes"
+readTime: 8
+featured: true
+---
+
+## Introduction
+
+La structuration d'une application Next.js en production requiert une réflexion approfondie sur l'architecture. Dans cet article, nous explorons les patterns qui fonctionnent.
+
+## Le pattern Feature-Based
+
+Plutôt que de trier par type de fichier (`components/`, `hooks/`, `utils/`), regroupez par fonctionnalité :
+
+```
+features/
+  blog/
+    components/
+    hooks/
+    actions/
+    types.ts
+  auth/
+    components/
+    hooks/
+    actions/
+    types.ts
+```
+
+### Avantages
+
+- **Cohésion** : tout le code lié au blog est au même endroit
+- **Isolation** : modifier le blog n'affecte pas l'auth
+- **Scalabilité** : ajouter une feature = ajouter un dossier
+- **Refactoring** : plus facile à déplacer ou supprimer
+
+## Server Components par défaut
+
+Utilisez les Server Components comme point de départ. Passez aux Client Components uniquement quand nécessaire :
+
+```tsx
+// Server Component par défaut (pas de "use client")
+export default async function BlogPage() {
+  const posts = await getPosts();
+  return <PostList posts={posts} />;
+}
+```
+
+## Server Actions pour les mutations
+
+```tsx
+"use server";
+
+import { z } from "zod";
+
+const commentSchema = z.object({
+  content: z.string().min(1).max(2000),
+  postId: z.string().uuid(),
+});
+
+export async function createComment(formData: FormData) {
+  const parsed = commentSchema.parse({
+    content: formData.get("content"),
+    postId: formData.get("postId"),
+  });
+  // Insérer en base...
+}
+```
+
+## Conclusion
+
+Une bonne architecture est celle qui évolue avec votre projet. Commencez simple, refactorisez quand le besoin se présente.

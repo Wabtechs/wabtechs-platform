@@ -1,0 +1,39 @@
+---
+title: "Guides"
+description: "Guides pas-à-pas pour les fonctionnalités."
+order: 4
+---
+
+## Créer un article
+
+1. Créer un fichier `.mdx` dans `src/content/blog/`
+2. Ajouter le frontmatter
+3. Écrire le contenu
+4. Commit et push
+
+### Frontmatter
+
+```yaml
+---
+title: "Titre de l'article"
+description: "Description courte"
+date: "2026-07-15"
+tags: ["Tag1", "Tag2"]
+author: "Emmanuel Mulonda Johannes"
+readTime: 5
+---
+```
+
+## Ajouter une page
+
+1. Créer un dossier dans `src/app/`
+2. Ajouter `page.tsx`
+3. Exporter `metadata`
+4. Utiliser `PageHeader` pour la cohérence
+
+## Configurer la base de données
+
+1. Installer PostgreSQL
+2. Configurer `DATABASE_URL` dans `.env`
+3. `npx prisma db push`
+4. `npx prisma generate`

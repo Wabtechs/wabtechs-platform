@@ -1,0 +1,63 @@
+---
+title: "Architecture"
+description: "Structure et conventions du projet."
+order: 2
+---
+
+## Principe fondamental
+
+Le projet utilise une **architecture feature-based**. Chaque fonctionnalité majeure a son propre dossier dans `src/features/`.
+
+## Conventions de code
+
+### Components
+
+- **Server Components** par défaut (pas de `"use client"`)
+- **Client Components** uniquement si nécessaire (interactivité, hooks)
+- Un fichier par composant
+- Export nommé
+
+### Naming
+
+```typescript
+// Fichiers : kebab-case
+button.tsx
+audio-player.tsx
+
+// Composants : PascalCase
+Button
+AudioPlayer
+
+// Hooks : camelCase avec préfixe use
+useMediaQuery
+useScrollProgress
+
+// Utils : camelCase
+formatDate
+slugify
+```
+
+### Types
+
+- Types partagés dans `src/types/`
+- Types locaux au dossier de la feature
+- Pas de `any`, jamais
+
+### State
+
+- **Server State** : TanStack Query
+- **Client State** : Zustand
+- **Form State** : React Hook Form + Zod
+
+## Patterns de validation
+
+```typescript
+// Zod schema
+const postSchema = z.object({
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+  tags: z.array(z.string()).max(5),
+});
+
+type PostInput = z.infer<typeof postSchema>;
+```
