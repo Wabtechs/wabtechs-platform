@@ -5,20 +5,19 @@ import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { MessagesClient } from "./messages-client";
+import { TagsClient } from "./tags-client";
 
-export const metadata: Metadata = { title: "Messages de contact" };
+export const metadata: Metadata = { title: "Gestion des tags" };
 
-export default async function AdminMessagesPage() {
+export default async function AdminTagsPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
 
-  const messages = await db.contactMessage.findMany({
-    orderBy: { createdAt: "desc" },
+  const tags = await db.tag.findMany({
+    orderBy: { name: "asc" },
+    include: { _count: { select: { posts: true, podcasts: true } } },
   });
-
-  const unreadCount = messages.filter((m) => !m.read).length;
 
   return (
     <div className="pt-24 pb-16">
@@ -30,12 +29,10 @@ export default async function AdminMessagesPage() {
           </Link>
         </Button>
 
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Messages</h1>
-        <p className="mt-2 text-muted-foreground">
-          {messages.length} messages · {unreadCount} non lus
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Tags</h1>
+        <p className="mt-2 text-muted-foreground">{tags.length} tags au total.</p>
 
-        <MessagesClient messages={messages} />
+        <TagsClient tags={tags} />
       </div>
     </div>
   );

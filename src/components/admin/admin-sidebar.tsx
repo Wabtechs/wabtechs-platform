@@ -14,6 +14,7 @@ import {
   Mail,
   MessageSquare,
   Settings,
+  Tag,
   Menu,
   X,
   ChevronRight,
@@ -45,6 +46,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Articles", href: "/admin/posts", icon: FileText },
       { label: "Podcasts", href: "/admin/podcasts", icon: Headphones },
       { label: "Projets", href: "/admin/projects", icon: Layers },
+      { label: "Tags", href: "/admin/tags", icon: Tag },
     ],
   },
   {

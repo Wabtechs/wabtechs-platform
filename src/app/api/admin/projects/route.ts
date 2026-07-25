@@ -24,24 +24,27 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { id } = body;
+    const { id, ...data } = body;
 
     if (id) {
-      const updated = await db.project.update({ where: { id }, data: body });
+      const updated = await db.project.update({ where: { id }, data });
       return NextResponse.json(updated);
     }
 
     const project = await db.project.create({
       data: {
-        title: body.title,
-        description: body.description ?? "",
-        slug: body.slug,
-        longDescription: body.longDescription ?? null,
-        coverImage: body.coverImage ?? null,
-        githubUrl: body.githubUrl ?? null,
-        demoUrl: body.demoUrl ?? null,
-        techStack: body.techStack ?? [],
-        featured: body.featured ?? false,
+        title: data.title,
+        description: data.description ?? "",
+        slug: data.slug,
+        longDescription: data.longDescription ?? null,
+        coverImage: data.coverImage ?? null,
+        githubUrl: data.githubUrl ?? null,
+        demoUrl: data.demoUrl ?? null,
+        techStack: data.techStack ?? [],
+        featured: data.featured ?? false,
+        metaTitle: data.metaTitle ?? null,
+        metaDescription: data.metaDescription ?? null,
+        ogImage: data.ogImage ?? null,
       },
     });
     return NextResponse.json(project, { status: 201 });

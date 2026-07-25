@@ -9,7 +9,10 @@ export async function GET() {
   }
 
   try {
-    const posts = await db.post.findMany({ orderBy: { createdAt: "desc" } });
+    const posts = await db.post.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { author: { select: { name: true } }, tags: true },
+    });
     return NextResponse.json(posts);
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -24,27 +27,78 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { title, slug } = body;
-    const id = body.id as string | undefined;
+    const { id, tags, ...data } = body;
+
+    if (tags !== undefined) {
+      data.tags = undefined;
+    }
 
     if (id) {
-      const updated = await db.post.update({ where: { id }, data: body });
+      const existing = await db.post.findUnique({ where: { id }, select: { published: true } });
+      if (data.published && existing && !existing.published) {
+        data.publishedAt = new Date();
+      }
+
+      const updated = await db.post.update({
+        where: { id },
+        data,
+      });
+
+      if (tags !== undefined && Array.isArray(tags)) {
+        await db.post.update({
+          where: { id },
+          data: { tags: { set: [] } },
+        });
+        for (const tagName of tags) {
+          if (!tagName) continue;
+          const tag = await db.tag.upsert({
+            where: { name: tagName },
+            update: {},
+            create: { name: tagName, slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-") },
+          });
+          await db.post.update({
+            where: { id },
+            data: { tags: { connect: { id: tag.id } } },
+          });
+        }
+      }
+
       return NextResponse.json(updated);
     }
 
     const post = await db.post.create({
       data: {
-        title,
-        description: body.description ?? "",
-        content: body.content ?? "",
-        slug,
-        published: body.published ?? false,
-        featured: body.featured ?? false,
-        coverImage: body.coverImage ?? null,
-        readTime: body.readTime ?? 5,
+        title: data.title,
+        description: data.description ?? "",
+        content: data.content ?? "",
+        slug: data.slug,
+        published: data.published ?? false,
+        featured: data.featured ?? false,
+        coverImage: data.coverImage ?? null,
+        readTime: data.readTime ?? 5,
+        publishedAt: data.published ? new Date() : null,
+        metaTitle: data.metaTitle ?? null,
+        metaDescription: data.metaDescription ?? null,
+        ogImage: data.ogImage ?? null,
         authorId: session.user.id as string,
       },
     });
+
+    if (tags !== undefined && Array.isArray(tags)) {
+      for (const tagName of tags) {
+        if (!tagName) continue;
+        const tag = await db.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: { name: tagName, slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-") },
+        });
+        await db.post.update({
+          where: { id: post.id },
+          data: { tags: { connect: { id: tag.id } } },
+        });
+      }
+    }
+
     return NextResponse.json(post, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

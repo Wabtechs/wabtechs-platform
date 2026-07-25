@@ -25,6 +25,7 @@ model User {
   comments     Comment[]
   likes        Like[]
   bookmarks    Bookmark[]
+  auditLogs    AuditLog[]
 
   @@map("users")
 }
@@ -50,6 +51,10 @@ model Post {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   publishedAt DateTime?
+
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
 
   author   User        @relation(fields: [authorId], references: [id])
   tags     Tag[]
@@ -128,6 +133,11 @@ model Podcast {
   season      Int      @default(1)
   published   Boolean  @default(false)
   publishedAt DateTime?
+
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -148,6 +158,11 @@ model Project {
   techStack   String[]
   featured    Boolean  @default(false)
   archived    Boolean  @default(false)
+
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -201,4 +216,16 @@ model PageView {
   @@index([path])
   @@index([createdAt])
   @@map("page_views")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String?
+  userId    String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 }

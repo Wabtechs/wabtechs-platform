@@ -9,10 +9,18 @@ export async function GET() {
   }
 
   try {
-    const subscribers = await db.newsletter.findMany({
+    const users = await db.user.findMany({
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        _count: { select: { posts: true, comments: true } },
+      },
     });
-    return NextResponse.json(subscribers);
+    return NextResponse.json(users);
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
@@ -25,11 +33,14 @@ export async function PATCH(req: Request) {
   }
 
   try {
-    const { id, active } = await req.json();
-    if (!id || typeof active !== "boolean") {
-      return NextResponse.json({ error: "id et active requis" }, { status: 400 });
+    const { id, role } = await req.json();
+    if (!id || !role) {
+      return NextResponse.json({ error: "id et role requis" }, { status: 400 });
     }
-    const updated = await db.newsletter.update({ where: { id }, data: { active } });
+    if (!["USER", "ADMIN", "MODERATOR"].includes(role)) {
+      return NextResponse.json({ error: "Role invalide" }, { status: 400 });
+    }
+    const updated = await db.user.update({ where: { id }, data: { role } });
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -44,7 +55,11 @@ export async function DELETE(req: Request) {
 
   try {
     const { id } = await req.json();
-    await db.newsletter.delete({ where: { id } });
+    const currentUser = session.user.id as string;
+    if (id === currentUser) {
+      return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 400 });
+    }
+    await db.user.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

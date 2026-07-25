@@ -27,26 +27,61 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { id } = body;
+    const { id, tags, ...data } = body;
 
     if (id) {
-      const updated = await db.podcast.update({ where: { id }, data: body });
+      const existing = await db.podcast.findUnique({ where: { id }, select: { published: true } });
+      if (data.published && existing && !existing.published) {
+        data.publishedAt = new Date();
+      }
+      const updated = await db.podcast.update({ where: { id }, data });
+
+      if (tags !== undefined && Array.isArray(tags)) {
+        await db.podcast.update({ where: { id }, data: { tags: { set: [] } } });
+        for (const tagName of tags) {
+          if (!tagName) continue;
+          const tag = await db.tag.upsert({
+            where: { name: tagName },
+            update: {},
+            create: { name: tagName, slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-") },
+          });
+          await db.podcast.update({ where: { id }, data: { tags: { connect: { id: tag.id } } } });
+        }
+      }
+
       return NextResponse.json(updated);
     }
 
     const podcast = await db.podcast.create({
       data: {
-        title: body.title,
-        description: body.description ?? "",
-        slug: body.slug,
-        audioUrl: body.audioUrl,
-        duration: body.duration ?? 0,
-        episode: body.episode ?? 1,
-        season: body.season ?? 1,
-        published: body.published ?? false,
-        coverImage: body.coverImage ?? null,
+        title: data.title,
+        description: data.description ?? "",
+        slug: data.slug,
+        audioUrl: data.audioUrl,
+        duration: data.duration ?? 0,
+        episode: data.episode ?? 1,
+        season: data.season ?? 1,
+        published: data.published ?? false,
+        coverImage: data.coverImage ?? null,
+        publishedAt: data.published ? new Date() : null,
+        metaTitle: data.metaTitle ?? null,
+        metaDescription: data.metaDescription ?? null,
+        ogImage: data.ogImage ?? null,
       },
     });
+
+    if (tags !== undefined && Array.isArray(tags)) {
+      for (const tagName of tags) {
+        if (!tagName) continue;
+        const tag = await db.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: { name: tagName, slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-") },
+        });
+        await db.podcast.update({ where: { id: podcast.id }, data: { tags: { connect: { id: tag.id } } } });
+      }
+    }
+
     return NextResponse.json(podcast, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
