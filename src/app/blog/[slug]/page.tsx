@@ -10,6 +10,7 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/mdx";
 import { PostCard } from "@/components/blog/post-card";
 import { mdxComponents } from "@/components/blog/mdx-components";
+import { ShareButtons } from "@/components/shared/share-buttons";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -89,6 +90,13 @@ export default async function BlogPostPage({
                 ))}
               </div>
             )}
+
+            <div className="mt-8 border-t pt-6">
+              <ShareButtons
+                title={post.meta.title}
+                url={`https://wabtechs.com/blog/${slug}`}
+              />
+            </div>
           </article>
 
           <aside>
