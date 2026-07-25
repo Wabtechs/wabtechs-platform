@@ -1,20 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Check } from "lucide-react";
+import { Mail, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
-  };
+    setStatus("loading");
 
-  if (submitted) {
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("idle");
+      }
+    } catch {
+      setStatus("idle");
+    }
+  }
+
+  if (status === "success") {
     return (
       <div className="flex items-center gap-2 text-sm text-green-600">
         <Check className="h-4 w-4" />
@@ -32,9 +49,14 @@ export function NewsletterForm() {
         onChange={(e) => setEmail(e.target.value)}
         required
         className="max-w-xs"
+        disabled={status === "loading"}
       />
-      <Button type="submit" size="sm">
-        <Mail className="mr-1 h-4 w-4" />
+      <Button type="submit" size="sm" disabled={status === "loading"}>
+        {status === "loading" ? (
+          <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+        ) : (
+          <Mail className="mr-1 h-4 w-4" />
+        )}
         S&apos;inscrire
       </Button>
     </form>
