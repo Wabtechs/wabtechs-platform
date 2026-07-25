@@ -172,7 +172,7 @@ export function SettingsPageClient() {
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Paramètres du site</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Paramètres du site</h1>
           <p className="mt-2 text-muted-foreground">Configurez l&apos;ensemble des sections et contenus de votre site.</p>
         </div>
 
@@ -187,7 +187,7 @@ export function SettingsPageClient() {
                   "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all whitespace-nowrap",
                   activeTab === tab.id
                     ? "bg-[#842ae3] text-[#1e1e1e]"
-                    : "text-muted-foreground hover:bg-white/5 hover:text-white",
+                    : "text-muted-foreground hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/5 dark:hover:text-white",
                 )}
               >
                 <tab.icon className="h-4 w-4" />
@@ -197,11 +197,11 @@ export function SettingsPageClient() {
           </div>
 
           {/* Content */}
-          <Card className="border-white/10 bg-[#1F1F1F]">
+          <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-white">{currentTab?.label}</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">{currentTab?.label}</CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={fetchSettings} className="border-white/10 text-muted-foreground hover:bg-white/5">
+                <Button variant="outline" size="sm" onClick={fetchSettings} className="border-gray-200 text-muted-foreground hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">
                   <RotateCcw className="mr-1 h-4 w-4" />
                   Réinitialiser
                 </Button>
@@ -214,17 +214,17 @@ export function SettingsPageClient() {
             <CardContent className="space-y-6">
               {currentTab?.fields.map((field) => (
                 <div key={field.key}>
-                  <label className="mb-2 block text-sm font-medium text-white">{field.label}</label>
+                  <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">{field.label}</label>
                   {field.type === "image" ? (
                     <div className="space-y-2">
                       <Input
                         value={draft[field.key] ?? ""}
                         onChange={(e) => updateField(field.key, e.target.value)}
-                        className="border-white/10 bg-[#131313] text-white"
+                        className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
                         placeholder="/images/..."
                       />
                       {(draft[field.key]) && (
-                        <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-white/10">
+                        <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-gray-200 dark:border-white/10">
                           <img src={draft[field.key]} alt={field.label} className="h-full w-full object-cover" />
                         </div>
                       )}
@@ -234,11 +234,11 @@ export function SettingsPageClient() {
                       <textarea
                         value={draft[field.key] ?? ""}
                         onChange={(e) => updateField(field.key, e.target.value)}
-                        className="w-full rounded-lg border border-white/10 bg-[#131313] p-3 font-mono text-sm text-white focus:border-[#842ae3] focus:outline-none"
+                        className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-sm text-gray-900 focus:border-[#842ae3] focus:outline-none dark:border-white/10 dark:bg-[#131313] dark:text-white"
                         rows={10}
                         spellCheck={false}
                       />
-                      <Button variant="outline" size="sm" onClick={() => formatJson(field.key)} className="border-white/10 text-muted-foreground hover:bg-white/5">
+                      <Button variant="outline" size="sm" onClick={() => formatJson(field.key)} className="border-gray-200 text-muted-foreground hover:bg-gray-100 dark:border-white/10 dark:hover:bg-white/5">
                         Formater JSON
                       </Button>
                     </div>
@@ -246,14 +246,14 @@ export function SettingsPageClient() {
                     <textarea
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="w-full rounded-lg border border-white/10 bg-[#131313] p-3 text-sm text-white focus:border-[#842ae3] focus:outline-none"
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900 focus:border-[#842ae3] focus:outline-none dark:border-white/10 dark:bg-[#131313] dark:text-white"
                       rows={4}
                     />
                   ) : (
                     <Input
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="border-white/10 bg-[#131313] text-white"
+                      className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
                     />
                   )}
                 </div>
