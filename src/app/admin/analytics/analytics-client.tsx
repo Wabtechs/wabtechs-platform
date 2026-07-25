@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
-import { BarChart3, Eye, Calendar, TrendingUp, Globe, Loader2 } from "lucide-react";
+import {
+  BarChart3,
+  Eye,
+  Calendar,
+  TrendingUp,
+  Globe,
+  Loader2,
+  ArrowUpRight,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
@@ -25,14 +33,14 @@ interface AnalyticsData {
   viewsByDay: { date: string; count: number }[];
 }
 
-const container = {
+const stagger = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.06 } },
 };
 
-const item = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0 },
+const fadeUp = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
 
 export function AnalyticsClient() {
@@ -40,7 +48,11 @@ export function AnalyticsClient() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<"7d" | "30d" | "all">("30d");
-  const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const isDark =
+    theme === "dark" ||
+    (theme === "system" &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
     fetch("/api/admin/analytics")
@@ -70,10 +82,34 @@ export function AnalyticsClient() {
   }
 
   const metrics = [
-    { label: "Total vues", value: data.totalViews.toLocaleString(), icon: Eye, color: "#3b82f6" },
-    { label: "Aujourd'hui", value: data.todayViews.toLocaleString(), icon: Calendar, color: "#842ae3" },
-    { label: "7 derniers jours", value: data.views7d.toLocaleString(), icon: TrendingUp, color: "#10b981" },
-    { label: "Pages uniques", value: data.uniquePages.toLocaleString(), icon: Globe, color: "#f59e0b" },
+    {
+      label: "Total vues",
+      value: data.totalViews.toLocaleString(),
+      icon: Eye,
+      color: "#3b82f6",
+      gradient: "from-blue-500/10 to-blue-600/5",
+    },
+    {
+      label: "Aujourd'hui",
+      value: data.todayViews.toLocaleString(),
+      icon: Calendar,
+      color: "#842ae3",
+      gradient: "from-purple-500/10 to-purple-600/5",
+    },
+    {
+      label: "7 derniers jours",
+      value: data.views7d.toLocaleString(),
+      icon: TrendingUp,
+      color: "#10b981",
+      gradient: "from-emerald-500/10 to-emerald-600/5",
+    },
+    {
+      label: "Pages uniques",
+      value: data.uniquePages.toLocaleString(),
+      icon: Globe,
+      color: "#f59e0b",
+      gradient: "from-amber-500/10 to-amber-600/5",
+    },
   ];
 
   const chartData = data.viewsByDay.map((d) => ({
@@ -85,25 +121,25 @@ export function AnalyticsClient() {
   }));
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show">
-      <motion.div variants={item} className="mb-8 flex items-center justify-between">
+    <motion.div variants={stagger} initial="hidden" animate="show">
+      <motion.div variants={fadeUp} className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
             Analytics
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
             Suivez les performances de votre plateforme.
           </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-white/10 dark:bg-[#1a1a1a]">
+        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-white/[0.06] dark:bg-[#111]">
           {(["7d", "30d", "all"] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-all ${
+              className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-all duration-200 ${
                 period === p
-                  ? "bg-white text-gray-900 shadow-sm dark:bg-[#111] dark:text-white"
-                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  ? "bg-white text-gray-900 shadow-sm dark:bg-[#1a1a1a] dark:text-white"
+                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
               {p === "7d" ? "7 jours" : p === "30d" ? "30 jours" : "Tous"}
@@ -112,25 +148,27 @@ export function AnalyticsClient() {
         </div>
       </motion.div>
 
-      <motion.div variants={item} className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div variants={fadeUp} className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((m) => (
           <Card
             key={m.label}
-            className="border-gray-200 bg-white dark:border-white/[0.06] dark:bg-[#111]"
+            className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
           >
             <CardContent className="p-5">
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[13px] text-gray-500 dark:text-gray-400">{m.label}</p>
-                  <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                  <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
+                    {m.label}
+                  </p>
+                  <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-white leading-none">
                     {m.value}
                   </p>
                 </div>
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: `${m.color}15` }}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: `${m.color}12` }}
                 >
-                  <m.icon className="h-4 w-4" style={{ color: m.color }} />
+                  <m.icon className="h-5 w-5" style={{ color: m.color }} />
                 </div>
               </div>
             </CardContent>
@@ -138,36 +176,45 @@ export function AnalyticsClient() {
         ))}
       </motion.div>
 
-      <motion.div variants={item} className="mb-8">
-        <Card className="border-gray-200 bg-white dark:border-white/[0.06] dark:bg-[#111]">
-          <CardHeader>
-            <CardTitle className="text-[15px] font-semibold text-gray-900 dark:text-white">
-              Vues dans le temps
-            </CardTitle>
+      <motion.div variants={fadeUp} className="mb-6">
+        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#842ae3]/10">
+                <TrendingUp className="h-3.5 w-3.5 text-[#842ae3]" />
+              </div>
+              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                Vues dans le temps
+              </CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(128,128,128,0.1)" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke={isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}
+                    />
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 11, fill: "#9ca3af" }}
+                      tick={{ fontSize: 11, fill: isDark ? "#6b7280" : "#9ca3af" }}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
-                      tick={{ fontSize: 11, fill: "#9ca3af" }}
+                      tick={{ fontSize: 11, fill: isDark ? "#6b7280" : "#9ca3af" }}
                       tickLine={false}
                       axisLine={false}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: isDark ? "#111" : "#fff",
-                        border: isDark ? "1px solid rgba(255,255,255,0.1)" : "1px solid #e5e7eb",
-                        borderRadius: "8px",
+                        backgroundColor: isDark ? "#1a1a1a" : "#fff",
+                        border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e5e7eb",
+                        borderRadius: "10px",
                         fontSize: "12px",
+                        boxShadow: "0 8px 30px rgb(0,0,0,0.12)",
                         color: isDark ? "#fff" : "#111",
                       }}
                     />
@@ -177,7 +224,7 @@ export function AnalyticsClient() {
                       stroke="#842ae3"
                       strokeWidth={2}
                       dot={{ fill: "#842ae3", strokeWidth: 0, r: 3 }}
-                      activeDot={{ r: 5, fill: "#842ae3" }}
+                      activeDot={{ r: 5, fill: "#842ae3", stroke: isDark ? "#111" : "#fff", strokeWidth: 2 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -191,30 +238,45 @@ export function AnalyticsClient() {
         </Card>
       </motion.div>
 
-      <motion.div variants={item}>
-        <Card className="border-gray-200 bg-white dark:border-white/[0.06] dark:bg-[#111]">
-          <CardHeader>
-            <CardTitle className="text-[15px] font-semibold text-gray-900 dark:text-white">
-              Pages les plus visitées
-            </CardTitle>
+      <motion.div variants={fadeUp}>
+        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
+                  <Globe className="h-3.5 w-3.5 text-blue-500" />
+                </div>
+                <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                  Pages les plus visitées
+                </CardTitle>
+              </div>
+              <span className="text-[12px] font-medium text-gray-400">
+                {data.topPages.length} pages
+              </span>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             {data.topPages.length > 0 ? (
-              <div className="divide-y divide-gray-100 dark:divide-white/[0.06]">
+              <div className="divide-y divide-gray-100/80 dark:divide-white/[0.04]">
                 {data.topPages.map((page, i) => (
                   <div
                     key={page.path}
-                    className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                    className="flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-5 text-[12px] font-medium text-gray-400">{i + 1}</span>
+                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-[11px] font-semibold text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                        {i + 1}
+                      </span>
                       <span className="font-mono text-[13px] font-medium text-gray-900 dark:text-white">
                         {page.path}
                       </span>
                     </div>
-                    <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
-                      {page.views} vues
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
+                        {page.views}
+                      </span>
+                      <ArrowUpRight className="h-3 w-3 text-gray-300 dark:text-gray-600" />
+                    </div>
                   </div>
                 ))}
               </div>

@@ -4,9 +4,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Plus, Pencil } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Pencil, Headphones, Clock } from "lucide-react";
 import { DeletePodcastButton } from "./delete-button";
 
 export const metadata: Metadata = { title: "Gestion des podcasts" };
@@ -21,64 +20,98 @@ export default async function AdminPodcastsPage() {
   });
 
   return (
-    <div className="pt-24 pb-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Button variant="ghost" size="sm" asChild className="mb-6">
-          <Link href="/admin">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
+    <div className="min-h-screen">
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-500/10">
+              <Headphones className="h-5 w-5 text-pink-500" />
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                Podcasts
+              </h1>
+              <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
+                {podcasts.length} épisodes au total
+              </p>
+            </div>
+          </div>
+        </div>
+        <Button
+          asChild
+          size="sm"
+          className="h-8 bg-[#842ae3] text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+        >
+          <Link href="/admin/podcasts/new">
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            Nouvel épisode
           </Link>
         </Button>
+      </div>
 
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Podcasts</h1>
-            <p className="mt-2 text-muted-foreground">{podcasts.length} épisodes au total.</p>
-          </div>
-          <Button asChild>
-            <Link href="/admin/podcasts/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Nouvel épisode
-            </Link>
-          </Button>
-        </div>
-
-        <div className="mt-8 space-y-3">
-          {podcasts.length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Aucun épisode. Créez votre premier podcast !
-              </CardContent>
-            </Card>
-          ) : (
-            podcasts.map((podcast) => (
-              <Card key={podcast.id}>
-                <CardHeader className="flex flex-row items-center gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-base truncate">{podcast.title}</CardTitle>
-                      <Badge variant={podcast.published ? "default" : "secondary"}>
-                        {podcast.published ? "Publié" : "Brouillon"}
-                      </Badge>
-                      <Badge variant="outline">S{podcast.season}E{podcast.episode}</Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {podcast.duration} secondes · {podcast.slug}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/admin/podcasts/${podcast.id}/edit`}>
-                        <Pencil className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <DeletePodcastButton id={podcast.id} />
-                  </div>
-                </CardHeader>
-              </Card>
-            ))
-          )}
-        </div>
+      <div className="space-y-2">
+        {podcasts.length === 0 ? (
+          <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <Headphones className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
+              <p className="text-[13px] text-gray-500">Aucun épisode</p>
+              <Link
+                href="/admin/podcasts/new"
+                className="mt-2 text-[12px] font-medium text-[#842ae3] hover:underline"
+              >
+                Créer votre premier podcast
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          podcasts.map((podcast) => (
+            <div
+              key={podcast.id}
+              className="group flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                    {podcast.title}
+                  </p>
+                  {podcast.published ? (
+                    <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                      Publié
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                      Brouillon
+                    </span>
+                  )}
+                  <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                    S{podcast.season}E{podcast.episode}
+                  </span>
+                </div>
+                <div className="mt-1.5 flex items-center gap-2 text-[12px] text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {podcast.duration}s
+                  </span>
+                  <span>·</span>
+                  <span>{podcast.slug}</span>
+                </div>
+              </div>
+              <div className="ml-4 flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  asChild
+                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  <Link href={`/admin/podcasts/${podcast.id}/edit`}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+                <DeletePodcastButton id={podcast.id} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

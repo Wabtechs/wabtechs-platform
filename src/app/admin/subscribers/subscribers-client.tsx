@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Trash2, ToggleLeft, ToggleRight, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
 
@@ -15,7 +14,21 @@ interface Subscriber {
   createdAt: Date;
 }
 
-export function SubscribersClient({ subscribers: initialSubs }: { subscribers: Subscriber[] }) {
+const stagger = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.03 } },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] as const } },
+};
+
+export function SubscribersClient({
+  subscribers: initialSubs,
+}: {
+  subscribers: Subscriber[];
+}) {
   const [subscribers, setSubscribers] = useState(initialSubs);
 
   async function toggleActive(id: string, active: boolean) {
@@ -25,7 +38,9 @@ export function SubscribersClient({ subscribers: initialSubs }: { subscribers: S
       body: JSON.stringify({ id, active }),
     });
     if (res.ok) {
-      setSubscribers(subscribers.map((s) => (s.id === id ? { ...s, active } : s)));
+      setSubscribers(
+        subscribers.map((s) => (s.id === id ? { ...s, active } : s)),
+      );
     }
   }
 
@@ -40,37 +55,89 @@ export function SubscribersClient({ subscribers: initialSubs }: { subscribers: S
   }
 
   return (
-    <div className="mt-8 space-y-2">
+    <div className="min-h-screen">
+      <div className="mb-8 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
+          <Mail className="h-5 w-5 text-emerald-500" />
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            Abonnés
+          </h1>
+          <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
+            {subscribers.length} abonnés au total
+          </p>
+        </div>
+      </div>
+
       {subscribers.length === 0 ? (
-        <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
-          <CardContent className="py-8 text-center text-muted-foreground">
-            Aucun abonné.
+        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <Mail className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
+            <p className="text-[13px] text-gray-500">Aucun abonné</p>
           </CardContent>
         </Card>
       ) : (
-        subscribers.map((sub) => (
-          <div key={sub.id} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-white/10 dark:bg-[#1F1F1F]">
-            <div className="flex items-center gap-3">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{sub.email}</p>
-                {sub.name && <p className="text-xs text-muted-foreground">{sub.name}</p>}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={sub.active ? "default" : "secondary"}>
-                {sub.active ? "Actif" : "Inactif"}
-              </Badge>
-              <Button variant="ghost" size="icon" onClick={() => toggleActive(sub.id, !sub.active)}>
-                {sub.active ? <ToggleRight className="h-4 w-4 text-green-500" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => deleteSubscriber(sub.id)} className="text-destructive hover:text-destructive">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-              <span className="text-xs text-muted-foreground">{formatDate(sub.createdAt)}</span>
-            </div>
-          </div>
-        ))
+        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-2">
+          <AnimatePresence>
+            {subscribers.map((sub) => (
+              <motion.div
+                key={sub.id}
+                variants={item}
+                layout
+                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
+                    <span className="text-[13px] font-semibold text-gray-500 dark:text-gray-400">
+                      {sub.email.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-medium text-gray-900 dark:text-white">
+                      {sub.email}
+                    </p>
+                    {sub.name && (
+                      <p className="text-[11px] text-gray-400">{sub.name}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {sub.active ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                      <CheckCircle2 className="h-2.5 w-2.5" />
+                      Actif
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                      <XCircle className="h-2.5 w-2.5" />
+                      Inactif
+                    </span>
+                  )}
+                  <button
+                    onClick={() => toggleActive(sub.id, !sub.active)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/[0.04] dark:hover:text-white"
+                  >
+                    {sub.active ? (
+                      <ToggleRight className="h-4 w-4 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="h-4 w-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => deleteSubscriber(sub.id)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="text-[11px] text-gray-400">
+                    {formatDate(sub.createdAt)}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </div>
   );
