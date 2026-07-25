@@ -357,3 +357,33 @@ mark {
   background: #842ae3;
   color: #1e1e1e;
 }
+
+/* ===== About image section ===== */
+.about-image-part {
+  position: relative;
+}
+.about-image-part .dot-shape {
+  animation: rotated_circle linear 10s infinite;
+}
+
+/* ===== Keyframes (from original site) ===== */
+@keyframes rotated_circle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes leftRightOne {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-100px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

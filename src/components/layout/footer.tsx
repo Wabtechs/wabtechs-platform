@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Github, Twitter, Youtube, Linkedin, MapPin, Mail, Phone, ArrowRight } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/constants";
 import { BgLines } from "@/components/shared/bg-lines";
@@ -24,9 +25,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           <div>
-            <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-              <span className="bg-gradient-to-r from-[#842ae3] to-[#a855f7] bg-clip-text text-transparent">Wab</span>
-              <span className="text-white">Techs</span>
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/images/logos/logo.png" alt="WabTechs" width={60} height={60} className="h-[60px] w-auto" />
             </Link>
           </div>
 
