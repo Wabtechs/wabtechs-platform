@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -148,12 +147,12 @@ export default function ProjectsPage() {
                         Voir le code
                       </a>
                     </Button>
-                    <Button asChild variant="outline">
+                    {featured.demo && (<Button asChild variant="outline">
                       <a href={featured.demo} target="_blank" rel="noopener noreferrer">
                         <Globe className="mr-2 h-4 w-4" />
                         Voir la démo
                       </a>
-                    </Button>
+                    </Button>)}
                   </div>
                 </div>
               </div>

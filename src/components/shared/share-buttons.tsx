@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2, Twitter, Linkedin, Link as LinkIcon, Check } from "lucide-react";
+import { Twitter, Linkedin, Link as LinkIcon, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 

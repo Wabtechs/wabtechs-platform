@@ -14,17 +14,3 @@ export const newsletterSchema = z.object({
 });
 
 export type NewsletterInput = z.infer<typeof newsletterSchema>;
-
-export const commentSchema = z.object({
-  content: z.string().min(1, "Le commentaire ne peut pas être vide").max(2000),
-  parentId: z.string().uuid().optional(),
-});
-
-export type CommentInput = z.infer<typeof commentSchema>;
-
-export const searchSchema = z.object({
-  q: z.string().min(1).max(200),
-  type: z.enum(["all", "blog", "docs", "projects"]).default("all"),
-});
-
-export type SearchInput = z.infer<typeof searchSchema>;

@@ -7,6 +7,7 @@ import { ScrollProgress } from "@/components/shared/scroll-progress";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { BackToTop } from "@/components/shared/back-to-top";
 import { PageTransition } from "@/components/shared/page-transition";
+import { PodcastWrapper } from "@/components/shared/podcast-wrapper";
 import { SITE_CONFIG } from "@/lib/utils";
 import "./globals.css";
 
@@ -52,14 +53,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" className="dark" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <Providers>
-          <ScrollProgress />
-          <CommandPalette />
-          <Navbar />
-          <main className="min-h-screen">
-            <PageTransition>{children}</PageTransition>
-          </main>
-          <Footer />
-          <BackToTop />
+          <PodcastWrapper>
+            <ScrollProgress />
+            <CommandPalette />
+            <Navbar />
+            <main className="min-h-screen">
+              <PageTransition>{children}</PageTransition>
+            </main>
+            <Footer />
+            <BackToTop />
+          </PodcastWrapper>
         </Providers>
       </body>
     </html>

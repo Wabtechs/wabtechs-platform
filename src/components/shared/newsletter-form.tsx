@@ -1,64 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { Mail, Check, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { newsletterSchema, type NewsletterInput } from "@/lib/validators";
+import { Mail, Loader2 } from "lucide-react";
 
 export function NewsletterForm() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<NewsletterInput>({
+    resolver: zodResolver(newsletterSchema),
+  });
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setStatus("loading");
-
-    try {
-      const res = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-        setEmail("");
-      } else {
-        setStatus("idle");
-      }
-    } catch {
-      setStatus("idle");
-    }
-  }
-
-  if (status === "success") {
-    return (
-      <div className="flex items-center gap-2 text-sm text-green-600">
-        <Check className="h-4 w-4" />
-        Merci ! Vous serez notifié des prochains articles.
-      </div>
-    );
+  async function onSubmit(data: NewsletterInput) {
+    const res = await fetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) reset();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
-        type="email"
-        placeholder="votre@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="max-w-xs"
-        disabled={status === "loading"}
-      />
-      <Button type="submit" size="sm" disabled={status === "loading"}>
-        {status === "loading" ? (
-          <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-        ) : (
-          <Mail className="mr-1 h-4 w-4" />
-        )}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
+      <div className="flex-1">
+        <input
+          type="email"
+          placeholder="votre@email.com"
+          className="form-control w-full"
+          {...register("email")}
+        />
+        {errors.email && <p className="mt-1 text-xs text-[#ef4444]">{errors.email.message}</p>}
+      </div>
+      <button type="submit" disabled={isSubmitting} className="theme-btn">
+        {isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Mail className="mr-1 h-4 w-4" />}
         S&apos;inscrire
-      </Button>
+      </button>
     </form>
   );
 }

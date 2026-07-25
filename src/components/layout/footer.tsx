@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { Github, Twitter, Youtube, Linkedin, Heart, MapPin, Mail, Phone } from "lucide-react";
+import { Github, Twitter, Youtube, Linkedin, MapPin, Mail, Phone, ArrowRight } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/constants";
-import { SITE_CONFIG } from "@/lib/utils";
 import { BgLines } from "@/components/shared/bg-lines";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {

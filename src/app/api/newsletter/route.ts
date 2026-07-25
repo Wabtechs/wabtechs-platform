@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { z } from "zod";
 
 const subscribeSchema = z.object({
@@ -20,12 +20,13 @@ export async function POST(request: Request) {
 
     const { email } = parsed.data;
 
-    const existing = await prisma.subscriber.findUnique({ where: { email } });
+    const existing = await db.newsletter.findUnique({ where: { email } });
     if (existing) {
       return NextResponse.json({ message: "Vous êtes déjà inscrit." }, { status: 200 });
     }
 
-    await prisma.subscriber.create({ data: { email } });
+    const token = crypto.randomUUID();
+    await db.newsletter.create({ data: { email, token } });
 
     return NextResponse.json({ message: "Inscription réussie !" }, { status: 201 });
   } catch {

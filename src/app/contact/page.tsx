@@ -1,19 +1,21 @@
 "use client";
 
-import { Mail, MapPin, Phone, ArrowRight } from "lucide-react";
+import { Mail, Phone, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, type ContactInput } from "@/lib/validators";
-import { BgLines } from "@/components/shared/bg-lines";
-import Link from "next/link";
 
 export default function ContactPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
   });
 
-  async function onSubmit(_data: ContactInput) {
-    await new Promise((r) => setTimeout(r, 1000));
+  async function onSubmit(data: ContactInput) {
+    await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
     reset();
   }
 
