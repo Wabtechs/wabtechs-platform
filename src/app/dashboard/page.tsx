@@ -22,7 +22,6 @@ export default async function DashboardPage() {
     subscriberCount,
     userPostCount,
     userCommentCount,
-    userBookmarkCount,
     totalViews,
   ] = await Promise.all([
     db.post.count(),
@@ -31,13 +30,12 @@ export default async function DashboardPage() {
     db.newsletter.count({ where: { active: true } }),
     db.post.count({ where: { authorId: userId } }).catch(() => 0),
     db.comment.count({ where: { authorId: userId } }).catch(() => 0),
-    db.bookmark.count({ where: { authorId: userId } }).catch(() => 0),
     db.pageView.count().catch(() => 0),
   ]);
 
   const recentPosts = await db.post.findMany({
     orderBy: { createdAt: "desc" },
-    take: 10,
+    take: 8,
     select: {
       id: true,
       title: true,
@@ -48,17 +46,6 @@ export default async function DashboardPage() {
       tags: { select: { name: true } },
     },
   });
-
-  const userBookmarks = await db.bookmark.findMany({
-    where: { authorId: userId },
-    orderBy: { createdAt: "desc" },
-    take: 5,
-    select: {
-      id: true,
-      createdAt: true,
-      post: { select: { id: true, title: true, slug: true, createdAt: true } },
-    },
-  }).catch(() => []);
 
   const recentComments = await db.comment.findMany({
     where: { authorId: userId },
@@ -81,11 +68,9 @@ export default async function DashboardPage() {
         subscriberCount,
         userPostCount,
         userCommentCount,
-        userBookmarkCount,
         totalViews,
       }}
       recentPosts={recentPosts}
-      userBookmarks={userBookmarks}
       recentComments={recentComments}
       userName={userName}
       userRole={userRole}
