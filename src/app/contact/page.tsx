@@ -1,21 +1,17 @@
 "use client";
 
-import { Mail, MapPin, Send } from "lucide-react";
+import { Mail, MapPin, Phone, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { contactSchema, type ContactInput } from "@/lib/validators";
+import { BgLines } from "@/components/shared/bg-lines";
+import Link from "next/link";
 
 export default function ContactPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- form data used server-side in production
   async function onSubmit(_data: ContactInput) {
     await new Promise((r) => setTimeout(r, 1000));
     reset();
@@ -24,66 +20,97 @@ export default function ContactPage() {
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <Badge variant="secondary" className="mb-4">Contact</Badge>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-            Entrons en <span className="gradient-text">contact</span>
-          </h1>
-          <p className="mt-6 text-lg text-muted-foreground">
-            Une question, une suggestion ou un projet ? N&apos;hésitez pas à me contacter.
-          </p>
-        </div>
-
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
-          <div className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <Mail className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base">Email</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">contact@wabtechs.com</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center gap-4">
-                <MapPin className="h-5 w-5 text-primary" />
-                <CardTitle className="text-base">Localisation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Kinshasa, RD Congo</p>
-              </CardContent>
-            </Card>
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-[1fr_2fr]">
+          <div>
+            <span className="sub-title">Entrez en contact</span>
+            <h2 className="mb-6 text-3xl font-bold sm:text-4xl">
+              Parlons de vos <span className="text-[#842ae3]">prochains projets</span>
+            </h2>
+            <p className="mb-8 max-w-md text-muted-foreground">
+              Que ce soit pour un projet personnel ou professionnel, c&apos;est l&apos;occasion de partager
+              vos idées, vos ambitions et de définir les étapes nécessaires pour les réaliser.
+              N&apos;hésitez pas à partager plus de détails sur vos projets !
+            </p>
+            <ul className="space-y-3">
+              {["Plus de 4 années d'expérience", "Concepteur Web professionnel", "Conception d'applications mobiles", "Support de conception personnalisée"].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm text-foreground">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#842ae3]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8 flex flex-wrap items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                  <Mail className="h-4 w-4 text-[#1e1e1e]" />
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">E-mail</span>
+                  <a href="mailto:contact@wabtechs.com" className="block text-sm text-foreground hover:text-[#842ae3]">contact@wabtechs.com</a>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                  <Phone className="h-4 w-4 text-[#1e1e1e]" />
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground">Téléphone</span>
+                  <a href="tel:+243850060060" className="block text-sm text-foreground hover:text-[#842ae3]">+243 850 060 060</a>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <Card className="lg:col-span-2">
-            <CardContent className="pt-6">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Input placeholder="Votre nom" {...register("name")} />
-                    {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Input type="email" placeholder="Votre email" {...register("email")} />
-                    {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-                  </div>
+          <div className="rounded-[14px] border border-white/10 bg-[#1F1F1F] p-8 sm:p-12">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid gap-8 sm:grid-cols-2">
+                <div>
+                  <label className="mb-3 block text-sm font-medium text-white">Nom complet</label>
+                  <input
+                    type="text"
+                    placeholder="Votre nom"
+                    className="form-control w-full"
+                    {...register("name")}
+                  />
+                  {errors.name && <p className="mt-1 text-xs text-[#ef4444]">{errors.name.message}</p>}
                 </div>
-                <div className="space-y-2">
-                  <Input placeholder="Sujet" {...register("subject")} />
-                  {errors.subject && <p className="text-xs text-destructive">{errors.subject.message}</p>}
+                <div>
+                  <label className="mb-3 block text-sm font-medium text-white">Adresse e-mail</label>
+                  <input
+                    type="email"
+                    placeholder="contact@wabtechs.com"
+                    className="form-control w-full"
+                    {...register("email")}
+                  />
+                  {errors.email && <p className="mt-1 text-xs text-[#ef4444]">{errors.email.message}</p>}
                 </div>
-                <div className="space-y-2">
-                  <Textarea placeholder="Votre message" rows={5} {...register("message")} />
-                  {errors.message && <p className="text-xs text-destructive">{errors.message.message}</p>}
-                </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
-                  <Send className="ml-2 h-4 w-4" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+              </div>
+              <div>
+                <label className="mb-3 block text-sm font-medium text-white">Sujet</label>
+                <input
+                  type="text"
+                  placeholder="Sujet"
+                  className="form-control w-full"
+                  {...register("subject")}
+                />
+                {errors.subject && <p className="mt-1 text-xs text-[#ef4444]">{errors.subject.message}</p>}
+              </div>
+              <div>
+                <label className="mb-3 block text-sm font-medium text-white">Message</label>
+                <textarea
+                  placeholder="Votre message"
+                  rows={5}
+                  className="form-control w-full resize-none"
+                  {...register("message")}
+                />
+                {errors.message && <p className="mt-1 text-xs text-[#ef4444]">{errors.message.message}</p>}
+              </div>
+              <button type="submit" disabled={isSubmitting} className="theme-btn">
+                {isSubmitting ? "Envoi en cours..." : "Envoie-nous un message"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

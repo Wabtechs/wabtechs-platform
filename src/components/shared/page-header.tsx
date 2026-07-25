@@ -1,5 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-
 interface PageHeaderProps {
   badge?: string;
   title: string;
@@ -11,14 +9,12 @@ export function PageHeader({ badge, title, highlight, description }: PageHeaderP
   return (
     <div className="mx-auto max-w-3xl text-center">
       {badge && (
-        <Badge variant="secondary" className="mb-4">
-          {badge}
-        </Badge>
+        <span className="sub-title">{badge}</span>
       )}
       <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
         {highlight ? (
           <>
-            {title} <span className="gradient-text">{highlight}</span>
+            {title} <span className="text-[#842ae3]">{highlight}</span>
           </>
         ) : (
           title

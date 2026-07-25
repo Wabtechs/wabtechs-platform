@@ -2,56 +2,77 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Github } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { BgLines } from "@/components/shared/bg-lines";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-24">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-blue-500/10 to-transparent blur-3xl" />
-        <div className="absolute right-0 top-1/2 -z-10 h-[400px] w-[400px] translate-x-1/3 -translate-y-1/2 rounded-full bg-gradient-to-l from-violet-500/10 to-transparent blur-3xl" />
-      </div>
-
+    <section id="home" className="relative overflow-hidden pt-32 pb-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
-        >
-          <div className="mb-8 inline-flex items-center rounded-full border bg-muted/50 px-4 py-1.5 text-sm">
-            <span className="mr-2 h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            Plateforme en constante évolution
-          </div>
-
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl">
-            Développez.{" "}
-            <span className="gradient-text">Partagez.</span>{" "}
-            Innovez.
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            La plateforme de référence pour les développeurs francophones.
-            Articles, documentation, projets open source et bien plus.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" asChild>
-              <Link href="/blog">
-                Explorer le blog
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-3">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <span className="text-lg text-muted-foreground">Salut, Je suis</span>
+            <h1 className="mt-2 text-4xl font-bold sm:text-5xl">
+              <span className="text-primary">Emmanuel Mulonda Johannes</span> Développeur
+            </h1>
+            <p className="mt-6 max-w-md text-muted-foreground">
+              Nous utilisons des langages de programmation, des outils et des frameworks pour concevoir
+              et mettre en œuvre des sites web qui sont à la fois fonctionnels et attrayants.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link href="/contact" className="theme-btn">
+                Suis-là
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="https://github.com/wabtechs" target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 h-4 w-4" />
-                GitHub
+              <Link href="#" className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                Download my CV
+                <ArrowRight className="ml-1 inline h-3 w-3" />
               </Link>
-            </Button>
-          </div>
-        </motion.div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mx-auto w-full max-w-[265px] rounded-2xl bg-[#1e1e1e] p-8"
+          >
+            <div className="space-y-6">
+              <div className="border-b border-white/10 pb-6 text-center">
+                <span className="count-text">4</span>
+                <span className="counter-title">Expériences</span>
+              </div>
+              <div className="border-b border-white/10 pb-6 text-center">
+                <span className="count-text">8</span>
+                <span className="counter-title">Projets complets</span>
+              </div>
+              <div className="text-center">
+                <span className="count-text">100</span>
+                <span className="counter-title">Clients Satisfait</span>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="relative mx-auto hidden lg:block"
+          >
+            <div className="absolute left-[5%] top-[4%] h-[425px] w-[425px] rounded-full bg-[#1e1e1e]" />
+            <div className="relative z-10 mx-auto h-[400px] w-[400px] overflow-hidden rounded-b-[580px] rounded-t-[565px] bg-gradient-to-b from-primary/20 to-primary/5">
+              <div className="flex h-full items-center justify-center">
+                <span className="text-6xl font-bold text-primary/30">EM</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
+      <BgLines />
     </section>
   );
 }

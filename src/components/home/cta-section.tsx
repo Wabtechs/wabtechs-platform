@@ -1,31 +1,32 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { BgLines } from "@/components/shared/bg-lines";
 
 export function CTASection() {
   return (
-    <section className="border-t py-24 bg-muted/30">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border bg-card p-8 sm:p-12 lg:p-16 text-center">
+    <section className="relative border-t border-white/10 py-24">
+      <div className="for-bgc-black py-32">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Rejoignez la communauté
+            Parlons de vos <span className="text-primary">prochains projets</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Recevez les derniers articles, tutoriels et ressources directement dans votre boîte mail.
+            Que ce soit pour un projet personnel ou professionnel, c&apos;est l&apos;occasion de partager
+            vos idées, vos ambitions et de définir les étapes nécessaires pour les réaliser.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" asChild>
-              <Link href="/newsletter">
-                S&apos;inscrire à la newsletter
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/community">Rejoindre la communauté</Link>
-            </Button>
+            <Link href="/contact" className="theme-btn">
+              Contactez-nous
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+            <Link href="/projects" className="theme-btn" style={{ background: "transparent", color: "#cccccc", border: "1px solid rgba(255,255,255,0.1)" }}>
+              Voir les projets
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </div>
         </div>
       </div>
+      <BgLines />
     </section>
   );
 }
