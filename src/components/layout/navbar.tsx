@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, Command } from "lucide-react";
+import { Menu, X, Search, Command, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { useUIStore } from "@/stores/ui-store";
 
 export function Navbar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu, toggleCommandPalette } = useUIStore();
   const [scrolled, setScrolled] = useState(false);
 
@@ -69,9 +71,26 @@ export function Navbar() {
 
           <ThemeToggle />
 
-          <Button asChild className="hidden md:inline-flex">
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
+          {session ? (
+            <Button asChild className="hidden md:inline-flex">
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <div className="hidden items-center gap-2 md:flex">
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">
+                  <LogIn className="mr-1 h-4 w-4" />
+                  Connexion
+                </Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/register">
+                  <UserPlus className="mr-1 h-4 w-4" />
+                  S&apos;inscrire
+                </Link>
+              </Button>
+            </div>
+          )}
 
           <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMobileMenu}>
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -100,9 +119,22 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Button asChild className="mt-2 w-full">
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
+              <div className="mt-3 space-y-2 border-t pt-3">
+                {session ? (
+                  <Button asChild className="w-full">
+                    <Link href="/dashboard">Dashboard</Link>
+                  </Button>
+                ) : (
+                  <>
+                    <Button asChild variant="outline" className="w-full">
+                      <Link href="/login">Connexion</Link>
+                    </Button>
+                    <Button asChild className="w-full">
+                      <Link href="/register">S&apos;inscrire</Link>
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

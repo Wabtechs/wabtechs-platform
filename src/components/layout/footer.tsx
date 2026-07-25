@@ -10,6 +10,13 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   linkedin: Linkedin,
 };
 
+const categoryLabels: Record<string, string> = {
+  plateforme: "Plateforme",
+  resources: "Ressources",
+  company: "Entreprise",
+  legal: "Légal",
+};
+
 export function Footer() {
   return (
     <footer className="border-t bg-background">
@@ -17,11 +24,16 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {Object.entries(FOOTER_LINKS).map(([category, links]) => (
             <div key={category}>
-              <h3 className="mb-4 text-sm font-semibold capitalize">{category === "plateforme" ? "Plateforme" : category === "resources" ? "Ressources" : category === "company" ? "Entreprise" : "Légal"}</h3>
-              <ul className="space-y-3">
+              <h3 className="mb-4 text-sm font-semibold">
+                {categoryLabels[category] ?? category}
+              </h3>
+              <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
                       {link.label}
                     </Link>
                   </li>

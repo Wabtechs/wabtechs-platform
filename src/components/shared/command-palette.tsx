@@ -2,23 +2,59 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, FileText, BookOpen, FolderGit2, Headphones, Hash } from "lucide-react";
+import {
+  Search,
+  FileText,
+  BookOpen,
+  FolderGit2,
+  Headphones,
+  Hash,
+  Video,
+  Code2,
+  GraduationCap,
+  Map,
+  Calendar,
+  Wrench,
+  Link,
+  MessageSquare,
+  Shield,
+  FileCode,
+  HelpCircle,
+  Mail,
+  Download,
+  CreditCard,
+  Clock,
+  Home,
+} from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useUIStore } from "@/stores/ui-store";
 
 const PAGES = [
-  { title: "Accueil", href: "/", icon: Hash },
+  { title: "Accueil", href: "/", icon: Home },
   { title: "Blog", href: "/blog", icon: FileText },
   { title: "Documentation", href: "/docs", icon: BookOpen },
   { title: "Projets", href: "/projects", icon: FolderGit2 },
   { title: "Podcast", href: "/podcast", icon: Headphones },
-  { title: "Vidéos", href: "/videos", icon: Hash },
-  { title: "Communauté", href: "/community", icon: Hash },
-  { title: "Newsletter", href: "/newsletter", icon: Hash },
-  { title: "FAQ", href: "/faq", icon: Hash },
-  { title: "Contact", href: "/contact", icon: Hash },
-  { title: "Dashboard", href: "/dashboard", icon: Hash },
+  { title: "Vidéos", href: "/videos", icon: Video },
+  { title: "Snippets", href: "/snippets", icon: Code2 },
+  { title: "Tutoriels", href: "/tutorials", icon: GraduationCap },
+  { title: "Ressources", href: "/resources", icon: Link },
+  { title: "Downloads", href: "/downloads", icon: Download },
+  { title: "Communauté", href: "/community", icon: MessageSquare },
+  { title: "Événements", href: "/events", icon: Calendar },
+  { title: "Roadmaps", href: "/roadmaps", icon: Map },
+  { title: "Open Source", href: "/open-source", icon: FolderGit2 },
+  { title: "Newsletter", href: "/newsletter", icon: Mail },
+  { title: "FAQ", href: "/faq", icon: HelpCircle },
+  { title: "Contact", href: "/contact", icon: Mail },
+  { title: "Support", href: "/support", icon: Wrench },
+  { title: "Tarifs", href: "/pricing", icon: CreditCard },
+  { title: "Changelog", href: "/changelog", icon: Clock },
+  { title: "Politique de confidentialité", href: "/privacy", icon: Shield },
+  { title: "Conditions d'utilisation", href: "/terms", icon: FileCode },
   { title: "À propos", href: "/about", icon: Hash },
+  { title: "Dashboard", href: "/dashboard", icon: Hash },
+  { title: "Admin", href: "/admin", icon: Hash },
 ];
 
 export function CommandPalette() {

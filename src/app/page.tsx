@@ -17,6 +17,8 @@ import { HeroSection } from "@/components/home/hero-section";
 import { FeatureCard } from "@/components/home/feature-card";
 import { StatsSection } from "@/components/home/stats-section";
 import { CTASection } from "@/components/home/cta-section";
+import { getAllPosts } from "@/lib/mdx";
+import { formatDate } from "@/lib/utils";
 
 const FEATURES = [
   {
@@ -57,31 +59,9 @@ const FEATURES = [
   },
 ];
 
-const LATEST_POSTS = [
-  {
-    title: "Construire une architecture scalable avec Next.js App Router",
-    description: "Découvrez les patterns avancés pour structurer vos applications Next.js en production.",
-    tag: "Architecture",
-    date: "15 Juillet 2026",
-    readTime: "8 min",
-  },
-  {
-    title: "Optimiser les performances React avec Server Components",
-    description: "Guide pratique pour tirer le meilleur parti des Server Components dans vos projets.",
-    tag: "Performance",
-    date: "10 Juillet 2026",
-    readTime: "6 min",
-  },
-  {
-    title: "TypeScript Strict Mode : Le guide définitif",
-    description: "Tout ce que vous devez savoir pour activer et utiliser le mode strict de TypeScript.",
-    tag: "TypeScript",
-    date: "5 Juillet 2026",
-    readTime: "12 min",
-  },
-];
-
 export default function HomePage() {
+  const posts = getAllPosts().slice(0, 3);
+
   return (
     <>
       <HeroSection />
@@ -128,23 +108,33 @@ export default function HomePage() {
             </Button>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
-            {LATEST_POSTS.map((post) => (
-              <Card key={post.title} className="group cursor-pointer transition-all hover:shadow-lg">
-                <CardHeader>
-                  <div className="mb-2 flex items-center gap-2">
-                    <Badge variant="outline">{post.tag}</Badge>
-                    <span className="text-xs text-muted-foreground">{post.readTime}</span>
-                  </div>
-                  <CardTitle className="text-lg group-hover:text-primary transition-colors">
-                    {post.title}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2">
-                    {post.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+            {posts.map((post) => (
+              <Link key={post.slug} href={`/blog/${post.slug}`}>
+                <Card className="group h-full cursor-pointer transition-all hover:shadow-lg hover:border-primary/50">
+                  <CardHeader>
+                    <div className="mb-2 flex items-center gap-2">
+                      {post.tags.slice(0, 2).map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                      ))}
+                      <span className="text-xs text-muted-foreground">{post.readTime} min</span>
+                    </div>
+                    <CardTitle className="text-lg group-hover:text-primary transition-colors line-clamp-2">
+                      {post.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-2">
+                      {post.description}
+                    </CardDescription>
+                    <p className="text-xs text-muted-foreground">{formatDate(post.date)}</p>
+                  </CardHeader>
+                </Card>
+              </Link>
             ))}
           </div>
+          {posts.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              Aucun article pour le moment. Revenez bientôt !
+            </p>
+          )}
           <div className="mt-8 text-center sm:hidden">
             <Button variant="ghost" asChild>
               <Link href="/blog">
