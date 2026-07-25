@@ -3,6 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 
 const CONTENT_DIR = path.join(process.cwd(), "src", "content", "blog");
+const DOCS_DIR = path.join(process.cwd(), "src", "content", "docs");
 
 export interface PostMeta {
   slug: string;
@@ -96,4 +97,51 @@ export function getRelatedPosts(slug: string, limit = 3): PostMeta[] {
     }))
     .sort((a, b) => b.relevance - a.relevance)
     .slice(0, limit);
+}
+
+export interface DocMeta {
+  slug: string;
+  title: string;
+  description: string;
+  order: number;
+}
+
+export function getAllDocs(): DocMeta[] {
+  if (!fs.existsSync(DOCS_DIR)) return [];
+  const files = fs.readdirSync(DOCS_DIR).filter((f) => f.endsWith(".mdx"));
+
+  const docs = files.map((file) => {
+    const slug = file.replace(/\.mdx$/, "");
+    const filePath = path.join(DOCS_DIR, file);
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const { data } = matter(fileContent);
+
+    return {
+      slug,
+      title: (data.title as string) ?? "",
+      description: (data.description as string) ?? "",
+      order: (data.order as number) ?? 99,
+    };
+  });
+
+  return docs.sort((a, b) => a.order - b.order);
+}
+
+export function getDocBySlug(slug: string): { meta: DocMeta; content: string } | null {
+  const filePath = path.join(DOCS_DIR, `${slug}.mdx`);
+
+  if (!fs.existsSync(filePath)) return null;
+
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  const { data, content } = matter(fileContent);
+
+  return {
+    meta: {
+      slug,
+      title: (data.title as string) ?? "",
+      description: (data.description as string) ?? "",
+      order: (data.order as number) ?? 99,
+    },
+    content,
+  };
 }

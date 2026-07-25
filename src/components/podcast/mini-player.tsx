@@ -10,7 +10,7 @@ interface MiniPlayerProps {
   audioSrc: string;
 }
 
-export function MiniPlayer({ title, audioSrc: _audioSrc }: MiniPlayerProps) {
+export function MiniPlayer({ title }: MiniPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 

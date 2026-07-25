@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface TOCItem {
@@ -10,10 +10,9 @@ interface TOCItem {
 }
 
 export function DocsTableOfContents({ content }: { content: string }) {
-  const [headings, setHeadings] = useState<TOCItem[]>([]);
   const [activeId, setActiveId] = useState("");
 
-  useEffect(() => {
+  const headings = useMemo(() => {
     const regex = /^(#{1,3})\s+(.+)$/gm;
     const items: TOCItem[] = [];
     let match;
@@ -23,10 +22,12 @@ export function DocsTableOfContents({ content }: { content: string }) {
       const id = text.toLowerCase().replace(/\s+/g, "-");
       items.push({ id, text, level });
     }
-    setHeadings(items);
+    return items;
   }, [content]);
 
   useEffect(() => {
+    if (headings.length === 0) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

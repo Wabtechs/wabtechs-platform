@@ -28,8 +28,11 @@ export const FOOTER_LINKS = {
   company: [
     { href: "/about", label: "À propos" },
     { href: "/contact", label: "Contact" },
+    { href: "/support", label: "Support" },
+    { href: "/pricing", label: "Tarifs" },
     { href: "/faq", label: "FAQ" },
     { href: "/newsletter", label: "Newsletter" },
+    { href: "/changelog", label: "Changelog" },
   ],
   legal: [
     { href: "/privacy", label: "Politique de confidentialité" },

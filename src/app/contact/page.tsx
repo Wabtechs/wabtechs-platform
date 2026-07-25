@@ -15,6 +15,7 @@ export default function ContactPage() {
     resolver: zodResolver(contactSchema),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- form data used server-side in production
   async function onSubmit(_data: ContactInput) {
     await new Promise((r) => setTimeout(r, 1000));
     reset();
