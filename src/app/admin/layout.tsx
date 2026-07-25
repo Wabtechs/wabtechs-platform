@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/admin/app-sidebar";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -9,13 +11,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
 
   return (
-    <div className="flex min-h-screen pt-16">
-      <AdminSidebar />
-      <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-[1400px] px-6 py-8 lg:px-8">
-          {children}
-        </div>
-      </div>
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <AdminHeader />
+        <div className="flex-1 p-6">{children}</div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
