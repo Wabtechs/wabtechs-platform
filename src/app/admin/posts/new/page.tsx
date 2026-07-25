@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Save, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MdxEditor } from "@/components/admin/mdx-editor";
+import { useDraftAutosave } from "@/hooks/use-draft-autosave";
+
+const DRAFT_KEY = "new-post";
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -24,6 +28,24 @@ export default function NewPostPage() {
     featured: false,
   });
 
+  const { hasDraft, loadDraft, clearDraft } = useDraftAutosave(DRAFT_KEY, form);
+
+  useEffect(() => {
+    const saved = loadDraft();
+    if (saved) {
+      setForm((prev) => ({
+        title: String(saved.title ?? prev.title),
+        slug: String(saved.slug ?? prev.slug),
+        description: String(saved.description ?? prev.description),
+        content: String(saved.content ?? prev.content),
+        tags: String(saved.tags ?? prev.tags),
+        coverImage: String(saved.coverImage ?? prev.coverImage),
+        published: saved.published === true || saved.published === "true",
+        featured: saved.featured === true || saved.featured === "true",
+      }));
+    }
+  }, [loadDraft]);
+
   function updateForm(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -31,7 +53,6 @@ export default function NewPostPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-
     try {
       const res = await fetch("/api/admin/posts", {
         method: "POST",
@@ -44,7 +65,10 @@ export default function NewPostPage() {
             .filter(Boolean),
         }),
       });
-      if (res.ok) router.push("/admin/posts");
+      if (res.ok) {
+        clearDraft();
+        router.push("/admin/posts");
+      }
     } finally {
       setLoading(false);
     }
@@ -53,67 +77,115 @@ export default function NewPostPage() {
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <Button variant="ghost" size="sm" asChild className="mb-6">
-          <Link href="/admin/posts">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
-          </Link>
-        </Button>
+        <div className="mb-6 flex items-center justify-between">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/admin/posts">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Link>
+          </Button>
+          {hasDraft && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const saved = loadDraft();
+                if (saved) {
+                  setForm((prev) => ({
+                    ...prev,
+                    title: String(saved.title ?? prev.title),
+                    slug: String(saved.slug ?? prev.slug),
+                    description: String(saved.description ?? prev.description),
+                    content: String(saved.content ?? prev.content),
+                    tags: String(saved.tags ?? prev.tags),
+                    coverImage: String(saved.coverImage ?? prev.coverImage),
+                  }));
+                }
+              }}
+            >
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              Brouillon sauvegardé
+            </Button>
+          )}
+        </div>
 
-        <h1 className="text-3xl font-bold tracking-tight">Nouvel article</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Nouvel article</h1>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <Card>
+          <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
             <CardHeader>
-              <CardTitle>Contenu</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Contenu</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Titre</Label>
+                <Label className="text-gray-900 dark:text-white">Titre</Label>
                 <Input
-                  id="title"
                   value={form.title}
                   onChange={(e) => {
                     updateForm("title", e.target.value);
                     if (!form.slug) updateForm("slug", e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
                   }}
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
-                <Input id="slug" value={form.slug} onChange={(e) => updateForm("slug", e.target.value)} required />
+                <Label className="text-gray-900 dark:text-white">Slug</Label>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => updateForm("slug", e.target.value)}
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" value={form.description} onChange={(e) => updateForm("description", e.target.value)} required />
+                <Label className="text-gray-900 dark:text-white">Description</Label>
+                <Textarea
+                  value={form.description}
+                  onChange={(e) => updateForm("description", e.target.value)}
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="content">Contenu (MDX)</Label>
-                <Textarea id="content" rows={15} value={form.content} onChange={(e) => updateForm("content", e.target.value)} className="font-mono text-sm" required />
+                <Label className="text-gray-900 dark:text-white">Contenu (Markdown)</Label>
+                <MdxEditor
+                  value={form.content}
+                  onChange={(v) => updateForm("content", v)}
+                />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
             <CardHeader>
-              <CardTitle>Méta</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-white">Méta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="tags">Tags (séparés par des virgules)</Label>
-                <Input id="tags" value={form.tags} onChange={(e) => updateForm("tags", e.target.value)} placeholder="Next.js, React, TypeScript" />
+                <Label className="text-gray-900 dark:text-white">Tags (séparés par des virgules)</Label>
+                <Input
+                  value={form.tags}
+                  onChange={(e) => updateForm("tags", e.target.value)}
+                  placeholder="Next.js, React, TypeScript"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="coverImage">Image de couverture (URL)</Label>
-                <Input id="coverImage" value={form.coverImage} onChange={(e) => updateForm("coverImage", e.target.value)} />
+                <Label className="text-gray-900 dark:text-white">Image de couverture (URL)</Label>
+                <Input
+                  value={form.coverImage}
+                  onChange={(e) => updateForm("coverImage", e.target.value)}
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                />
               </div>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
                   <input type="checkbox" checked={form.published} onChange={(e) => updateForm("published", e.target.checked)} className="rounded" />
                   Publié
                 </label>
-                <label className="flex items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
                   <input type="checkbox" checked={form.featured} onChange={(e) => updateForm("featured", e.target.checked)} className="rounded" />
                   Featured
                 </label>
@@ -121,7 +193,7 @@ export default function NewPostPage() {
             </CardContent>
           </Card>
 
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="bg-[#842ae3] text-white hover:bg-[#7323c4]">
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {loading ? "Création..." : "Créer l'article"}
           </Button>

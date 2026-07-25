@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MdxEditor } from "@/components/admin/mdx-editor";
 
 interface PostData {
   id: string;
@@ -149,13 +150,10 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Contenu (MDX)</Label>
-                <Textarea
-                  rows={15}
+                <Label className="text-gray-900 dark:text-white">Contenu (Markdown)</Label>
+                <MdxEditor
                   value={form.content}
-                  onChange={(e) => updateForm("content", e.target.value)}
-                  className="border-gray-200 bg-gray-50 font-mono text-sm text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
-                  required
+                  onChange={(v) => updateForm("content", v)}
                 />
               </div>
             </CardContent>
