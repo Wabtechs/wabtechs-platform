@@ -1,0 +1,212 @@
+---
+title: "Déploiement"
+description: "Déployez votre application Next.js sur Vercel, Docker ou votre propre serveur — guide complet de mise en production."
+---
+
+## Vercel (Recommandé)
+
+Vercel est la plateforme de déploiement recommandée pour Next.js.
+
+### Configuration
+
+```bash
+# Installer la CLI
+npm install -g vercel
+
+# Déployer
+vercel
+
+# Déployer en production
+vercel --prod
+```
+
+### Variables d'Environnement
+
+```bash
+# Via la CLI
+vercel env add DATABASE_URL
+vercel env add NEXTAUTH_SECRET
+vercel env add NEXTAUTH_URL
+```
+
+### Configuration du Projet
+
+```json
+// vercel.json
+{
+  "buildCommand": "npx prisma generate && npx next build",
+  "framework": "nextjs",
+  "regions": ["iad1"]
+}
+```
+
+### GitHub Integration
+
+1. Connectez votre repo GitHub sur vercel.com
+2. Chaque push sur `main` déclenche un déploiement
+3. Les PRs génèrent des previews automatiques
+
+## Docker
+
+### Dockerfile Multi-Stage
+
+```dockerfile
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
+
+### next.config.ts
+
+```typescript
+const nextConfig = {
+  output: "standalone",
+};
+```
+
+### Docker Compose
+
+```yaml
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+
+volumes:
+  pgdata:
+```
+
+## VPS (Vultr, DigitalOcean, etc.)
+
+### Setup
+
+```bash
+# Installer Docker
+curl -fsSL https://get.docker.com | sh
+
+# Cloner le repo
+git clone https://github.com/username/project.git
+cd project
+
+# Configurer les variables
+cp .env.example .env
+nano .env
+
+# Lancer
+docker compose -f docker-compose.prod.yml up -d
+```
+
+### Nginx Reverse Proxy
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### SSL avec Certbot
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com
+```
+
+## CI/CD
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+```
+
+## Checklist de Production
+
+- [ ] Variables d'Environnement configurées
+- [ ] Base de données connectée
+- [ ] Migrations appliquées
+- [ ] HTTPS activé
+- [ ] Headers de sécurité configurés
+- [ ] Monitoring en place
+- [ ] Backups automatiques
+- [ ] Logs configurés
+- [ ] Performance vérifiée (Lighthouse > 90)

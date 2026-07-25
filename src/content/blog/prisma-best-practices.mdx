@@ -1,0 +1,194 @@
+---
+title: "Prisma ORM : Bonnes pratiques en production"
+description: "Optimisez vos requêtes Prisma, gérez les migrations et évitez les pièges courants en production."
+date: "2026-07-15"
+tags: ["Prisma", "Database", "Performance"]
+author: "Emmanuel Mulonda"
+readTime: 12
+featured: false
+---
+
+## Pourquoi Prisma ?
+
+Prisma est devenu l'ORM de référence pour les projets TypeScript. Sa type-safety, ses migrations automatiques et sa documentation le rendent incontournable.
+
+## Schema Design
+
+### Utilisez des Enums
+
+```prisma
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  role  Role   @default(USER)
+}
+```
+
+### Relations Correctement Typées
+
+```prisma
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  tags      Tag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+}
+```
+
+## Performance
+
+### Utilisez `select` au lieu de `findMany`
+
+```typescript
+// ❌ Bad — charge tout
+const users = await prisma.user.findMany();
+
+// ✅ Good — ne charge que ce dont on a besoin
+const users = await prisma.user.findMany({
+  select: {
+    id: true,
+    name: true,
+    email: true,
+  },
+});
+```
+
+### Pagination avec Cursor
+
+```typescript
+const posts = await prisma.post.findMany({
+  take: 20,
+  skip: 1, // Skip the cursor
+  cursor: { id: lastPostId },
+  orderBy: { createdAt: "desc" },
+});
+```
+
+### Transactions
+
+```typescript
+const [user, post] = await prisma.$transaction([
+  prisma.user.create({ data: { email: "test@example.com" } }),
+  prisma.post.create({ data: { title: "Mon premier article" } }),
+]);
+```
+
+### Batch Operations
+
+```typescript
+// Insertion en masse
+await prisma.post.createMany({
+  data: posts.map((p) => ({ title: p.title, content: p.content })),
+  skipDuplicates: true,
+});
+```
+
+## Migrations
+
+### Workflow Recommandé
+
+```bash
+# 1. Modifier le schema
+# 2. Générer la migration
+npx prisma migrate dev --name add_comments_table
+
+# 3. Vérifier le diff
+# 4. Appliquer en staging
+npx prisma migrate deploy
+
+# 5. Appliquer en production
+npx prisma migrate deploy
+```
+
+### Seeding
+
+```typescript
+// prisma/seed.ts
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.user.upsert({
+    where: { email: "admin@wabtechs.com" },
+    update: {},
+    create: {
+      email: "admin@wabtechs.com",
+      name: "Admin",
+      password: await bcrypt.hash("Admin@12345", 12),
+      role: "ADMIN",
+    },
+  });
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
+```
+
+## Pièges Courants
+
+### N+1 Queries
+
+```typescript
+// ❌ N+1 — une requête par post
+const posts = await prisma.post.findMany();
+for (const post of posts) {
+  post.author = await prisma.user.findUnique({ where: { id: post.authorId } });
+}
+
+// ✅ Include — une seule requête
+const posts = await prisma.post.findMany({
+  include: { author: true },
+});
+```
+
+### Connexion Multiple en Dev
+
+```typescript
+// lib/prisma.ts
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+```
+
+## Monitoring
+
+Utilisez Prisma Studio pour inspecter vos données :
+
+```bash
+npx prisma studio
+```
+
+Et Prisma generate pour les types :
+
+```bash
+npx prisma generate
+```
+
+## Conclusion
+
+Prisma est un outil puissant quand il est bien utilisé. Suivez ces bonnes pratiques pour des performances optimales et un code maintenable.

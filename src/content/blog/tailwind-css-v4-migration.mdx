@@ -1,0 +1,167 @@
+---
+title: "Tailwind CSS v4 : Migration complète depuis v3"
+description: "Guide pas-à-pas pour migrer de Tailwind CSS v3 vers v4 — nouvelle config CSS-first, oklch colors, et toutes les nouveautés."
+date: "2026-07-20"
+tags: ["Tailwind", "CSS", "Tutorial"]
+author: "Emmanuel Mulonda"
+readTime: 10
+featured: true
+---
+
+## Introduction
+
+Tailwind CSS v4 represents a paradigm shift in how we configure and use the framework. Gone are the JavaScript config files — everything is now CSS-first.
+
+## What Changes in v4
+
+### CSS-First Configuration
+
+In v3, we used `tailwind.config.js`. In v4, configuration moves directly into your CSS file:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-primary: oklch(0.6 0.2 260);
+  --color-secondary: oklch(0.5 0.15 300);
+  --font-sans: "Inter", sans-serif;
+  --radius-lg: 1rem;
+}
+```
+
+### OKLCH Color System
+
+Tailwind v4 defaults to OKLCH, a perceptually uniform color space:
+
+```css
+@theme {
+  --color-blue-500: oklch(0.623 0.214 259.815);
+  --color-blue-600: oklch(0.546 0.245 262.881);
+}
+```
+
+### No More `tailwind.config.js`
+
+Delete your config file entirely. All configuration is now in CSS:
+
+```css
+/* Before (v3) */
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#6366f1',
+      },
+    },
+  },
+}
+
+/* After (v4) */
+@import "tailwindcss";
+@theme {
+  --color-primary: oklch(0.585 0.233 270.871);
+}
+```
+
+## Migration Steps
+
+### 1. Update Dependencies
+
+```bash
+npm install tailwindcss@latest @tailwindcss/postcss@latest
+```
+
+### 2. Update PostCSS Config
+
+```js
+// postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+```
+
+### 3. Replace Config File
+
+```css
+/* src/app/globals.css */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: oklch(0.585 0.233 270.871);
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0 0);
+}
+```
+
+### 4. Update Custom Utilities
+
+```css
+@utility gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-violet-600;
+}
+
+@utility glass {
+  backdrop-filter: blur(12px);
+  background: oklch(1 0 0 / 0.8);
+}
+```
+
+## New Features
+
+### Native Container Queries
+
+```html
+<div class="@container">
+  <div class="@lg:flex @lg:gap-4">
+    <!-- Responsive to container, not viewport -->
+  </div>
+</div>
+```
+
+### 3D Transforms
+
+```html
+<div class="rotate-x-45 rotate-y-12 perspective-1000">
+  3D transforms are now first-class citizens
+</div>
+```
+
+### `@starting-style` Support
+
+```css
+@layer utilities {
+  .fade-in {
+    @starting-style {
+      opacity: 0;
+    }
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+}
+```
+
+## Performance Improvements
+
+Tailwind v4 is significantly faster:
+
+- **10x faster** full rebuilds
+- **Instant** incremental builds
+- **Smaller** output CSS (only what you use)
+
+Benchmarks from the Tailwind team show v4 processing a 10,000-line CSS file in under 100ms.
+
+## Common Pitfalls
+
+1. **Don't mix v3 and v4 config patterns** — commit to one or the other
+2. **OKLCH colors look different** — that's intentional, they're more perceptually accurate
+3. **Some utilities were renamed** — check the migration guide
+4. **`@apply` still works** but prefer utility classes when possible
+
+## Conclusion
+
+Tailwind CSS v4 is a massive improvement. The CSS-first approach means better performance, simpler tooling, and more power. The migration is straightforward — most projects can be migrated in under an hour.
+
+Start today and enjoy the future of CSS.

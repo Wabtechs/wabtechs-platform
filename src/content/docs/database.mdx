@@ -1,0 +1,202 @@
+---
+title: "Base de données"
+description: "Configurer et gérer votre base de données PostgreSQL avec Prisma — schema, migrations, seeding et monitoring."
+---
+
+## PostgreSQL
+
+PostgreSQL est la base de données recommandée pour les projets Next.js en production.
+
+### Schema Prisma
+
+```prisma
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      Role     @default(USER)
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  tags      Tag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([slug])
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  posts Post[]
+}
+```
+
+### Migrations
+
+```bash
+# Créer une migration
+npx prisma migrate dev --name add_tags_table
+
+# Appliquer en production
+npx prisma migrate deploy
+
+# Voir le statut
+npx prisma migrate status
+
+# Reset (développement uniquement)
+npx prisma migrate reset
+```
+
+### Seeding
+
+```typescript
+// prisma/seed.ts
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.user.upsert({
+    where: { email: "admin@example.com" },
+    update: {},
+    create: {
+      email: "admin@example.com",
+      name: "Admin",
+      password: await bcrypt.hash("password123", 12),
+      role: "ADMIN",
+    },
+  });
+}
+
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
+```
+
+```json
+// package.json
+{
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  }
+}
+```
+
+## Connexion
+
+### Singleton Prisma
+
+```typescript
+// lib/prisma.ts
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+```
+
+### Requêtes Courantes
+
+```typescript
+// Créer
+const user = await prisma.user.create({
+  data: { email: "test@example.com", name: "Test" },
+});
+
+// Lire
+const user = await prisma.user.findUnique({
+  where: { email: "test@example.com" },
+});
+
+// Mettre à jour
+const user = await prisma.user.update({
+  where: { id: userId },
+  data: { name: "Updated Name" },
+});
+
+// Supprimer
+await prisma.user.delete({ where: { id: userId } });
+
+// Relations
+const posts = await prisma.post.findMany({
+  include: { author: true, tags: true },
+  orderBy: { createdAt: "desc" },
+  take: 10,
+});
+
+// Pagination
+const posts = await prisma.post.findMany({
+  skip: page * perPage,
+  take: perPage,
+});
+```
+
+## Neon (Serverless PostgreSQL)
+
+### Configuration
+
+```bash
+DATABASE_URL="postgresql://user:pass@ep-xxx.us-east-1.aws.neon.tech/dbname?sslmode=require"
+```
+
+### Points d'Attention
+
+- Utilisez le connection pooler (port 5432) pour les connexions normales
+- Le port 5432 est le pooler, le port 5432 est la connexion directe
+- Activez `sslmode=require` pour la sécurité
+
+## Monitoring
+
+```bash
+# Prisma Studio
+npx prisma studio
+
+# Voir les logs SQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Activer les logs dans le code
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
+```
+
+## Backup
+
+```bash
+# Dump complet
+pg_dump -h host -U user dbname > backup.sql
+
+# Restore
+psql -h host -U user dbname < backup.sql
+```
