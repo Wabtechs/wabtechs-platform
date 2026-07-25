@@ -14,6 +14,7 @@ import {
   Users,
   Mail,
   ArrowRight,
+  Settings,
 } from "lucide-react";
 
 export const metadata: Metadata = { title: "Administration" };
@@ -76,6 +77,13 @@ export default async function AdminPage() {
       description: `${unreadMessages}/${messageCount} non lus`,
       href: "/admin/messages",
       color: "text-yellow-500",
+    },
+    {
+      icon: Settings,
+      title: "Paramètres",
+      description: "Configurer le site",
+      href: "/admin/settings",
+      color: "text-pink-500",
     },
   ];
 

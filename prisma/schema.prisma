@@ -176,3 +176,29 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  group     String   @default("general")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@map("site_settings")
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  ip        String?
+  userAgent String?
+  referer   String?
+  country   String?
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@map("page_views")
+}

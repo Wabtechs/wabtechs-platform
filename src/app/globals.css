@@ -3,37 +3,37 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: #1c1c1c;
-  --color-foreground: #cccccc;
-  --color-card: #1F1F1F;
-  --color-card-foreground: #FFFFFF;
-  --color-popover: #1F1F1F;
-  --color-popover-foreground: #FFFFFF;
+  --color-background: #ffffff;
+  --color-foreground: #1a1a1a;
+  --color-card: #f8f9fa;
+  --color-card-foreground: #1a1a1a;
+  --color-popover: #f8f9fa;
+  --color-popover-foreground: #1a1a1a;
   --color-primary: #842ae3;
-  --color-primary-foreground: #1e1e1e;
-  --color-secondary: #1F1F1F;
-  --color-secondary-foreground: #FFFFFF;
-  --color-muted: #131313;
-  --color-muted-foreground: rgba(255, 255, 255, 0.65);
-  --color-accent: #1F1F1F;
-  --color-accent-foreground: #FFFFFF;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f1f3f5;
+  --color-secondary-foreground: #1a1a1a;
+  --color-muted: #f1f3f5;
+  --color-muted-foreground: rgba(0, 0, 0, 0.65);
+  --color-accent: #f1f3f5;
+  --color-accent-foreground: #1a1a1a;
   --color-destructive: #ef4444;
-  --color-destructive-foreground: #FFFFFF;
-  --color-border: rgba(255, 255, 255, 0.1);
-  --color-input: rgba(255, 255, 255, 0.1);
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-input: rgba(0, 0, 0, 0.1);
   --color-ring: #842ae3;
   --color-chart-1: #842ae3;
   --color-chart-2: #3b82f6;
   --color-chart-3: #10b981;
   --color-chart-4: #f59e0b;
   --color-chart-5: #ef4444;
-  --color-sidebar: #131313;
-  --color-sidebar-foreground: #FFFFFF;
+  --color-sidebar: #f1f3f5;
+  --color-sidebar-foreground: #1a1a1a;
   --color-sidebar-primary: #842ae3;
-  --color-sidebar-primary-foreground: #FFFFFF;
-  --color-sidebar-accent: #1F1F1F;
-  --color-sidebar-accent-foreground: #FFFFFF;
-  --color-sidebar-border: rgba(255, 255, 255, 0.1);
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #f1f3f5;
+  --color-sidebar-accent-foreground: #1a1a1a;
+  --color-sidebar-border: rgba(0, 0, 0, 0.1);
   --color-sidebar-ring: #842ae3;
   --radius: 0.625rem;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -115,8 +115,11 @@
   z-index: -1;
   width: 1px;
   height: 100%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.04);
   animation: leftRightOne 18s infinite;
+}
+.dark .bg-lines span {
+  background: rgba(255, 255, 255, 0.05);
 }
 .bg-lines span:nth-child(1) { left: 10%; }
 .bg-lines span:nth-child(2) { left: 20%; }
@@ -144,7 +147,7 @@
   padding: 10px 35px;
   align-items: center;
   position: relative;
-  color: #1e1e1e;
+  color: #ffffff;
   border-radius: 15px;
   display: inline-flex;
   justify-content: center;
@@ -178,8 +181,8 @@
   padding: 35px 50px;
   margin-bottom: 30px;
   border-radius: 15px;
-  background: #1F1F1F;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
 }
 .service-item:hover {
   border-color: #842ae3;
@@ -193,8 +196,8 @@
   height: 50px;
   border-radius: 50%;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: var(--color-border);
+  color: var(--color-card-foreground);
   transition: 0.5s;
 }
 .service-item:hover .details-btn {
@@ -209,8 +212,8 @@
   margin-bottom: 30px;
   border-radius: 14px;
   padding: 25px 10px 10px;
-  background: #1F1F1F;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
 }
 .skill-item:hover {
   border-color: #842ae3;
@@ -223,9 +226,9 @@
   transition: 0.5s;
   line-height: 1.2;
   border-radius: 14px;
-  background: #131313;
+  background: var(--color-muted);
   font-family: var(--font-heading);
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--color-muted-foreground);
 }
 .skill-item:hover .percent {
   background: #842ae3;
@@ -237,13 +240,13 @@
   padding: 10px;
   border-radius: 16px;
   margin-bottom: 30px;
-  background: #1F1F1F;
+  background: var(--color-card);
 }
 .pricing-header {
   padding: 47px 50px;
   border-radius: 16px;
-  background: #131313;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-muted);
+  border: 1px solid var(--color-border);
 }
 .pricing-details {
   padding: 40px 50px;
@@ -255,8 +258,8 @@
   padding: 25px 30px;
   margin-bottom: 25px;
   border-radius: 15px;
-  background: #1F1F1F;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   transition: 0.5s;
 }
 .resume-item:hover {
@@ -270,7 +273,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-border);
   color: #842ae3;
   margin-right: 25px;
   transition: 0.5s;
@@ -283,25 +286,25 @@
 /* ===== Contact form inputs ===== */
 .form-control {
   font-size: 16px;
-  color: #ffffff;
+  color: var(--color-foreground);
   font-weight: 400;
   line-height: 1.3;
   padding: 19px 45px 19px 30px;
   border-radius: 14px;
-  background: #1F1F1F;
+  background: var(--color-card);
   font-family: var(--font-heading);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-border);
   transition: 0.5s;
 }
 .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--color-muted-foreground);
 }
 .form-control:focus {
-  background: #070707;
+  background: var(--color-muted);
   border-color: #842ae3;
   outline: none;
   box-shadow: none;
-  color: #ffffff;
+  color: var(--color-foreground);
 }
 
 /* ===== Counter text ===== */
@@ -319,7 +322,7 @@
 .counter-title {
   display: block;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--color-muted-foreground);
   margin-top: 5px;
 }
 
@@ -349,8 +352,8 @@ mark {
   height: 50px;
   border-radius: 50%;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background: var(--color-border);
+  color: var(--color-card-foreground);
   transition: 0.5s;
 }
 .details-btn:hover {

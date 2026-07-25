@@ -4,6 +4,7 @@ import { Providers } from "@/providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
+import { PageViewTracker } from "@/components/shared/page-view-tracker";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { BackToTop } from "@/components/shared/back-to-top";
 import { PageTransition } from "@/components/shared/page-transition";
@@ -50,11 +51,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="dark" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <Providers>
           <PodcastWrapper>
             <ScrollProgress />
+            <PageViewTracker />
             <CommandPalette />
             <Navbar />
             <main className="min-h-screen">
