@@ -5,11 +5,13 @@ import Link from "next/link";
 import { Search, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { getAllDocs } from "@/lib/mdx";
+import type { DocMeta } from "@/lib/mdx";
 
-const docs = getAllDocs();
+interface DocsSearchProps {
+  docs: DocMeta[];
+}
 
-export function DocsSearch() {
+export function DocsSearch({ docs }: DocsSearchProps) {
   const [query, setQuery] = useState("");
 
   const results = query.length > 1

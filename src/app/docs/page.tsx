@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { DocsSearch } from "@/components/docs/docs-search";
+import { getAllDocs } from "@/lib/mdx";
 
 export const metadata: Metadata = {
   title: "Documentation",
@@ -18,6 +19,8 @@ const SECTIONS = [
 ];
 
 export default function DocsPage() {
+  const docs = getAllDocs();
+
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -29,7 +32,7 @@ export default function DocsPage() {
         />
 
         <div className="mt-12">
-          <DocsSearch />
+          <DocsSearch docs={docs} />
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
