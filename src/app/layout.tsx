@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { ScrollProgress } from "@/components/shared/scroll-progress";
 import { CommandPalette } from "@/components/shared/command-palette";
 import { BackToTop } from "@/components/shared/back-to-top";
+import { PageTransition } from "@/components/shared/page-transition";
 import { SITE_CONFIG } from "@/lib/utils";
 import "./globals.css";
 
@@ -54,7 +55,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ScrollProgress />
           <CommandPalette />
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <Footer />
           <BackToTop />
         </Providers>

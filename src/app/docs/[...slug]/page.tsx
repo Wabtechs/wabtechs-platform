@@ -5,6 +5,7 @@ import { getAllDocs, getDocBySlug } from "@/lib/mdx";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { DocsSidebar } from "@/components/docs/docs-sidebar";
 import { DocsTableOfContents } from "@/components/docs/docs-table-of-contents";
+import { Breadcrumb } from "@/components/shared/breadcrumb";
 
 export const dynamic = "force-static";
 
@@ -54,6 +55,8 @@ export default async function DocPage({
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumb items={[{ label: "Documentation", href: "/docs/getting-started" }, { label: doc.meta.title }]} className="mb-6" />
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {doc.meta.title}

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
+import { Breadcrumb } from "@/components/shared/breadcrumb";
 import { ExternalLink, Github, Star, GitFork, Globe, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -104,6 +105,8 @@ export default function ProjectsPage() {
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumb items={[{ label: "Projets" }]} className="mb-6" />
+
         <PageHeader
           badge="Projets"
           title="Projets"

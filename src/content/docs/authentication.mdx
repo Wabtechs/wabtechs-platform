@@ -1,0 +1,175 @@
+---
+title: "Authentification"
+description: "Configurer l'authentification avec NextAuth.js v5 — credentials provider, JWT, Prisma adapter et protection des routes."
+order: 5
+---
+
+## Vue d'ensemble
+
+NextAuth.js (Auth.js) est la solution d'authentification standard pour Next.js. Il gère les sessions, les providers, et l'intégration avec les bases de données.
+
+## Installation
+
+```bash
+npm install next-auth@beta @auth/prisma-adapter bcryptjs
+npm install -D @types/bcryptjs
+```
+
+## Configuration
+
+### auth.ts
+
+```typescript
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
+  pages: {
+    signIn: "/login",
+  },
+  providers: [
+    Credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
+        if (!user?.password) return null;
+        const valid = await bcrypt.compare(credentials.password as string, user.password);
+        return valid ? { id: user.id, email: user.email, name: user.name, role: user.role } : null;
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) token.role = user.role;
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub!;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+});
+```
+
+### API Route
+
+```typescript
+// app/api/auth/[...nextauth]/route.ts
+import { handlers } from "@/auth";
+export const { GET, POST } = handlers;
+```
+
+## Protection des Routes
+
+### Middleware (Next.js 16 → proxy.ts)
+
+```typescript
+export { auth as proxy } from "@/auth";
+
+export const config = {
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
+};
+```
+
+### Server-Side
+
+```typescript
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
+export default async function ProtectedPage() {
+  const session = await auth();
+  if (!session) redirect("/login");
+  return <div>Bonjour {session.user.name}</div>;
+}
+```
+
+## Inscription
+
+```typescript
+// app/api/auth/register/route.ts
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+
+export async function POST(request: Request) {
+  const { name, email, password } = await request.json();
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    return NextResponse.json({ error: "Email déjà utilisé" }, { status: 400 });
+  }
+  const hashed = await bcrypt.hash(password, 12);
+  const user = await prisma.user.create({
+    data: { name, email, password: hashed },
+  });
+  return NextResponse.json({ userId: user.id }, { status: 201 });
+}
+```
+
+## Client-Side
+
+```typescript
+"use client";
+import { useSession, signIn, signOut } from "next-auth/react";
+
+export function AuthButton() {
+  const { data: session } = useSession();
+  if (session) {
+    return <button onClick={() => signOut()}>Déconnexion</button>;
+  }
+  return <button onClick={() => signIn()}>Connexion</button>;
+}
+```
+
+## Providers Supplémentaires
+
+### GitHub OAuth
+
+```bash
+npm install @auth/github
+```
+
+```typescript
+import GitHub from "@auth/github";
+
+GitHub({
+  clientId: process.env.GITHUB_ID,
+  clientSecret: process.env.GITHUB_SECRET,
+})
+```
+
+### Google OAuth
+
+```bash
+npm install @auth/google
+```
+
+```typescript
+import Google from "@auth/google";
+
+Google({
+  clientId: process.env.GOOGLE_ID,
+  clientSecret: process.env.GOOGLE_SECRET,
+})
+```
+
+## Sécurité
+
+- **Bcrypt** : hashing avec salt factor 12
+- **JWT** : sessions chiffrées côté serveur
+- **CSRF** : protection intégrée
+- **Rate Limiting** : à implémenter avec Redis
+- **HTTPS** : toujours en production

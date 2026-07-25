@@ -11,6 +11,7 @@ import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/mdx";
 import { PostCard } from "@/components/blog/post-card";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { ShareButtons } from "@/components/shared/share-buttons";
+import { Breadcrumb } from "@/components/shared/breadcrumb";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -65,6 +66,8 @@ export default async function BlogPostPage({
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumb items={[{ label: "Blog", href: "/blog" }, { label: post.meta.title }]} className="mb-6" />
+
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/blog">
             <ArrowLeft className="mr-2 h-4 w-4" />

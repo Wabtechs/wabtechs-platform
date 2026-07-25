@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { TagFilter } from "@/components/blog/tag-filter";
 import { PostList } from "@/components/blog/post-list";
+import { FeaturedPostCard } from "@/components/blog/featured-post-card";
 import type { PostMeta } from "@/lib/mdx";
 
 interface BlogClientProps {
@@ -15,6 +16,8 @@ interface BlogClientProps {
 export function BlogClient({ posts, tags }: BlogClientProps) {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+
+  const featured = posts.filter((p) => p.featured);
 
   const filtered = posts.filter((post) => {
     const matchesTag = selectedTag
@@ -29,6 +32,17 @@ export function BlogClient({ posts, tags }: BlogClientProps) {
 
   return (
     <>
+      {featured.length > 0 && !selectedTag && !search && (
+        <div className="mt-12">
+          <h2 className="text-lg font-semibold mb-6">Article en vedette</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((post) => (
+              <FeaturedPostCard key={post.slug} post={post} />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mt-12 mx-auto max-w-md">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
