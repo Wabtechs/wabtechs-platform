@@ -60,6 +60,7 @@ model Post {
   tags     Tag[]
   comments Comment[]
   likes    Like[]
+  bookmarks Bookmark[]
 
   @@index([authorId])
   @@index([slug])
@@ -116,6 +117,7 @@ model Bookmark {
   createdAt DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id])
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([authorId, postId])
   @@map("bookmarks")
