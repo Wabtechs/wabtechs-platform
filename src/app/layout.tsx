@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/shared/command-palette";
 import { BackToTop } from "@/components/shared/back-to-top";
 import { PageTransition } from "@/components/shared/page-transition";
 import { PodcastWrapper } from "@/components/shared/podcast-wrapper";
+import { Toaster } from "@/components/ui/sonner";
 import { SITE_CONFIG } from "@/lib/utils";
 import "./globals.css";
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </main>
             <Footer />
             <BackToTop />
+            <Toaster />
           </PodcastWrapper>
         </Providers>
       </body>

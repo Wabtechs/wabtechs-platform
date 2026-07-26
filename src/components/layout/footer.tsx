@@ -49,7 +49,7 @@ export function Footer() {
                 className="flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-white/30"
                 required
               />
-              <button type="submit" className="rounded-[14px] bg-[#842ae3] px-5 py-2.5 text-xs font-semibold text-[#1e1e1e] transition-colors hover:bg-[#9333ea]">
+              <button type="submit" className="rounded-[14px] bg-primary px-5 py-2.5 text-xs font-semibold text-[#1e1e1e] transition-colors hover:bg-[#9333ea]">
                 S&apos;inscrire <ArrowRight className="ml-1 inline h-3 w-3" />
               </button>
             </form>

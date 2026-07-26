@@ -61,7 +61,7 @@ export function SubscribersClient({
           <Mail className="h-5 w-5 text-emerald-500" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
             Abonnés
           </h1>
           <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -71,7 +71,7 @@ export function SubscribersClient({
       </div>
 
       {subscribers.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Mail className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun abonné</p>
@@ -85,7 +85,7 @@ export function SubscribersClient({
                 key={sub.id}
                 variants={item}
                 layout
-                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
@@ -94,7 +94,7 @@ export function SubscribersClient({
                     </span>
                   </div>
                   <div>
-                    <p className="text-[13px] font-medium text-gray-900 dark:text-white">
+                    <p className="text-[13px] font-medium text-gray-900 dark:text-foreground">
                       {sub.email}
                     </p>
                     {sub.name && (
@@ -116,7 +116,7 @@ export function SubscribersClient({
                   )}
                   <button
                     onClick={() => toggleActive(sub.id, !sub.active)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/[0.04] dark:hover:text-white"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-accent/[0.04] dark:hover:text-foreground"
                   >
                     {sub.active ? (
                       <ToggleRight className="h-4 w-4 text-emerald-500" />

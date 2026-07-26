@@ -26,7 +26,7 @@ export default function ContactPage() {
           <div>
             <span className="sub-title">Entrez en contact</span>
             <h2 className="mb-6 text-3xl font-bold sm:text-4xl">
-              Parlons de vos <span className="text-[#842ae3]">prochains projets</span>
+              Parlons de vos <span className="text-primary">prochains projets</span>
             </h2>
             <p className="mb-8 max-w-md text-muted-foreground">
               Que ce soit pour un projet personnel ou professionnel, c&apos;est l&apos;occasion de partager
@@ -36,28 +36,28 @@ export default function ContactPage() {
             <ul className="space-y-3">
               {["Plus de 4 années d'expérience", "Concepteur Web professionnel", "Conception d'applications mobiles", "Support de conception personnalisée"].map((item) => (
                 <li key={item} className="flex items-center gap-2 text-sm text-foreground">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#842ae3]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                   {item}
                 </li>
               ))}
             </ul>
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                   <Mail className="h-4 w-4 text-[#1e1e1e]" />
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">E-mail</span>
-                  <a href="mailto:contact@wabtechs.com" className="block text-sm text-foreground hover:text-[#842ae3]">contact@wabtechs.com</a>
+                  <a href="mailto:contact@wabtechs.com" className="block text-sm text-foreground hover:text-primary">contact@wabtechs.com</a>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                   <Phone className="h-4 w-4 text-[#1e1e1e]" />
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">Téléphone</span>
-                  <a href="tel:+243850060060" className="block text-sm text-foreground hover:text-[#842ae3]">+243 850 060 060</a>
+                  <a href="tel:+243850060060" className="block text-sm text-foreground hover:text-primary">+243 850 060 060</a>
                 </div>
               </div>
             </div>

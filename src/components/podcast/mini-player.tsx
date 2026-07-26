@@ -60,7 +60,7 @@ export function MiniPlayer() {
           </button>
           <button
             onClick={togglePlay}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#842ae3] text-[#1e1e1e] transition-colors hover:bg-[#9333ea]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[#1e1e1e] transition-colors hover:bg-[#9333ea]"
           >
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
           </button>
@@ -79,7 +79,7 @@ export function MiniPlayer() {
           </button>
         </div>
         <div className="h-0.5 bg-white/5">
-          <div className="h-full bg-[#842ae3] transition-all" style={{ width: `${progress}%` }} />
+          <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
         </div>
       </motion.div>
     </AnimatePresence>

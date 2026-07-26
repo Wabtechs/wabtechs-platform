@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { UsersClient } from "./users-client";
 
-export const metadata: Metadata = { title: "Gestion des utilisateurs" };
+export const metadata: Metadata = { title: "Gestion des utilisateurs | Admin" };
 
 export default async function AdminUsersPage() {
   const session = await auth();
@@ -19,9 +19,18 @@ export default async function AdminUsersPage() {
       email: true,
       role: true,
       createdAt: true,
+      avatar: true,
       _count: { select: { posts: true, comments: true } },
     },
   });
 
-  return <UsersClient users={users} currentUserId={session.user.id as string} />;
+  return (
+    <UsersClient
+      users={users.map((u) => ({
+        ...u,
+        createdAt: u.createdAt.toISOString(),
+      }))}
+      currentUserId={session.user.id as string}
+    />
+  );
 }

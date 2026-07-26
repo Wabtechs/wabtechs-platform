@@ -89,21 +89,21 @@ export default function HomePage() {
                   </ul>
                   <div className="mt-8 flex flex-wrap items-center gap-6 rounded-[20px] border border-white/10 bg-[#1F1F1F] px-10 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                         <Mail className="h-4 w-4 text-[#1e1e1e]" />
                       </div>
                       <div>
                         <span className="text-xs text-muted-foreground">E-mail</span>
-                        <a href="mailto:contact@wabtechs.com" className="block text-sm text-foreground hover:text-[#842ae3]">contact@wabtechs.com</a>
+                        <a href="mailto:contact@wabtechs.com" className="block text-sm text-foreground hover:text-primary">contact@wabtechs.com</a>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#842ae3]">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
                         <Phone className="h-4 w-4 text-[#1e1e1e]" />
                       </div>
                       <div>
                         <span className="text-xs text-muted-foreground">Passer un coup de fil</span>
-                        <a href="tel:+243850060060" className="block text-sm text-foreground hover:text-[#842ae3]">+243 850 060 060</a>
+                        <a href="tel:+243850060060" className="block text-sm text-foreground hover:text-primary">+243 850 060 060</a>
                       </div>
                     </div>
                   </div>
@@ -318,7 +318,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               {TESTIMONIALS.map((t, i) => (
                 <AnimateOnScroll key={t.name} delay={i * 0.15}>
-                  <div className="rounded-[14px] border border-white/10 bg-[#1F1F1F] p-8 transition-all hover:border-[#842ae3]/30">
+                  <div className="rounded-[14px] border border-white/10 bg-[#1F1F1F] p-8 transition-all hover:border-primary/30">
                     <Quote className="mb-4 h-8 w-8 text-primary/30" />
                     <p className="mb-6 leading-relaxed text-muted-foreground">{t.text}</p>
                     <div className="flex items-center gap-4">
@@ -352,7 +352,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {posts.map((post, i) => (
               <AnimateOnScroll key={post.slug} delay={i * 0.1}>
-                <Link href={`/blog/${post.slug}`} className="group block overflow-hidden rounded-xl border border-white/10 bg-[#1F1F1F] transition-all hover:border-[#842ae3]">
+                <Link href={`/blog/${post.slug}`} className="group block overflow-hidden rounded-xl border border-white/10 bg-[#1F1F1F] transition-all hover:border-primary">
                   <div className="relative h-48 w-full overflow-hidden">
                     <Image
                       src={BLOG_IMAGES[i % BLOG_IMAGES.length]!}
@@ -367,7 +367,7 @@ export default function HomePage() {
                         <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
                       ))}
                     </div>
-                    <h5 className="mb-4 text-lg font-semibold text-white group-hover:text-[#842ae3] transition-colors">
+                    <h5 className="mb-4 text-lg font-semibold text-white group-hover:text-primary transition-colors">
                       {post.title}
                     </h5>
                     <hr className="border-white/10" />

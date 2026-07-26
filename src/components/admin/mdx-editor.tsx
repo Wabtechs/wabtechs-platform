@@ -30,10 +30,10 @@ function simpleMarkdown(md: string): string {
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code class="rounded bg-gray-100 px-1.5 py-0.5 text-sm dark:bg-white/10">$1</code>')
     .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="overflow-x-auto rounded-lg bg-gray-100 p-4 text-sm dark:bg-white/5"><code>$2</code></pre>')
-    .replace(/^\> (.+)$/gm, '<blockquote class="border-l-4 border-[#842ae3] pl-4 italic text-gray-600 dark:text-gray-400">$1</blockquote>')
+    .replace(/^\> (.+)$/gm, '<blockquote class="border-l-4 border-primary pl-4 italic text-gray-600 dark:text-gray-400">$1</blockquote>')
     .replace(/^\- (.+)$/gm, '<li class="ml-4 list-disc">$1</li>')
     .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 list-decimal">$1</li>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#842ae3] underline">$1</a>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary underline">$1</a>')
     .replace(/\n\n/g, '</p><p class="mb-3">')
     .replace(/^(?!<[hlupbo])/gm, "")
     .replace(/\n/g, "\n");
@@ -81,9 +81,9 @@ export function MdxEditor({ value, onChange, placeholder = "Écrivez votre conte
   const preview = useMemo(() => ({ __html: simpleMarkdown(value || "") }), [value]);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-white/10">
+    <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-border">
       {/* Toolbar */}
-      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1 dark:border-white/10 dark:bg-[#131313]">
+      <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-2 py-1 dark:border-border dark:bg-muted">
         <div className="flex items-center gap-0.5">
           {toolbar.map((item) => (
             <Button
@@ -93,7 +93,7 @@ export function MdxEditor({ value, onChange, placeholder = "Écrivez votre conte
               size="icon"
               onClick={item.action}
               title={item.title}
-              className="h-7 w-7 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+              className="h-7 w-7 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-foreground"
             >
               <item.icon className="h-3.5 w-3.5" />
             </Button>
@@ -141,8 +141,8 @@ export function MdxEditor({ value, onChange, placeholder = "Écrivez votre conte
             rows={rows}
             spellCheck={false}
             className={cn(
-              "w-full resize-none bg-white p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:bg-[#1a1a1a] dark:text-white",
-              mode === "split" ? "border-r border-gray-200 dark:border-white/10" : "",
+              "w-full resize-none bg-white p-4 font-mono text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none dark:bg-card dark:text-foreground",
+              mode === "split" ? "border-r border-gray-200 dark:border-border" : "",
             )}
           />
         )}

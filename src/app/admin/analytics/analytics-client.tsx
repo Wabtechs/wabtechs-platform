@@ -65,7 +65,7 @@ export function AnalyticsClient() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-[#842ae3]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -124,21 +124,21 @@ export function AnalyticsClient() {
     <motion.div variants={stagger} initial="hidden" animate="show">
       <motion.div variants={fadeUp} className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
             Analytics
           </h1>
           <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
             Suivez les performances de votre plateforme.
           </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-white/[0.06] dark:bg-[#111]">
+        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-border dark:bg-card">
           {(["7d", "30d", "all"] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-all duration-200 ${
                 period === p
-                  ? "bg-white text-gray-900 shadow-sm dark:bg-[#1a1a1a] dark:text-white"
+                  ? "bg-white text-gray-900 shadow-sm dark:bg-card dark:text-foreground"
                   : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
@@ -152,7 +152,7 @@ export function AnalyticsClient() {
         {metrics.map((m) => (
           <Card
             key={m.label}
-            className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+            className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
           >
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
@@ -160,7 +160,7 @@ export function AnalyticsClient() {
                   <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
                     {m.label}
                   </p>
-                  <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-white leading-none">
+                  <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-foreground leading-none">
                     {m.value}
                   </p>
                 </div>
@@ -177,13 +177,13 @@ export function AnalyticsClient() {
       </motion.div>
 
       <motion.div variants={fadeUp} className="mb-6">
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#842ae3]/10">
-                <TrendingUp className="h-3.5 w-3.5 text-[#842ae3]" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                <TrendingUp className="h-3.5 w-3.5 text-primary" />
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-white">
+              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                 Vues dans le temps
               </CardTitle>
             </div>
@@ -239,14 +239,14 @@ export function AnalyticsClient() {
       </motion.div>
 
       <motion.div variants={fadeUp}>
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
                   <Globe className="h-3.5 w-3.5 text-blue-500" />
                 </div>
-                <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                   Pages les plus visitées
                 </CardTitle>
               </div>
@@ -261,13 +261,13 @@ export function AnalyticsClient() {
                 {data.topPages.map((page, i) => (
                   <div
                     key={page.path}
-                    className="flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
+                    className="flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
                   >
                     <div className="flex items-center gap-3">
                       <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-[11px] font-semibold text-gray-500 dark:bg-white/5 dark:text-gray-400">
                         {i + 1}
                       </span>
-                      <span className="font-mono text-[13px] font-medium text-gray-900 dark:text-white">
+                      <span className="font-mono text-[13px] font-medium text-gray-900 dark:text-foreground">
                         {page.path}
                       </span>
                     </div>

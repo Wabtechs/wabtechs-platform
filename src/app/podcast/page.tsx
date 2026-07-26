@@ -41,7 +41,7 @@ export default function PodcastPage() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {PLATFORMS.map((platform) => (
             <a key={platform.name} href={platform.url} target="_blank" rel="noopener noreferrer">
-              <Badge variant="outline" className="cursor-pointer border-white/10 text-muted-foreground hover:border-[#842ae3] hover:text-[#842ae3] transition-colors">
+              <Badge variant="outline" className="cursor-pointer border-white/10 text-muted-foreground hover:border-primary hover:text-primary transition-colors">
                 <ExternalLink className="mr-1 h-3 w-3" />
                 {platform.name}
               </Badge>
@@ -56,7 +56,7 @@ export default function PodcastPage() {
             return (
               <div key={ep.number}>
                 <Card
-                  className={`transition-all group cursor-pointer ${isCurrent ? "border-[#842ae3] bg-[#1F1F1F]" : "border-white/10 bg-[#1F1F1F] hover:border-[#842ae3]/50"}`}
+                  className={`transition-all group cursor-pointer ${isCurrent ? "border-primary bg-[#1F1F1F]" : "border-white/10 bg-[#1F1F1F] hover:border-primary/50"}`}
                   onClick={() => {
                     setSelectedEpisode(selectedEpisode === ep.number ? null : ep.number);
                   }}
@@ -68,7 +68,7 @@ export default function PodcastPage() {
                         if (isEpPlaying) pause();
                         else play({ number: ep.number, title: ep.title, audioSrc: ep.audioSrc });
                       }}
-                      className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-[#842ae3]/10 text-[#842ae3] group-hover:bg-[#842ae3]/20 transition-colors"
+                      className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors"
                     >
                       {isEpPlaying ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6 ml-0.5" />}
                     </button>
@@ -86,7 +86,7 @@ export default function PodcastPage() {
                           {ep.date}
                         </span>
                       </div>
-                      <CardTitle className="mt-2 text-lg text-white group-hover:text-[#842ae3] transition-colors">
+                      <CardTitle className="mt-2 text-lg text-white group-hover:text-primary transition-colors">
                         {ep.title}
                       </CardTitle>
                       <CardDescription className="mt-1">{ep.description}</CardDescription>

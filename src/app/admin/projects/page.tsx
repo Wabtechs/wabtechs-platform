@@ -29,7 +29,7 @@ export default async function AdminProjectsPage() {
               <Layers className="h-5 w-5 text-cyan-500" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
                 Projets
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -41,7 +41,7 @@ export default async function AdminProjectsPage() {
         <Button
           asChild
           size="sm"
-          className="h-8 bg-[#842ae3] text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           <Link href="/admin/projects/new">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -52,13 +52,13 @@ export default async function AdminProjectsPage() {
 
       <div className="space-y-2">
         {projects.length === 0 ? (
-          <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+          <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Layers className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
               <p className="text-[13px] text-gray-500">Aucun projet</p>
               <Link
                 href="/admin/projects/new"
-                className="mt-2 text-[12px] font-medium text-[#842ae3] hover:underline"
+                className="mt-2 text-[12px] font-medium text-primary hover:underline"
               >
                 Créer votre premier projet
               </Link>
@@ -68,11 +68,11 @@ export default async function AdminProjectsPage() {
           projects.map((project) => (
             <div
               key={project.id}
-              className="group flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+              className="group flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-white">
+                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-foreground">
                     {project.title}
                   </p>
                   {project.featured && (
@@ -106,7 +106,7 @@ export default async function AdminProjectsPage() {
                   variant="ghost"
                   size="icon"
                   asChild
-                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-foreground"
                 >
                   <Link href={`/admin/projects/${project.id}/edit`}>
                     <Pencil className="h-3.5 w-3.5" />

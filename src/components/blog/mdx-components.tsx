@@ -53,12 +53,12 @@ export const mdxComponents = {
     </li>
   ),
   a: ({ children, href, ...props }: ComponentPropsWithoutRef<"a">) => (
-    <a href={href} className="font-medium text-[#842ae3] underline underline-offset-4 hover:text-[#a855f7]" target="_blank" rel="noopener noreferrer" {...props}>
+    <a href={href} className="font-medium text-primary underline underline-offset-4 hover:text-[#a855f7]" target="_blank" rel="noopener noreferrer" {...props}>
       {children}
     </a>
   ),
   blockquote: ({ children, ...props }: ComponentPropsWithoutRef<"blockquote">) => (
-    <blockquote className="my-6 border-l-2 border-[#842ae3]/30 pl-6 italic text-muted-foreground" {...props}>
+    <blockquote className="my-6 border-l-2 border-primary/30 pl-6 italic text-muted-foreground" {...props}>
       {children}
     </blockquote>
   ),
@@ -72,7 +72,7 @@ export const mdxComponents = {
       );
     }
     return (
-      <code className="rounded bg-[#131313] px-1.5 py-0.5 text-sm font-mono text-[#842ae3]" {...props}>
+      <code className="rounded bg-[#131313] px-1.5 py-0.5 text-sm font-mono text-primary" {...props}>
         {children}
       </code>
     );

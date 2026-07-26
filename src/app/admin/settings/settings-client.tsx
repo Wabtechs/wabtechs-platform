@@ -254,7 +254,7 @@ export function SettingsPageClient() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-[#842ae3]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
@@ -262,7 +262,7 @@ export function SettingsPageClient() {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show">
       <motion.div variants={fadeUp} className="mb-8">
-        <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+        <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
           Paramètres du site
         </h1>
         <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -279,8 +279,8 @@ export function SettingsPageClient() {
               className={cn(
                 "flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200 whitespace-nowrap",
                 activeTab === tab.id
-                  ? "bg-[#842ae3]/[0.08] text-[#842ae3] dark:bg-[#842ae3]/[0.12]"
-                  : "text-gray-500 hover:bg-gray-100/80 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.04] dark:hover:text-white",
+                  ? "bg-primary/[0.08] text-primary dark:bg-primary/[0.12]"
+                  : "text-gray-500 hover:bg-gray-100/80 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-accent/[0.04] dark:hover:text-foreground",
               )}
             >
               <tab.icon className="h-4 w-4" />
@@ -289,17 +289,17 @@ export function SettingsPageClient() {
           ))}
         </div>
 
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
               <div
-                className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#842ae3]/10"
+                className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
               >
                 {currentTab && (
-                  <currentTab.icon className="h-3.5 w-3.5 text-[#842ae3]" />
+                  <currentTab.icon className="h-3.5 w-3.5 text-primary" />
                 )}
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-white">
+              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                 {currentTab?.label}
               </CardTitle>
             </div>
@@ -308,7 +308,7 @@ export function SettingsPageClient() {
                 variant="outline"
                 size="sm"
                 onClick={fetchSettings}
-                className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-white/[0.06] dark:text-gray-400 dark:hover:bg-white/[0.04]"
+                className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
               >
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
                 Réinitialiser
@@ -317,7 +317,7 @@ export function SettingsPageClient() {
                 size="sm"
                 onClick={saveTab}
                 disabled={saving}
-                className="h-8 bg-[#842ae3] text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+                className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
               >
                 {saving ? (
                   <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
@@ -331,7 +331,7 @@ export function SettingsPageClient() {
           <CardContent className="space-y-6">
             {currentTab?.fields.map((field) => (
               <div key={field.key}>
-                <label className="mb-2 block text-[13px] font-medium text-gray-900 dark:text-white">
+                <label className="mb-2 block text-[13px] font-medium text-gray-900 dark:text-foreground">
                   {field.label}
                 </label>
                 {field.type === "image" ? (
@@ -339,11 +339,11 @@ export function SettingsPageClient() {
                     <Input
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-[#842ae3] focus:ring-[#842ae3]/20 dark:border-white/[0.06] dark:bg-[#0a0a0a] dark:text-white"
+                      className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
                       placeholder="/images/..."
                     />
                     {draft[field.key] && (
-                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200/80 dark:border-white/[0.06]">
+                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200/80 dark:border-border">
                         <img
                           src={draft[field.key]}
                           alt={field.label}
@@ -357,7 +357,7 @@ export function SettingsPageClient() {
                     <textarea
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 font-mono text-[13px] text-gray-900 focus:border-[#842ae3] focus:outline-none focus:ring-1 focus:ring-[#842ae3]/20 dark:border-white/[0.06] dark:bg-[#0a0a0a] dark:text-white"
+                      className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 font-mono text-[13px] text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
                       rows={10}
                       spellCheck={false}
                     />
@@ -365,7 +365,7 @@ export function SettingsPageClient() {
                       variant="outline"
                       size="sm"
                       onClick={() => formatJson(field.key)}
-                      className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-white/[0.06] dark:text-gray-400 dark:hover:bg-white/[0.04]"
+                      className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
                     >
                       Formater JSON
                     </Button>
@@ -374,14 +374,14 @@ export function SettingsPageClient() {
                   <textarea
                     value={draft[field.key] ?? ""}
                     onChange={(e) => updateField(field.key, e.target.value)}
-                    className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 text-[13px] text-gray-900 focus:border-[#842ae3] focus:outline-none focus:ring-1 focus:ring-[#842ae3]/20 dark:border-white/[0.06] dark:bg-[#0a0a0a] dark:text-white"
+                    className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 text-[13px] text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
                     rows={4}
                   />
                 ) : (
                   <Input
                     value={draft[field.key] ?? ""}
                     onChange={(e) => updateField(field.key, e.target.value)}
-                    className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-[#842ae3] focus:ring-[#842ae3]/20 dark:border-white/[0.06] dark:bg-[#0a0a0a] dark:text-white"
+                    className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
                   />
                 )}
               </div>

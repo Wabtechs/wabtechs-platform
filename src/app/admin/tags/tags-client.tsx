@@ -67,11 +67,11 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
   return (
     <div className="min-h-screen">
       <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#842ae3]/10">
-          <Tag className="h-5 w-5 text-[#842ae3]" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+          <Tag className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
             Tags
           </h1>
           <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -86,13 +86,13 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
           onChange={(e) => setNewTag(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addTag()}
           placeholder="Nouveau tag..."
-          className="max-w-xs h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-[#842ae3] focus:ring-[#842ae3]/20 dark:border-white/[0.06] dark:bg-[#0a0a0a] dark:text-white"
+          className="max-w-xs h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
         />
         <Button
           onClick={addTag}
           disabled={loading || !newTag.trim()}
           size="sm"
-          className="h-9 bg-[#842ae3] text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4]"
+          className="h-9 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4]"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -103,7 +103,7 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
       </div>
 
       {tags.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Tag className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun tag</p>
@@ -117,14 +117,14 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
                 key={tag.id}
                 variants={item}
                 layout
-                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-3.5 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-3.5 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#842ae3]/10">
-                    <Tag className="h-4 w-4 text-[#842ae3]" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <Tag className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-[13px] font-medium text-gray-900 dark:text-white">
+                    <p className="text-[13px] font-medium text-gray-900 dark:text-foreground">
                       {tag.name}
                     </p>
                     <p className="text-[11px] text-gray-400">{tag.slug}</p>

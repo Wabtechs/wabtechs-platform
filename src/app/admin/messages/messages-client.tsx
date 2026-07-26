@@ -70,7 +70,7 @@ export function MessagesClient({
           <MessageSquare className="h-5 w-5 text-amber-500" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
             Messages
           </h1>
           <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -81,7 +81,7 @@ export function MessagesClient({
       </div>
 
       {messages.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <MessageSquare className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun message</p>
@@ -95,9 +95,9 @@ export function MessagesClient({
                 key={msg.id}
                 variants={item}
                 layout
-                className={`rounded-xl border bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)] ${
+                className={`rounded-xl border bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)] ${
                   msg.read
-                    ? "border-gray-200/80 dark:border-white/[0.06]"
+                    ? "border-gray-200/80 dark:border-border"
                     : "border-l-[3px] border-l-[#842ae3] border-t-gray-200/80 border-r-gray-200/80 border-b-gray-200/80 dark:border-l-[#842ae3] dark:border-t-white/[0.06] dark:border-r-white/[0.06] dark:border-b-white/[0.06]"
                 }`}
               >
@@ -108,11 +108,11 @@ export function MessagesClient({
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="text-[14px] font-medium text-gray-900 dark:text-white">
+                        <p className="text-[14px] font-medium text-gray-900 dark:text-foreground">
                           {msg.name}
                         </p>
                         {!msg.read && (
-                          <span className="inline-flex items-center rounded-full bg-[#842ae3]/10 px-1.5 py-0.5 text-[9px] font-semibold text-[#842ae3]">
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold text-primary">
                             NOUVEAU
                           </span>
                         )}
@@ -120,7 +120,7 @@ export function MessagesClient({
                       <p className="mt-0.5 text-[12px] text-gray-400">
                         <a
                           href={`mailto:${msg.email}`}
-                          className="hover:text-[#842ae3] hover:underline"
+                          className="hover:text-primary hover:underline"
                         >
                           {msg.email}
                         </a>
@@ -134,7 +134,7 @@ export function MessagesClient({
                       variant="ghost"
                       size="icon"
                       asChild
-                      className="h-8 w-8 text-gray-400 hover:text-[#842ae3]"
+                      className="h-8 w-8 text-gray-400 hover:text-primary"
                     >
                       <a href={`mailto:${msg.email}`}>
                         <Send className="h-3.5 w-3.5" />
@@ -158,7 +158,7 @@ export function MessagesClient({
                   </div>
                 </div>
                 <div className="mt-3 ml-12">
-                  <p className="text-[13px] font-medium text-gray-900 dark:text-white">
+                  <p className="text-[13px] font-medium text-gray-900 dark:text-foreground">
                     {msg.subject}
                   </p>
                   <p className="mt-1 text-[13px] leading-relaxed text-gray-500 dark:text-gray-400 whitespace-pre-wrap">

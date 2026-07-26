@@ -47,9 +47,9 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-[#842ae3]",
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
                 pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href))
-                  ? "text-[#842ae3]"
+                  ? "text-primary"
                   : "text-[#cccccc]",
               )}
             >
@@ -70,7 +70,7 @@ export function Navbar() {
           <ThemeToggle />
 
           {session ? (
-            <Button asChild className="hidden md:inline-flex bg-[#842ae3] text-[#1e1e1e] hover:bg-[#9333ea]">
+            <Button asChild className="hidden md:inline-flex bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
@@ -81,7 +81,7 @@ export function Navbar() {
                   Connexion
                 </Link>
               </Button>
-              <Button asChild size="sm" className="bg-[#842ae3] text-[#1e1e1e] hover:bg-[#9333ea]">
+              <Button asChild size="sm" className="bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
                 <Link href="/register">
                   <UserPlus className="mr-1 h-4 w-4" />
                   S&apos;inscrire
@@ -110,8 +110,8 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-[#842ae3]",
-                    pathname === link.href ? "text-[#842ae3]" : "text-[#cccccc]",
+                    "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-primary",
+                    pathname === link.href ? "text-primary" : "text-[#cccccc]",
                   )}
                 >
                   {link.label}
@@ -119,7 +119,7 @@ export function Navbar() {
               ))}
               <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
                 {session ? (
-                  <Button asChild className="w-full bg-[#842ae3] text-[#1e1e1e] hover:bg-[#9333ea]">
+                  <Button asChild className="w-full bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
                     <Link href="/dashboard">Dashboard</Link>
                   </Button>
                 ) : (
@@ -127,7 +127,7 @@ export function Navbar() {
                     <Button asChild variant="outline" className="w-full border-white/10 text-[#cccccc] hover:bg-white/5">
                       <Link href="/login">Connexion</Link>
                     </Button>
-                    <Button asChild className="w-full bg-[#842ae3] text-[#1e1e1e] hover:bg-[#9333ea]">
+                    <Button asChild className="w-full bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
                       <Link href="/register">S&apos;inscrire</Link>
                     </Button>
                   </>

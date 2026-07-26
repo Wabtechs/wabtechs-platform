@@ -14,7 +14,7 @@ export function PageHeader({ badge, title, highlight, description }: PageHeaderP
       <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
         {highlight ? (
           <>
-            {title} <span className="text-[#842ae3]">{highlight}</span>
+            {title} <span className="text-primary">{highlight}</span>
           </>
         ) : (
           title

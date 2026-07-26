@@ -110,46 +110,46 @@ export default function NewPostPage() {
           )}
         </div>
 
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Nouvel article</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-foreground">Nouvel article</h1>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
+          <Card className="border-gray-200 bg-white dark:border-border dark:bg-card">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-white">Contenu</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-foreground">Contenu</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Titre</Label>
+                <Label className="text-gray-900 dark:text-foreground">Titre</Label>
                 <Input
                   value={form.title}
                   onChange={(e) => {
                     updateForm("title", e.target.value);
                     if (!form.slug) updateForm("slug", e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
                   }}
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Slug</Label>
+                <Label className="text-gray-900 dark:text-foreground">Slug</Label>
                 <Input
                   value={form.slug}
                   onChange={(e) => updateForm("slug", e.target.value)}
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Description</Label>
+                <Label className="text-gray-900 dark:text-foreground">Description</Label>
                 <Textarea
                   value={form.description}
                   onChange={(e) => updateForm("description", e.target.value)}
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Contenu (Markdown)</Label>
+                <Label className="text-gray-900 dark:text-foreground">Contenu (Markdown)</Label>
                 <MdxEditor
                   value={form.content}
                   onChange={(v) => updateForm("content", v)}
@@ -158,34 +158,34 @@ export default function NewPostPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-gray-200 bg-white dark:border-white/10 dark:bg-[#1F1F1F]">
+          <Card className="border-gray-200 bg-white dark:border-border dark:bg-card">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-white">Méta</CardTitle>
+              <CardTitle className="text-gray-900 dark:text-foreground">Méta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Tags (séparés par des virgules)</Label>
+                <Label className="text-gray-900 dark:text-foreground">Tags (séparés par des virgules)</Label>
                 <Input
                   value={form.tags}
                   onChange={(e) => updateForm("tags", e.target.value)}
                   placeholder="Next.js, React, TypeScript"
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-white">Image de couverture (URL)</Label>
+                <Label className="text-gray-900 dark:text-foreground">Image de couverture (URL)</Label>
                 <Input
                   value={form.coverImage}
                   onChange={(e) => updateForm("coverImage", e.target.value)}
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-white/10 dark:bg-[#131313] dark:text-white"
+                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
                 />
               </div>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-foreground">
                   <input type="checkbox" checked={form.published} onChange={(e) => updateForm("published", e.target.checked)} className="rounded" />
                   Publié
                 </label>
-                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-foreground">
                   <input type="checkbox" checked={form.featured} onChange={(e) => updateForm("featured", e.target.checked)} className="rounded" />
                   Featured
                 </label>
@@ -193,7 +193,7 @@ export default function NewPostPage() {
             </CardContent>
           </Card>
 
-          <Button type="submit" disabled={loading} className="bg-[#842ae3] text-white hover:bg-[#7323c4]">
+          <Button type="submit" disabled={loading} className="bg-primary text-white hover:bg-[#7323c4]">
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             {loading ? "Création..." : "Créer l'article"}
           </Button>

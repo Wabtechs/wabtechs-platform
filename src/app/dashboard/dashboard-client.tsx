@@ -110,11 +110,11 @@ export function DashboardClient({
         {/* Profile Header */}
         <motion.div variants={fadeUp} className="mb-8">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#842ae3] text-lg font-bold text-white shadow-lg shadow-[#842ae3]/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-white shadow-lg shadow-[#842ae3]/20">
               {initial}
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
                 Bonjour, {userName}
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -128,28 +128,28 @@ export function DashboardClient({
         <motion.div variants={fadeUp} className="mb-8 flex flex-wrap gap-2">
           <Link
             href="/blog"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#842ae3] px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
           >
             <FileText className="h-3.5 w-3.5" />
             Blog
           </Link>
           <Link
             href="/podcast"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#842ae3] px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
           >
             <Headphones className="h-3.5 w-3.5" />
             Podcast
           </Link>
           <Link
             href="/projects"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#842ae3] px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[13px] font-medium text-white shadow-sm shadow-[#842ae3]/20 transition-all hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
           >
             <Layers className="h-3.5 w-3.5" />
             Projets
           </Link>
           <Link
             href="/contact"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-gray-200/80 px-3 text-[13px] font-medium text-gray-600 transition-all hover:bg-gray-50 dark:border-white/[0.06] dark:text-gray-400 dark:hover:bg-white/[0.04]"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-gray-200/80 px-3 text-[13px] font-medium text-gray-600 transition-all hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
           >
             <Mail className="h-3.5 w-3.5" />
             Contact
@@ -157,7 +157,7 @@ export function DashboardClient({
           {userRole === "ADMIN" && (
             <Link
               href="/admin"
-              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-gray-200/80 px-3 text-[13px] font-medium text-gray-600 transition-all hover:bg-gray-50 dark:border-white/[0.06] dark:text-gray-400 dark:hover:bg-white/[0.04]"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-gray-200/80 px-3 text-[13px] font-medium text-gray-600 transition-all hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
             >
               <Settings className="h-3.5 w-3.5" />
               Admin
@@ -170,13 +170,13 @@ export function DashboardClient({
           {primaryMetrics.map((m) => (
             <Card
               key={m.label}
-              className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+              className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-[11px] font-medium text-gray-500 dark:text-gray-400">{m.label}</p>
-                    <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white leading-none">
+                    <p className="mt-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-foreground leading-none">
                       {m.value.toLocaleString()}
                     </p>
                   </div>
@@ -190,7 +190,7 @@ export function DashboardClient({
                 {m.href && (
                   <Link
                     href={m.href}
-                    className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-[#842ae3] hover:underline"
+                    className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
                   >
                     Voir
                     <ArrowUpRight className="h-3 w-3" />
@@ -206,7 +206,7 @@ export function DashboardClient({
           {secondaryMetrics.map((m) => (
             <Card
               key={m.label}
-              className="border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-white/[0.06] dark:bg-[#111] dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+              className="border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
             >
               <CardContent className="flex items-center gap-3 p-3.5">
                 <div
@@ -216,7 +216,7 @@ export function DashboardClient({
                   <m.icon className="h-4 w-4" style={{ color: m.color }} />
                 </div>
                 <div>
-                  <p className="text-lg font-semibold text-gray-900 dark:text-white">{m.value}</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-foreground">{m.value}</p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">{m.label}</p>
                 </div>
               </CardContent>
@@ -228,19 +228,19 @@ export function DashboardClient({
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Posts */}
           <motion.div variants={fadeUp} className="lg:col-span-2">
-            <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+            <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
               <div className="flex items-center justify-between px-5 pt-5 pb-3">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#842ae3]/10">
-                    <FileText className="h-3.5 w-3.5 text-[#842ae3]" />
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="h-3.5 w-3.5 text-primary" />
                   </div>
-                  <span className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                  <span className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                     Articles récents
                   </span>
                 </div>
                 <Link
                   href="/blog"
-                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium text-[#842ae3] transition-colors hover:bg-[#842ae3]/5"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-medium text-primary transition-colors hover:bg-primary/5"
                 >
                   Tout voir
                   <ArrowUpRight className="h-3 w-3" />
@@ -258,10 +258,10 @@ export function DashboardClient({
                       <Link
                         key={post.id}
                         href={`/blog/${post.slug}`}
-                        className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
+                        className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
                       >
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-medium text-gray-900 dark:text-white">
+                          <p className="truncate text-[13px] font-medium text-gray-900 dark:text-foreground">
                             {post.title}
                           </p>
                           <div className="mt-1 flex items-center gap-2">
@@ -302,13 +302,13 @@ export function DashboardClient({
           {/* Right Column */}
           <motion.div variants={fadeUp} className="space-y-5">
             {/* Comments */}
-            <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+            <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
               <div className="flex items-center justify-between px-5 pt-5 pb-3">
                 <div className="flex items-center gap-2">
                   <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10">
                     <MessageSquare className="h-3.5 w-3.5 text-amber-500" />
                   </div>
-                  <span className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                  <span className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                     Commentaires
                   </span>
                 </div>
@@ -323,7 +323,7 @@ export function DashboardClient({
                   ) : (
                     recentComments.map((c) => (
                       <div key={c.id} className="px-5 py-3">
-                        <p className="truncate text-[13px] text-gray-900 dark:text-white">{c.content}</p>
+                        <p className="truncate text-[13px] text-gray-900 dark:text-foreground">{c.content}</p>
                         <div className="mt-1 flex items-center gap-2">
                           <span className="text-[11px] text-gray-400">
                             sur <span className="font-medium text-gray-600 dark:text-gray-300">{c.post.title}</span>
@@ -338,19 +338,19 @@ export function DashboardClient({
             </Card>
 
             {/* Profile Card */}
-            <Card className="border-gray-200/80 bg-white dark:border-white/[0.06] dark:bg-[#111]">
+            <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
               <div className="flex items-center gap-2 px-5 pt-5 pb-3">
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/10">
                   <Zap className="h-3.5 w-3.5 text-violet-500" />
                 </div>
-                <span className="text-[14px] font-semibold text-gray-900 dark:text-white">
+                <span className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
                   Mon profil
                 </span>
               </div>
               <CardContent className="space-y-3 px-5 pb-5">
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-gray-500 dark:text-gray-400">Email</span>
-                  <span className="text-[12px] font-medium text-gray-900 dark:text-white truncate max-w-[160px]">
+                  <span className="text-[12px] font-medium text-gray-900 dark:text-foreground truncate max-w-[160px]">
                     {userEmail}
                   </span>
                 </div>
@@ -358,7 +358,7 @@ export function DashboardClient({
                   <span className="text-[12px] text-gray-500 dark:text-gray-400">Rôle</span>
                   <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
                     userRole === "ADMIN"
-                      ? "bg-[#842ae3]/10 text-[#842ae3]"
+                      ? "bg-primary/10 text-primary"
                       : "bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400"
                   }`}>
                     {userRole === "ADMIN" ? "Admin" : "Membre"}
@@ -366,11 +366,11 @@ export function DashboardClient({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-gray-500 dark:text-gray-400">Articles</span>
-                  <span className="text-[12px] font-medium text-gray-900 dark:text-white">{stats.userPostCount}</span>
+                  <span className="text-[12px] font-medium text-gray-900 dark:text-foreground">{stats.userPostCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] text-gray-500 dark:text-gray-400">Commentaires</span>
-                  <span className="text-[12px] font-medium text-gray-900 dark:text-white">{stats.userCommentCount}</span>
+                  <span className="text-[12px] font-medium text-gray-900 dark:text-foreground">{stats.userCommentCount}</span>
                 </div>
               </CardContent>
             </Card>
