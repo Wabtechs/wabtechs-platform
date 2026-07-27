@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Providers } from "@/providers";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { ScrollProgress } from "@/components/shared/scroll-progress";
-import { PageViewTracker } from "@/components/shared/page-view-tracker";
-import { CommandPalette } from "@/components/shared/command-palette";
-import { BackToTop } from "@/components/shared/back-to-top";
-import { PageTransition } from "@/components/shared/page-transition";
-import { PodcastWrapper } from "@/components/shared/podcast-wrapper";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE_CONFIG } from "@/lib/utils";
 import "./globals.css";
@@ -55,18 +47,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans`}>
         <Providers>
-          <PodcastWrapper>
-            <ScrollProgress />
-            <PageViewTracker />
-            <CommandPalette />
-            <Navbar />
-            <main className="min-h-screen">
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <Footer />
-            <BackToTop />
-            <Toaster />
-          </PodcastWrapper>
+          {children}
+          <Toaster />
         </Providers>
       </body>
     </html>

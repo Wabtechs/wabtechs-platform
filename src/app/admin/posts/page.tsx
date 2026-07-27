@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,12 +8,9 @@ import { formatDate } from "@/lib/utils";
 import { DeletePostButton } from "./delete-button";
 
 export const metadata: Metadata = { title: "Gestion des articles" };
+export const dynamic = "force-dynamic";
 
 export default async function AdminPostsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-  if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
-
   const posts = await db.post.findMany({
     orderBy: { createdAt: "desc" },
     include: { author: { select: { name: true } }, tags: true },

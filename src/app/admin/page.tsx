@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import { db } from "@/lib/prisma";
 import { AdminDashboardClient } from "./dashboard-client";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Dashboard | Admin" };
 

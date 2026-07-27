@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,12 +7,9 @@ import { Plus, Pencil, Headphones, Clock } from "lucide-react";
 import { DeletePodcastButton } from "./delete-button";
 
 export const metadata: Metadata = { title: "Gestion des podcasts" };
+export const dynamic = "force-dynamic";
 
 export default async function AdminPodcastsPage() {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-  if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
-
   const podcasts = await db.podcast.findMany({
     orderBy: { createdAt: "desc" },
   });

@@ -2,33 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import {
   LayoutDashboard,
   BarChart3,
   FileText,
   Headphones,
   Layers,
+  Tag,
+  CheckSquare,
+  AppWindow,
+  MessageCircle,
   Users,
   Mail,
   MessageSquare,
   Settings,
-  Tag,
-  Building2,
-  CheckSquare,
-  AppWindow,
-  MessageCircle,
-  HelpCircle,
-  ChevronDown,
-  LogIn,
-  UserPlus,
-  KeyRound,
-  Lock,
-  ShieldAlert,
-  ShieldOff,
-  AlertTriangle,
-  ServerCrash,
-  CloudOff,
 } from "lucide-react";
 import {
   Sidebar,
@@ -57,18 +45,6 @@ interface NavGroup {
   items: NavItem[];
 }
 
-interface SubItem {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
-
-interface CollapsibleGroup {
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  items: SubItem[];
-}
-
 const NAV_GROUPS: NavGroup[] = [
   {
     title: "OVERVIEW",
@@ -89,7 +65,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "PRODUCTIVITY",
     items: [
-      { label: "Tasks", href: "/admin/tasks", icon: CheckSquare, badge: "12" },
+      { label: "Tâches", href: "/admin/tasks", icon: CheckSquare },
       { label: "Apps", href: "/admin/apps", icon: AppWindow },
       { label: "Chats", href: "/admin/chats", icon: MessageCircle, badge: "3" },
     ],
@@ -106,38 +82,12 @@ const NAV_GROUPS: NavGroup[] = [
     title: "SYSTEM",
     items: [
       { label: "Paramètres", href: "/admin/settings", icon: Settings },
-      { label: "Help Center", href: "/admin/help", icon: HelpCircle, badge: "Coming Soon" },
-    ],
-  },
-];
-
-const PAGES_GROUPS: CollapsibleGroup[] = [
-  {
-    label: "Auth",
-    icon: Lock,
-    items: [
-      { label: "Sign In", href: "/auth/sign-in", icon: LogIn },
-      { label: "Sign Up", href: "/auth/sign-up", icon: UserPlus },
-      { label: "Reset Password", href: "/auth/reset-password", icon: KeyRound },
-      { label: "Forgot Password", href: "/auth/forgot-password", icon: Lock },
-    ],
-  },
-  {
-    label: "Errors",
-    icon: ShieldAlert,
-    items: [
-      { label: "401", href: "/errors/401", icon: ShieldAlert },
-      { label: "403", href: "/errors/403", icon: ShieldOff },
-      { label: "404", href: "/errors/404", icon: AlertTriangle },
-      { label: "500", href: "/errors/500", icon: ServerCrash },
-      { label: "503", href: "/errors/503", icon: CloudOff },
     ],
   },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const isActive = useCallback(
     (href: string) => {
@@ -146,10 +96,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     [pathname],
   );
-
-  const toggleGroup = (label: string) => {
-    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -160,15 +106,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               href="/admin"
               className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group-data-[collapsible=icon]:justify-center"
             >
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
-                <Building2 className="h-4 w-4" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
+                W
               </div>
               <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                 <span className="text-sm font-semibold text-sidebar-foreground">
-                  WabTechs Admin
+                  WabTechs
                 </span>
                 <span className="text-[11px] text-sidebar-foreground/60">
-                  Organisation
+                  Admin
                 </span>
               </div>
             </Link>
@@ -216,73 +162,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
-
-        <SidebarGroup>
-          <SidebarGroupLabel>PAGES</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {PAGES_GROUPS.map((group) => {
-                const isExpanded = openGroups[group.label] ?? false;
-                return (
-                  <SidebarMenuItem key={group.label}>
-                    <button
-                      onClick={() => toggleGroup(group.label)}
-                      className={cn(
-                        "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none transition-colors",
-                        "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                        "focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-                        "[&>svg]:size-4 [&>svg]:shrink-0",
-                        "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-2",
-                        "text-sidebar-foreground/70",
-                      )}
-                    >
-                      <group.icon className="h-4 w-4" />
-                      <span className="truncate group-data-[collapsible=icon]:hidden">
-                        {group.label}
-                      </span>
-                      <ChevronDown
-                        className={cn(
-                          "ml-auto h-4 w-4 shrink-0 transition-transform duration-200 group-data-[collapsible=icon]:hidden",
-                          isExpanded && "rotate-180",
-                        )}
-                      />
-                    </button>
-                    {isExpanded && (
-                      <div className="ml-4 mt-0.5 border-l pl-2 group-data-[collapsible=icon]:hidden">
-                        <SidebarMenu>
-                          {group.items.map((subItem) => {
-                            const active = isActive(subItem.href);
-                            return (
-                              <SidebarMenuItem key={subItem.href}>
-                                <Link
-                                  href={subItem.href}
-                                  className={cn(
-                                    "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none transition-colors",
-                                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                                    "focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-                                    "[&>svg]:size-4 [&>svg]:shrink-0",
-                                    active
-                                      ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                                      : "text-sidebar-foreground/70",
-                                  )}
-                                >
-                                  <subItem.icon className="h-4 w-4" />
-                                  <span className="truncate">
-                                    {subItem.label}
-                                  </span>
-                                </Link>
-                              </SidebarMenuItem>
-                            );
-                          })}
-                        </SidebarMenu>
-                      </div>
-                    )}
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarSeparator />
@@ -294,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               href="/dashboard"
               className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group-data-[collapsible=icon]:justify-center"
             >
-              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
                 E
               </div>
               <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
