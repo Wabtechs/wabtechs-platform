@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtDecrypt } from "jose";
 
-const AUTH_SECRET = process.env.NEXTAUTH_SECRET;
+const AUTH_SECRET = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 const ADMIN_ROUTES = ["/admin", "/dashboard"];
 
 function isProtectedRoute(pathname: string): boolean {
@@ -30,10 +30,9 @@ export async function proxy(request: NextRequest) {
   }
 
   try {
-    await jwtVerify(
+    await jwtDecrypt(
       token,
       new TextEncoder().encode(AUTH_SECRET),
-      { algorithms: ["HS256"] },
     );
     return NextResponse.next();
   } catch {
