@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtDecrypt } from "jose";
 
-const AUTH_SECRET = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 const ADMIN_ROUTES = ["/admin", "/dashboard"];
 
 function isProtectedRoute(pathname: string): boolean {
   return ADMIN_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + "/"),
+  );
+}
+
+function hasSessionCookie(request: NextRequest): boolean {
+  const cookies = request.cookies;
+  return (
+    cookies.has("authjs.session-token") ||
+    cookies.has("__Secure-authjs.session-token") ||
+    cookies.has("next-auth.session-token") ||
+    cookies.has("__Secure-next-auth.session-token")
   );
 }
 
@@ -18,28 +26,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("authjs.session-token")?.value
-    ?? request.cookies.get("__Secure-authjs.session-token")?.value
-    ?? request.cookies.get("next-auth.session-token")?.value
-    ?? request.cookies.get("__Secure-next-auth.session-token")?.value;
-
-  if (!token) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  try {
-    await jwtDecrypt(
-      token,
-      new TextEncoder().encode(AUTH_SECRET),
-    );
+  if (hasSessionCookie(request)) {
     return NextResponse.next();
-  } catch {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
   }
+
+  const loginUrl = new URL("/login", request.url);
+  loginUrl.searchParams.set("callbackUrl", pathname);
+  return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
