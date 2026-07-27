@@ -45,7 +45,8 @@ next-env.d.ts
 # prisma
 prisma/migrations/
 
-# old site backup
+# old site backups
 _backup-old-site/
+_backup-old-Dashboard/
 
 .vercel
