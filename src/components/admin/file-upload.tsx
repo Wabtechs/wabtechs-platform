@@ -3,21 +3,46 @@
 import { useState, useCallback } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2, File } from "lucide-react";
+import { z } from "zod";
 
 interface FileUploadProps {
   value?: string;
   onChange: (url: string) => void;
   accept?: string;
   label?: string;
+  maxSizeMB?: number;
 }
 
-export function FileUpload({ value, onChange, accept = "image/*", label = "Image" }: FileUploadProps) {
+const fileSchema = z.object({
+  name: z.string().min(1, "Fichier invalide"),
+  size: z.number().positive("Fichier vide"),
+  type: z.string().regex(/^image\//, "Le fichier doit être une image"),
+});
+
+export function FileUpload({ value, onChange, accept = "image/*", label = "Image", maxSizeMB = 5 }: FileUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(value ?? "");
+  const [error, setError] = useState<string | null>(null);
 
   const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setError(null);
+
+    const parsed = fileSchema.safeParse(file);
+    if (!parsed.success) {
+      setError(parsed.error.errors[0]?.message ?? "Fichier invalide");
+      e.target.value = "";
+      return;
+    }
+
+    const maxBytes = maxSizeMB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      setError(`Fichier trop volumineux (max ${maxSizeMB} Mo)`);
+      e.target.value = "";
+      return;
+    }
 
     setUploading(true);
     try {
@@ -30,11 +55,16 @@ export function FileUpload({ value, onChange, accept = "image/*", label = "Image
       if (res.ok) {
         setPreview(data.url);
         onChange(data.url);
+      } else {
+        setError(data.error ?? "Échec de l'upload");
       }
+    } catch {
+      setError("Erreur de connexion pendant l'upload");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
-  }, [onChange]);
+  }, [onChange, maxSizeMB]);
 
   const isImage = preview?.match(/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i);
 
@@ -70,12 +100,13 @@ export function FileUpload({ value, onChange, accept = "image/*", label = "Image
               <Upload className="h-6 w-6 text-gray-400" />
             )}
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              {uploading ? "Upload en cours..." : `Cliquez pour uploader ${label}`}
+              {uploading ? "Upload en cours..." : `Cliquez pour uploader ${label} (max ${maxSizeMB} Mo)`}
             </span>
           </div>
           <input type="file" accept={accept} onChange={handleFile} className="hidden" disabled={uploading} />
         </label>
       )}
+      {error && <p className="text-[11px] text-red-500">{error}</p>}
       {preview && (
         <p className="truncate text-[11px] text-gray-400">{preview}</p>
       )}

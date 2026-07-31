@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Github, Twitter, Youtube, Linkedin, MapPin, Mail, Phone, ArrowRight } from "lucide-react";
+import { Github, Twitter, Youtube, Linkedin, MapPin, Mail, Phone } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/constants";
 import { BgLines } from "@/components/shared/bg-lines";
+import { NewsletterForm } from "@/components/shared/newsletter-form";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   github: Github,
@@ -41,18 +42,9 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-            <form className="mt-6 flex max-w-[430px] items-end gap-0 border-b border-white/20 pb-3">
-              <Mail className="mb-1 h-4 w-4 text-muted-foreground" />
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-white/30"
-                required
-              />
-              <button type="submit" className="rounded-[14px] bg-primary px-5 py-2.5 text-xs font-semibold text-[#1e1e1e] transition-colors hover:bg-[#9333ea]">
-                S&apos;inscrire <ArrowRight className="ml-1 inline h-3 w-3" />
-              </button>
-            </form>
+            <div className="mt-6 max-w-[430px]">
+              <NewsletterForm />
+            </div>
           </div>
 
           <div>

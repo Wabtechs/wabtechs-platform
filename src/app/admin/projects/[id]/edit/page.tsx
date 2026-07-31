@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileUpload } from "@/components/admin/file-upload";
 
 interface ProjectData {
   id: string;
@@ -157,8 +158,8 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
                 <Input value={form.techStack} onChange={(e) => updateForm("techStack", e.target.value)} placeholder="Next.js, TypeScript, Prisma" className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Image de couverture (URL)</Label>
-                <Input value={form.coverImage} onChange={(e) => updateForm("coverImage", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="text-gray-900 dark:text-foreground">Image de couverture</Label>
+                <FileUpload value={form.coverImage} onChange={(url) => updateForm("coverImage", url)} label="l'image de couverture" />
               </div>
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-foreground">

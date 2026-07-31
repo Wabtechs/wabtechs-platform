@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { z } from "zod";
+import { sendConfirmationEmail } from "@/lib/email";
 
 const subscribeSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -22,13 +23,25 @@ export async function POST(request: Request) {
 
     const existing = await db.newsletter.findUnique({ where: { email } });
     if (existing) {
-      return NextResponse.json({ message: "Vous êtes déjà inscrit." }, { status: 200 });
+      if (existing.active) {
+        return NextResponse.json({ message: "Vous êtes déjà inscrit." }, { status: 200 });
+      }
+      return NextResponse.json({ message: "Un email de confirmation vous a déjà été envoyé." }, { status: 200 });
     }
 
     const token = crypto.randomUUID();
-    await db.newsletter.create({ data: { email, token } });
+    await db.newsletter.create({ data: { email, token, active: false } });
 
-    return NextResponse.json({ message: "Inscription réussie !" }, { status: 201 });
+    try {
+      await sendConfirmationEmail(email, token);
+    } catch {
+      // Email sending failed but subscriber is recorded
+    }
+
+    return NextResponse.json(
+      { message: "Email de confirmation envoyé. Vérifiez votre boîte de réception." },
+      { status: 201 },
+    );
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }

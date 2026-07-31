@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileUpload } from "@/components/admin/file-upload";
 
 interface TutorialData {
   id: string;
@@ -135,12 +136,8 @@ export default function EditTutorialPage({ params }: { params: Promise<{ id: str
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Image de couverture (URL)</Label>
-                <Input
-                  value={form.coverImage}
-                  onChange={(e) => updateForm("coverImage", e.target.value)}
-                  className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
-                />
+                <Label className="text-gray-900 dark:text-foreground">Image de couverture</Label>
+                <FileUpload value={form.coverImage} onChange={(url) => updateForm("coverImage", url)} label="l'image de couverture" />
               </div>
             </CardContent>
           </Card>

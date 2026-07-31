@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileUpload } from "@/components/admin/file-upload";
 
 export default function NewPodcastPage() {
   const router = useRouter();
@@ -107,8 +108,8 @@ export default function NewPodcastPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="coverImage">Image de couverture (URL)</Label>
-                <Input id="coverImage" value={form.coverImage} onChange={(e) => updateForm("coverImage", e.target.value)} />
+                <Label htmlFor="coverImage">Image de couverture</Label>
+                <FileUpload value={form.coverImage} onChange={(url) => updateForm("coverImage", url)} label="l'image de couverture" />
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.published} onChange={(e) => updateForm("published", e.target.checked)} className="rounded" />

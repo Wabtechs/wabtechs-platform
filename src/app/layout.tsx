@@ -4,6 +4,7 @@ import { Providers } from "@/providers";
 import { Toaster } from "@/components/ui/sonner";
 import { SITE_CONFIG } from "@/lib/utils";
 import { JsonLd } from "@/components/shared/json-ld";
+import { NewsletterPopup } from "@/components/shared/newsletter-popup";
 import "./globals.css";
 
 const inter = Inter({
@@ -75,6 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <Toaster />
+          <NewsletterPopup />
         </Providers>
       </body>
     </html>
