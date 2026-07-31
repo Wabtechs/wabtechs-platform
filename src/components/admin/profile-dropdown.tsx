@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut } from "next-auth/react";
+import { logoutAction } from "@/app/actions/auth";
 
 export function ProfileDropdown() {
   const router = useRouter();
@@ -36,7 +36,7 @@ export function ProfileDropdown() {
           Paramètres
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+        <DropdownMenuItem onClick={() => logoutAction()}>
           <LogOut className="mr-2 h-4 w-4" />
           Déconnexion
         </DropdownMenuItem>
