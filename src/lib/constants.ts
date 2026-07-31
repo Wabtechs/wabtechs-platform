@@ -5,6 +5,7 @@ export const NAV_LINKS = [
   { href: "/projects", label: "Projets" },
   { href: "/podcast", label: "Podcast" },
   { href: "/videos", label: "Vidéos" },
+  { href: "/academy", label: "Academy" },
   { href: "/community", label: "Communauté" },
 ] as const;
 
@@ -16,6 +17,7 @@ export const FOOTER_LINKS = {
     { href: "/podcast", label: "Podcast" },
     { href: "/videos", label: "Vidéos" },
     { href: "/tutorials", label: "Tutoriels" },
+    { href: "/academy", label: "Academy" },
   ],
   resources: [
     { href: "/snippets", label: "Snippets" },

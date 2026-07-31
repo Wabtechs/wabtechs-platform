@@ -1,0 +1,71 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Check, Lock } from "lucide-react";
+
+export function EnrollButton({ courseId }: { courseId: string }) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  if (status === "loading") {
+    return (
+      <Button size="lg" disabled className="w-full sm:w-auto">
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Chargement...
+      </Button>
+    );
+  }
+
+  if (!session?.user) {
+    return (
+      <Button asChild size="lg" className="w-full sm:w-auto">
+        <a href="/api/auth/signin">
+          <Lock className="mr-2 h-4 w-4" />
+          Se connecter pour s'inscrire
+        </a>
+      </Button>
+    );
+  }
+
+  if (done) {
+    return (
+      <Button size="lg" disabled className="w-full bg-emerald-500 hover:bg-emerald-500 sm:w-auto">
+        <Check className="mr-2 h-4 w-4" />
+        Inscrit !
+      </Button>
+    );
+  }
+
+  async function handleEnroll() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/academy/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId }),
+      });
+      if (res.ok) {
+        setDone(true);
+        router.refresh();
+      } else {
+        const data = await res.json();
+        if (data?.error === "Déjà inscrit") setDone(true);
+        else alert(data?.error ?? "Une erreur est survenue");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Button size="lg" onClick={handleEnroll} disabled={loading} className="w-full sm:w-auto">
+      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+      {loading ? "Inscription..." : "S'inscrire au cours"}
+    </Button>
+  );
+}

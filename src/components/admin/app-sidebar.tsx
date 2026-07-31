@@ -31,6 +31,8 @@ import {
   Calendar,
   GitCompare,
   Star,
+  GraduationCap,
+  PlayCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -78,6 +80,8 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Tutoriels", href: "/admin/tutorials", icon: BookOpen },
       { label: "Snippets", href: "/admin/snippets", icon: Code2 },
       { label: "Tags", href: "/admin/tags", icon: Tag },
+      { label: "Cours — Academy", href: "/admin/courses", icon: GraduationCap },
+      { label: "Leçons", href: "/admin/lessons", icon: PlayCircle },
     ],
   },
   {
