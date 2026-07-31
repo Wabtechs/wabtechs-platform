@@ -1,8 +1,13 @@
 # Wabtechs Platform v2
 
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/wabtechs?style=for-the-badge)](https://github.com/sponsors/wabtechs)
+[![GitHub stars](https://img.shields.io/github/stars/wabtechs/wabtechs-platform?style=for-the-badge)](https://github.com/wabtechs/wabtechs-platform)
+[![Build](https://img.shields.io/github/actions/workflow/status/wabtechs/wabtechs-platform/ci.yml?style=for-the-badge)](https://github.com/wabtechs/wabtechs-platform/actions)
+
 Plateforme technologique officielle de **Wabtechs** — Blog, Documentation, Podcast, Vidéos, Projets Open Source, Communauté.
 
 > Projet en développement actif. Architecture modulaire et évolutive conçue pour durer plusieurs années.
+> 💖 Soutenez le projet via [GitHub Sponsors](https://github.com/sponsors/wabtechs).
 
 ---
 
@@ -84,6 +89,7 @@ prisma/
 | `/open-source` | Open Source — Contributions |
 | `/community` | Communauté — Forum, profils, classements |
 | `/newsletter` | Newsletter — Inscription |
+| `/sponsors` | Sponsors — Tiers de soutien via GitHub Sponsors |
 | `/faq` | FAQ — Questions fréquentes |
 | `/contact` | Contact — Formulaire validé (Zod) |
 | `/dashboard` | Dashboard utilisateur |

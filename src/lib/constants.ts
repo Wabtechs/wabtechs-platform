@@ -30,6 +30,7 @@ export const FOOTER_LINKS = {
     { href: "/contact", label: "Contact" },
     { href: "/support", label: "Support" },
     { href: "/pricing", label: "Tarifs" },
+    { href: "/sponsors", label: "Sponsors" },
     { href: "/faq", label: "FAQ" },
     { href: "/newsletter", label: "Newsletter" },
     { href: "/changelog", label: "Changelog" },
