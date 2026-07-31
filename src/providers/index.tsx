@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { Suspense, useEffect, type ReactNode } from "react";
 import { ThemeProvider } from "./theme-provider";
 import { QueryProvider } from "./query-provider";
 import { AuthProvider } from "./auth-provider";
@@ -27,15 +27,23 @@ function ErrorBoundary({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+function AnalyticsWithSuspense({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={null}>
+      <AnalyticsProvider>{children}</AnalyticsProvider>
+    </Suspense>
+  );
+}
+
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <AuthProvider>
         <QueryProvider>
           <PodcastProvider>
-            <AnalyticsProvider>
+            <AnalyticsWithSuspense>
               <ErrorBoundary>{children}</ErrorBoundary>
-            </AnalyticsProvider>
+            </AnalyticsWithSuspense>
           </PodcastProvider>
         </QueryProvider>
       </AuthProvider>

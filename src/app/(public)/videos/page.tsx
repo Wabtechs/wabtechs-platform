@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

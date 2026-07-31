@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
