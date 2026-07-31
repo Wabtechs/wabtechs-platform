@@ -69,10 +69,10 @@ Ces chantiers génèrent les premiers revenus.
 ### P1.1 — Academy
 **Effort: 4 semaines • Budget: 500€ (micro, caméra, hébergement vidéo)**
 
-- [ ] Créer le modèle `Course` + `Lesson` + `Enrollment` dans Prisma
-- [ ] Interface admin pour gérer cours et leçons
-- [ ] Lecteur vidéo avec progression
-- [ ] Page publique des cours /academy
+- [x] Créer le modèle `Course` + `Lesson` + `Enrollment` dans Prisma
+- [x] Interface admin pour gérer cours et leçons
+- [x] Lecteur vidéo avec progression
+- [x] Page publique des cours /academy
 - [ ] Paiement Stripe pour l'accès
 - [ ] Premier cours: "Next.js 16 — De zéro à pro" (10h de contenu)
 - [ ] Certificat de complétion (PDF généré)
@@ -80,33 +80,33 @@ Ces chantiers génèrent les premiers revenus.
 ### P1.2 — Templates Premium
 **Effort: 2 semaines • Budget: 0€**
 
-- [ ] Créer le modèle `Template` dans Prisma
-- [ ] Page de marketplace /templates
+- [x] Créer le modèle `Template` dans Prisma
+- [x] Page de marketplace /templates
 - [ ] Système de téléchargement après paiement
-- [ ] 5 templates de démarrage:
-  - Admin Dashboard (dérivé du code existant)
-  - Landing Page SaaS
-  - Blog avec MDX
-  - Portfolio développeur
-  - SaaS Starter Kit
+- [x] 5 templates de démarrage:
+  - [x] Admin Dashboard (dérivé du code existant)
+  - [x] Landing Page SaaS
+  - [x] Blog avec MDX
+  - [x] Portfolio développeur
+  - [x] SaaS Starter Kit
 
 ### P1.3 — Newsletter
 **Effort: 1 semaine • Budget: 0€ (Buttondown gratuit)**
 
-- [ ] Double opt-in fonctionnel
-- [ ] Page de confirmation
-- [ ] Archives publiques
-- [ ] Formulaire d'inscription sur chaque page
-- [ ] Popup de sortie (exit intent)
+- [x] Double opt-in fonctionnel
+- [x] Page de confirmation
+- [x] Archives publiques
+- [x] Formulaire d'inscription sur chaque page
+- [x] Popup de sortie (exit intent)
 
 ### P1.4 — GitHub Sponsors
 **Effort: 2 jours • Budget: 0€**
 
-- [ ] Configurer GitHub Sponsors profile
-- [ ] Tiers de sponsoring (5$/25$/100$/500$)
-- [ ] Badges sponsors sur README
-- [ ] Page /sponsors sur le site
-- [ ] Avantages par tier (Discord privé, consulting, mentions)
+- [x] Configurer GitHub Sponsors profile
+- [x] Tiers de sponsoring (5$/25$/100$/500$)
+- [x] Badges sponsors sur README
+- [x] Page /sponsors sur le site
+- [x] Avantages par tier (Discord privé, consulting, mentions)
 
 ---
 
