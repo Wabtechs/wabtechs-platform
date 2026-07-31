@@ -61,7 +61,7 @@ const mockActivities = [
 export default async function AdminPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  if ((session.user as { role?: string }).role !== "ADMIN") redirect("/dashboard");
+  if ((session.user as { role?: string }).role !== "ADMIN") redirect("/login");
 
   const [postCount, podcastCount, projectCount, subscriberCount, messageCount, unreadMessages, userCount, totalViews] =
     await Promise.all([

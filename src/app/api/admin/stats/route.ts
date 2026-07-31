@@ -9,7 +9,7 @@ export async function GET() {
   }
 
   try {
-    const [totalPosts, totalPodcasts, totalProjects, totalSubscribers, totalMessages, unreadMessages] =
+    const [totalPosts, totalPodcasts, totalProjects, totalSubscribers, totalMessages, unreadMessages, totalViews] =
       await Promise.all([
         db.post.count(),
         db.podcast.count(),
@@ -17,9 +17,9 @@ export async function GET() {
         db.newsletter.count({ where: { active: true } }),
         db.contactMessage.count(),
         db.contactMessage.count({ where: { read: false } }),
+        db.pageView.count(),
       ]);
 
-    const totalViews = 0;
     const recentPosts = await db.post.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,

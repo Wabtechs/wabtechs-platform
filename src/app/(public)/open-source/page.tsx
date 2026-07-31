@@ -8,13 +8,13 @@ import { Github, Star, GitFork, ExternalLink, Code2, Users, BookOpen, Heart } fr
 
 export const metadata: Metadata = {
   title: "Open Source",
-  description: "Projets open source et contributions communautaires de WabTechs.",
+  description: "Projets open source et contributions communautaires de Wabtechs.",
 };
 
 const PROJECTS = [
   {
     name: "wabtechs-platform",
-    description: "La plateforme WabTechs — blog, docs, podcast, vidéos et projets. Construite avec Next.js 16, React 19, Prisma et PostgreSQL.",
+    description: "La plateforme Wabtechs — blog, docs, podcast, vidéos et projets. Construite avec Next.js 16, React 19, Prisma et PostgreSQL.",
     language: "TypeScript",
     stars: 42,
     forks: 12,

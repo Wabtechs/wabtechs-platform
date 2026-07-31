@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const ADMIN_ROUTES = ["/admin", "/dashboard"];
+const ADMIN_ROUTES = ["/admin"];
 
 function isProtectedRoute(pathname: string): boolean {
   return ADMIN_ROUTES.some(
@@ -36,5 +36,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*"],
 };

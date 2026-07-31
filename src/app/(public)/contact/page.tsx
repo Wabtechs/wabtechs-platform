@@ -1,22 +1,31 @@
 "use client";
 
-import { Mail, Phone, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactSchema, type ContactInput } from "@/lib/validators";
 
 export default function ContactPage() {
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<ContactInput>({
     resolver: zodResolver(contactSchema),
   });
 
   async function onSubmit(data: ContactInput) {
-    await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    reset();
+    setSubmitStatus(null);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Erreur serveur");
+      setSubmitStatus("success");
+      reset();
+    } catch {
+      setSubmitStatus("error");
+    }
   }
 
   return (
@@ -111,6 +120,18 @@ export default function ContactPage() {
                 {isSubmitting ? "Envoi en cours..." : "Envoie-nous un message"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </button>
+              {submitStatus === "success" && (
+                <div className="flex items-center gap-2 text-sm text-green-500">
+                  <CheckCircle className="h-4 w-4" />
+                  Message envoyé avec succès !
+                </div>
+              )}
+              {submitStatus === "error" && (
+                <div className="flex items-center gap-2 text-sm text-red-500">
+                  <AlertCircle className="h-4 w-4" />
+                  Une erreur s&apos;est produite. Veuillez réessayer.
+                </div>
+              )}
             </form>
           </div>
         </div>

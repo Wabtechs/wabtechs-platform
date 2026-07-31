@@ -3,8 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Star, BookOpen, Users, Github } from "lucide-react";
 import { BgLines } from "@/components/shared/bg-lines";
+
+const SOCIAL_PROOF = [
+  { icon: Github, label: "Projets Open Source", value: "10+" },
+  { icon: BookOpen, label: "Articles & Tutoriels", value: "50+" },
+  { icon: Users, label: "Développeurs Rejoints", value: "500+" },
+  { icon: Star, label: "Étoiles GitHub", value: "50+" },
+];
 
 export function HeroSection() {
   return (
@@ -15,24 +22,51 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-2"
           >
-            <span className="text-lg text-muted-foreground">Salut, Je suis</span>
-            <h1 className="mt-2 text-4xl font-bold sm:text-5xl">
-              <span className="text-primary">Emmanuel Mulonda Johannes</span> Développeur
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm text-primary">
+              <Star className="h-3.5 w-3.5" />
+              Wabtechs Platform
+            </span>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Construisez. Publiez.{" "}
+              <span className="text-primary">Développez.</span>
             </h1>
-            <p className="mt-6 max-w-md text-muted-foreground">
-              Nous utilisons des langages de programmation, des outils et des frameworks pour concevoir
-              et mettre en œuvre des sites web qui sont à la fois fonctionnels et attrayants.
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+              Une plateforme technologique complète — blogs, documentation, vidéos, tutoriels, 
+              podcasts et ressources open source. Créée par Emmanuel Mulonda Johannes pour 
+              la communauté des développeurs.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/contact" className="theme-btn">
-                Suis-là
+              <Link href="/docs" className="theme-btn">
+                Commencer
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-              <Link href="#" className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground">
-                Download my CV
-                <ArrowRight className="ml-1 inline h-3 w-3" />
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-foreground transition-all hover:border-primary/30 hover:text-primary"
+              >
+                Voir les projets
+                <ArrowRight className="h-4 w-4" />
               </Link>
+              <Link
+                href="/videos"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Regarder les vidéos
+              </Link>
+            </div>
+
+            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {SOCIAL_PROOF.map((item) => (
+                <div key={item.label} className="flex items-center gap-2 text-sm">
+                  <item.icon className="h-4 w-4 text-primary" />
+                  <span>
+                    <span className="font-semibold text-foreground">{item.value}</span>
+                    <span className="ml-1 text-muted-foreground">{item.label}</span>
+                  </span>
+                </div>
+              ))}
             </div>
           </motion.div>
 

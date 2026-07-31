@@ -378,11 +378,6 @@ mark {
   to { transform: rotate(360deg); }
 }
 
-@keyframes leftRightOne {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-100px); }
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;

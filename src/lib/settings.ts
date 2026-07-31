@@ -12,7 +12,8 @@ export async function getSettings(): Promise<Record<string, string>> {
     cache = map;
     cacheTime = Date.now();
     return map;
-  } catch {
+  } catch (e) {
+    console.error("Failed to load settings:", e);
     return {};
   }
 }

@@ -27,7 +27,7 @@ export function ProfileDropdown() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+        <DropdownMenuItem onClick={() => router.push("/admin")}>
           <User className="mr-2 h-4 w-4" />
           Dashboard
         </DropdownMenuItem>

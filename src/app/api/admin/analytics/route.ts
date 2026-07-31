@@ -6,7 +6,7 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
     const now = new Date();

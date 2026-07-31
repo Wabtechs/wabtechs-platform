@@ -14,7 +14,7 @@ export function formatDate(date: Date | string): string {
 }
 
 export const SITE_CONFIG = {
-  name: "WabTechs",
+  name: "Wabtechs",
   description: "Plateforme technologique — Développement, Articles, Projets, Formations.",
   url: "https://wabtechs.com",
   ogImage: "https://wabtechs.com/og.png",

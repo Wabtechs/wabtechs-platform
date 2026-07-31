@@ -26,7 +26,7 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           <div>
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/images/logos/logo.png" alt="WabTechs" width={60} height={60} className="h-[60px] w-auto" />
+              <Image src="/images/logos/logo.png" alt="Wabtechs" width={60} height={60} className="h-[60px] w-auto" />
             </Link>
           </div>
 

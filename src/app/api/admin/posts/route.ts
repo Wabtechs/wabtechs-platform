@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET() {
   const session = await auth();
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
         where: { id },
         data,
       });
+      await createAuditLog({ action: "UPDATE", entity: "Article", entityId: updated.id, userId: session.user.id as string, details: JSON.stringify(data) });
 
       if (tags !== undefined && Array.isArray(tags)) {
         await db.post.update({
@@ -83,6 +85,7 @@ export async function POST(req: Request) {
         authorId: session.user.id as string,
       },
     });
+    await createAuditLog({ action: "CREATE", entity: "Article", entityId: post.id, userId: session.user.id as string });
 
     if (tags !== undefined && Array.isArray(tags)) {
       for (const tagName of tags) {
@@ -114,6 +117,7 @@ export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
     await db.post.delete({ where: { id } });
+    await createAuditLog({ action: "DELETE", entity: "Article", entityId: id, userId: session.user.id as string });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

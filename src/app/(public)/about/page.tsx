@@ -15,10 +15,11 @@ import {
   Zap,
   Globe,
 } from "lucide-react";
+import { db } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "À propos",
-  description: "Découvrez WabTechs — la plateforme de Emmanuel Mulonda Johannes pour le développement web.",
+  description: "Découvrez Wabtechs — la plateforme de Emmanuel Mulonda Johannes pour le développement web.",
 };
 
 const VALUES = [
@@ -28,13 +29,6 @@ const VALUES = [
   { icon: Heart, title: "Passion", description: "L'amour du développement est au cœur de tout ce que nous faisons." },
   { icon: GraduationCap, title: "Apprentissage", description: "Apprendre et enseigner pour faire grandir la communauté francophone." },
   { icon: Target, title: "Impact", description: "Créer des outils et contenus qui font une différence réelle dans le quotidien des développeurs." },
-];
-
-const STATS = [
-  { label: "Articles publiés", value: "15+" },
-  { label: "Projets open source", value: "6" },
-  { label: "Épisodes podcast", value: "12" },
-  { label: "Snippets de code", value: "50+" },
 ];
 
 const TECH_STACK = [
@@ -48,7 +42,20 @@ const TECH_STACK = [
   { name: "Vercel", role: "Hébergement" },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const [postCount, projectCount, podcastCount, snippetCount] = await Promise.all([
+    db.post.count({ where: { published: true } }),
+    db.project.count(),
+    db.podcast.count({ where: { published: true } }),
+    db.snippet.count({ where: { published: true } }),
+  ]);
+  const stats = [
+    { label: "Articles publiés", value: `${postCount}+` },
+    { label: "Projets open source", value: `${projectCount}` },
+    { label: "Épisodes podcast", value: `${podcastCount}` },
+    { label: "Snippets de code", value: `${snippetCount}+` },
+  ];
+
   return (
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -60,7 +67,7 @@ export default function AboutPage() {
         />
 
         <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <Card key={stat.label} className="text-center">
               <CardContent className="pt-6">
                 <div className="text-3xl font-bold gradient-text">{stat.value}</div>

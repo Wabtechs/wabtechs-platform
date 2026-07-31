@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET() {
   const session = await auth();
@@ -41,6 +42,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Role invalide" }, { status: 400 });
     }
     const updated = await db.user.update({ where: { id }, data: { role } });
+    await createAuditLog({ action: "UPDATE", entity: "Utilisateur", entityId: updated.id, userId: session.user.id as string, details: JSON.stringify({ role }) });
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -60,6 +62,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 400 });
     }
     await db.user.delete({ where: { id } });
+    await createAuditLog({ action: "DELETE", entity: "Utilisateur", entityId: id, userId: session.user.id as string });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

@@ -5,7 +5,7 @@ import { FileText, Scale, Shield, Ban, AlertTriangle, Gavel, RefreshCw, Mail } f
 
 export const metadata: Metadata = {
   title: "Conditions d'utilisation",
-  description: "Conditions d'utilisation de la plateforme WabTechs.",
+  description: "Conditions d'utilisation de la plateforme Wabtechs.",
 };
 
 const SECTIONS = [
@@ -13,7 +13,7 @@ const SECTIONS = [
     icon: FileText,
     title: "Acceptation des conditions",
     content: [
-      "En accédant et en utilisant la plateforme WabTechs, vous acceptez intégralement les présentes conditions d'utilisation.",
+      "En accédant et en utilisant la plateforme Wabtechs, vous acceptez intégralement les présentes conditions d'utilisation.",
       "Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser la plateforme.",
       "Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications prennent effet dès leur publication.",
     ],
@@ -22,7 +22,7 @@ const SECTIONS = [
     icon: Scale,
     title: "Description du service",
     content: [
-      "WabTechs est une plateforme technologique offrant un blog, une documentation, des podcasts, des vidéos, des tutoriels et des projets open source.",
+      "Wabtechs est une plateforme technologique offrant un blog, une documentation, des podcasts, des vidéos, des tutoriels et des projets open source.",
       "Le service est fourni « en l'état » et « selon la disponibilité ». Nous nous efforçons d'assurer une disponibilité maximale mais ne garantissons pas une disponibilité continue.",
       "Nous nous réservons le droit de modifier, suspendre ou interrompre tout ou partie du service à tout moment, sans préavis.",
     ],
@@ -56,15 +56,15 @@ const SECTIONS = [
       "Le contenu de la plateforme (textes, images, code, design) est protégé par les droits d'auteur.",
       "Les projets open source sont distribués sous licence MIT, sauf mention contraire.",
       "Vous conservez les droits sur le contenu que vous soumettez à la plateforme, mais vous nous accordez une licence non exclusive pour le diffuser.",
-      "Les marques, logos et noms commerciaux de WabTechs sont protégés.",
+      "Les marques, logos et noms commerciaux de Wabtechs sont protégés.",
     ],
   },
   {
     icon: AlertTriangle,
     title: "Limitation de responsabilité",
     content: [
-      "En aucun cas WabTechs ne sera tenu responsable des dommages indirects, spéciaux, accessoires ou consécutifs résultant de l'utilisation de la plateforme.",
-      "La responsabilité totale de WabTechs ne dépassera jamais le montant payé par vous au cours des 12 derniers mois, le cas échéant.",
+      "En aucun cas Wabtechs ne sera tenu responsable des dommages indirects, spéciaux, accessoires ou consécutifs résultant de l'utilisation de la plateforme.",
+      "La responsabilité totale de Wabtechs ne dépassera jamais le montant payé par vous au cours des 12 derniers mois, le cas échéant.",
       "Vous êtes seul responsable de l'utilisation que vous faites du contenu disponible sur la plateforme.",
     ],
   },

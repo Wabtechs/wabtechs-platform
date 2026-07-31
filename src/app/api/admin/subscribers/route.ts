@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 export async function GET() {
   const session = await auth();
@@ -30,6 +31,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "id et active requis" }, { status: 400 });
     }
     const updated = await db.newsletter.update({ where: { id }, data: { active } });
+    await createAuditLog({ action: "UPDATE", entity: "Abonné", entityId: updated.id, userId: session.user.id as string, details: JSON.stringify({ active }) });
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -45,6 +47,7 @@ export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
     await db.newsletter.delete({ where: { id } });
+    await createAuditLog({ action: "DELETE", entity: "Abonné", entityId: id, userId: session.user.id as string });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

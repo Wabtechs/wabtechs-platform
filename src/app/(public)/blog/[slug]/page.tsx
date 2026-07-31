@@ -12,6 +12,8 @@ import { PostCard } from "@/components/blog/post-card";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { ShareButtons } from "@/components/shared/share-buttons";
 import { Breadcrumb } from "@/components/shared/breadcrumb";
+import { JsonLd } from "@/components/shared/json-ld";
+import { SITE_CONFIG } from "@/lib/utils";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -64,6 +66,23 @@ export default async function BlogPostPage({
   const relatedPosts = getRelatedPosts(slug, 3);
 
   return (
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.meta.title,
+          description: post.meta.description,
+          datePublished: post.meta.date,
+          dateModified: post.meta.date,
+          author: {
+            "@type": "Person",
+            name: post.meta.author || SITE_CONFIG.author,
+          },
+          image: SITE_CONFIG.ogImage,
+        }}
+      />
+
     <div className="pt-24 pb-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Breadcrumb items={[{ label: "Blog", href: "/blog" }, { label: post.meta.title }]} className="mb-6" />
@@ -119,5 +138,6 @@ export default async function BlogPostPage({
         )}
       </div>
     </div>
+    </>
   );
 }

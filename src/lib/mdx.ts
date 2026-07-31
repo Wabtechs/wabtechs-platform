@@ -16,7 +16,21 @@ export interface PostMeta {
   featured?: boolean;
 }
 
+function mapPostMeta(slug: string, data: Record<string, unknown>): PostMeta {
+  return {
+    slug,
+    title: (data.title as string) ?? "",
+    description: (data.description as string) ?? "",
+    date: (data.date as string) ?? "",
+    tags: (data.tags as string[]) ?? [],
+    author: (data.author as string) ?? "",
+    readTime: (data.readTime as number) ?? 5,
+    featured: (data.featured as boolean) ?? false,
+  };
+}
+
 export function getAllPosts(): PostMeta[] {
+  if (!fs.existsSync(CONTENT_DIR)) return [];
   const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".mdx"));
 
   const posts = files.map((file) => {
@@ -24,17 +38,7 @@ export function getAllPosts(): PostMeta[] {
     const filePath = path.join(CONTENT_DIR, file);
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const { data } = matter(fileContent);
-
-    return {
-      slug,
-      title: (data.title as string) ?? "",
-      description: (data.description as string) ?? "",
-      date: (data.date as string) ?? "",
-      tags: (data.tags as string[]) ?? [],
-      author: (data.author as string) ?? "",
-      readTime: (data.readTime as number) ?? 5,
-      featured: (data.featured as boolean) ?? false,
-    };
+    return mapPostMeta(slug, data);
   });
 
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -42,25 +46,12 @@ export function getAllPosts(): PostMeta[] {
 
 export function getPostBySlug(slug: string): { meta: PostMeta; content: string } | null {
   const filePath = path.join(CONTENT_DIR, `${slug}.mdx`);
-
   if (!fs.existsSync(filePath)) return null;
 
   const fileContent = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(fileContent);
 
-  return {
-    meta: {
-      slug,
-      title: (data.title as string) ?? "",
-      description: (data.description as string) ?? "",
-      date: (data.date as string) ?? "",
-      tags: (data.tags as string[]) ?? [],
-      author: (data.author as string) ?? "",
-      readTime: (data.readTime as number) ?? 5,
-      featured: (data.featured as boolean) ?? false,
-    },
-    content,
-  };
+  return { meta: mapPostMeta(slug, data), content };
 }
 
 export function getPostsByTag(tag: string): PostMeta[] {
@@ -106,6 +97,15 @@ export interface DocMeta {
   order: number;
 }
 
+function mapDocMeta(slug: string, data: Record<string, unknown>): DocMeta {
+  return {
+    slug,
+    title: (data.title as string) ?? "",
+    description: (data.description as string) ?? "",
+    order: (data.order as number) ?? 99,
+  };
+}
+
 export function getAllDocs(): DocMeta[] {
   if (!fs.existsSync(DOCS_DIR)) return [];
   const files = fs.readdirSync(DOCS_DIR).filter((f) => f.endsWith(".mdx"));
@@ -115,33 +115,19 @@ export function getAllDocs(): DocMeta[] {
     const filePath = path.join(DOCS_DIR, file);
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const { data } = matter(fileContent);
-
-    return {
-      slug,
-      title: (data.title as string) ?? "",
-      description: (data.description as string) ?? "",
-      order: (data.order as number) ?? 99,
-    };
+    return mapDocMeta(slug, data);
   });
 
   return docs.sort((a, b) => a.order - b.order);
 }
 
 export function getDocBySlug(slug: string): { meta: DocMeta; content: string } | null {
+  if (!fs.existsSync(DOCS_DIR)) return null;
   const filePath = path.join(DOCS_DIR, `${slug}.mdx`);
-
   if (!fs.existsSync(filePath)) return null;
 
   const fileContent = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(fileContent);
 
-  return {
-    meta: {
-      slug,
-      title: (data.title as string) ?? "",
-      description: (data.description as string) ?? "",
-      order: (data.order as number) ?? 99,
-    },
-    content,
-  };
+  return { meta: mapDocMeta(slug, data), content };
 }

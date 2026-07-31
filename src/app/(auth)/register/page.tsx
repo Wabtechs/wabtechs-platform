@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, User as UserIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,10 +43,9 @@ export default function RegisterPage() {
       });
 
       if (signInResult?.error) {
-        router.push("/login");
+        window.location.href = "/login";
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/admin";
       }
     } catch {
       setError("Erreur réseau.");
@@ -61,7 +58,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Créer un compte</CardTitle>
-          <CardDescription>Rejoignez la communauté WabTechs.</CardDescription>
+          <CardDescription>Rejoignez la communauté Wabtechs.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

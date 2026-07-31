@@ -8,7 +8,7 @@ import { getAllDocs } from "@/lib/mdx";
 
 export const metadata: Metadata = {
   title: "Documentation",
-  description: "Documentation complète de la plateforme WabTechs.",
+  description: "Documentation complète de la plateforme Wabtechs.",
 };
 
 const SECTIONS = [

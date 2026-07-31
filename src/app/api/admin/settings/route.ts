@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
+import { createAuditLog } from "@/lib/audit";
 
 const DEFAULTS: Record<string, Record<string, string>> = {
   general: {
-    siteName: "WabTechs",
+    siteName: "Wabtechs",
     siteDescription: "Plateforme technologique — Développement, Articles, Projets, Formations.",
     siteUrl: "https://wabtechs-platform.vercel.app",
     authorName: "Emmanuel Mulonda Johannes",
@@ -108,6 +109,11 @@ const DEFAULTS: Record<string, Record<string, string>> = {
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
     const settings = await db.siteSetting.findMany();
     if (settings.length === 0) {
       const entries = Object.entries(DEFAULTS).flatMap(([group, items]) =>
@@ -127,7 +133,7 @@ export async function PUT(request: Request) {
   try {
     const session = await auth();
     if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -136,8 +142,10 @@ export async function PUT(request: Request) {
     const existing = await db.siteSetting.findUnique({ where: { key } });
     if (existing) {
       await db.siteSetting.update({ where: { key }, data: { value, group } });
+      await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: key, userId: session.user.id as string, details: JSON.stringify({ key, value, group }) });
     } else {
       await db.siteSetting.create({ data: { key, value, group } });
+      await createAuditLog({ action: "CREATE", entity: "Paramètre", entityId: key, userId: session.user.id as string, details: JSON.stringify({ key, value, group }) });
     }
 
     return NextResponse.json({ success: true });
@@ -150,7 +158,7 @@ export async function POST(request: Request) {
   try {
     const session = await auth();
     if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -163,6 +171,7 @@ export async function POST(request: Request) {
         create: { key: s.key, value: s.value, group: s.group },
       });
     }
+    await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: "bulk", userId: session.user.id as string, details: JSON.stringify({ count: settings.length }) });
 
     return NextResponse.json({ success: true });
   } catch {

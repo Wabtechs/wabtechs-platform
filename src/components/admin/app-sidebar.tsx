@@ -17,6 +17,20 @@ import {
   Mail,
   MessageSquare,
   Settings,
+  Briefcase,
+  Zap,
+  DollarSign,
+  Building2,
+  HelpCircle,
+  Video,
+  BookOpen,
+  Code2,
+  Bookmark,
+  Download,
+  Map,
+  Calendar,
+  GitCompare,
+  Star,
 } from "lucide-react";
 import {
   Sidebar,
@@ -59,7 +73,33 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Articles", href: "/admin/posts", icon: FileText },
       { label: "Podcasts", href: "/admin/podcasts", icon: Headphones },
       { label: "Projets", href: "/admin/projects", icon: Layers },
+      { label: "Pages", href: "/admin/pages", icon: FileText },
+      { label: "Vidéos", href: "/admin/videos", icon: Video },
+      { label: "Tutoriels", href: "/admin/tutorials", icon: BookOpen },
+      { label: "Snippets", href: "/admin/snippets", icon: Code2 },
       { label: "Tags", href: "/admin/tags", icon: Tag },
+    ],
+  },
+  {
+    title: "SECTIONS SITE",
+    items: [
+      { label: "Services", href: "/admin/services", icon: Briefcase },
+      { label: "Compétences", href: "/admin/skills", icon: Zap },
+      { label: "Expériences", href: "/admin/resume-items", icon: Briefcase },
+      { label: "Forfaits", href: "/admin/pricing-plans", icon: DollarSign },
+      { label: "Témoignages", href: "/admin/testimonials", icon: Star },
+      { label: "Clients", href: "/admin/clients", icon: Building2 },
+      { label: "FAQ", href: "/admin/faq-items", icon: HelpCircle },
+    ],
+  },
+  {
+    title: "RESSOURCES",
+    items: [
+      { label: "Ressources", href: "/admin/resources", icon: Bookmark },
+      { label: "Téléchargements", href: "/admin/downloads", icon: Download },
+      { label: "Roadmaps", href: "/admin/roadmaps", icon: Map },
+      { label: "Événements", href: "/admin/events", icon: Calendar },
+      { label: "Changelog", href: "/admin/changelogs", icon: GitCompare },
     ],
   },
   {
@@ -111,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </div>
               <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
                 <span className="text-sm font-semibold text-sidebar-foreground">
-                  WabTechs
+                  Wabtechs
                 </span>
                 <span className="text-[11px] text-sidebar-foreground/60">
                   Admin
@@ -170,7 +210,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link
-              href="/dashboard"
+              href="/admin"
               className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group-data-[collapsible=icon]:justify-center"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">

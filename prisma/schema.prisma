@@ -220,6 +220,214 @@ model PageView {
   @@map("page_views")
 }
 
+model Page {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  content         String?
+  published       Boolean  @default(false)
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("pages")
+}
+
+model Service {
+  id          String @id @default(cuid())
+  num         String
+  title       String
+  description String
+  order       Int    @default(0)
+
+  @@map("services")
+}
+
+model Skill {
+  id      String @id @default(cuid())
+  name    String @unique
+  percent Int    @default(0)
+  image   String?
+  order   Int    @default(0)
+
+  @@map("skills")
+}
+
+model ResumeItem {
+  id      String @id @default(cuid())
+  years   String
+  title   String
+  company String
+  order   Int    @default(0)
+
+  @@map("resume_items")
+}
+
+model PricingPlan {
+  id       String   @id @default(cuid())
+  name     String
+  save     String?
+  price    String
+  features String[]
+  disabled String[]
+  featured Boolean  @default(false)
+  order    Int      @default(0)
+
+  @@map("pricing_plans")
+}
+
+model Testimonial {
+  id    String @id @default(cuid())
+  name  String
+  role  String?
+  text  String
+  image String?
+  order Int    @default(0)
+
+  @@map("testimonials")
+}
+
+model Client {
+  id    String @id @default(cuid())
+  name  String
+  logo  String?
+  url   String?
+  order Int    @default(0)
+
+  @@map("clients")
+}
+
+model FaqItem {
+  id       String @id @default(cuid())
+  question String
+  answer   String
+  category String?
+  order    Int    @default(0)
+
+  @@map("faq_items")
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  videoUrl    String
+  thumbnail   String?
+  duration    Int      @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("videos")
+}
+
+model Tutorial {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  content     String?
+  coverImage  String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tutorials")
+}
+
+model Snippet {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  language    String?
+  code        String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("snippets")
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  url         String?
+  type        String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("resources")
+}
+
+model Download {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  fileUrl     String
+  fileSize    String?
+  category    String?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("downloads")
+}
+
+model Roadmap {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  status      String   @default("planned")
+  quarter     String?
+  year        Int?
+  order       Int      @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roadmaps")
+}
+
+model Event {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String?
+  content     String?
+  date        DateTime?
+  location    String?
+  url         String?
+  coverImage  String?
+  type        String?
+  published   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("events")
+}
+
+model Changelog {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String?
+  version   String?
+  date      DateTime?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("changelogs")
+}
+
 model AuditLog {
   id        String   @id @default(cuid())
   action    String

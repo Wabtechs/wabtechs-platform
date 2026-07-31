@@ -8,12 +8,12 @@ import { ExternalLink, Github, Star, GitFork, Globe, ArrowRight } from "lucide-r
 
 export const metadata: Metadata = {
   title: "Projets",
-  description: "Projets open source et applications créées par WabTechs.",
+  description: "Projets open source et applications créées par Wabtechs.",
 };
 
 const PROJECTS = [
   {
-    title: "WabTechs Platform",
+    title: "Wabtechs Platform",
     description: "La plateforme officielle — blog, docs, podcasts, vidéos, snippets et projets open source. Construite avec Next.js 16, React 19, Prisma et PostgreSQL.",
     tags: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
     github: "https://github.com/Wabtechs/wabtechs-platform",

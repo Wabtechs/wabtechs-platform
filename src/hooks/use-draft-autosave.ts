@@ -16,7 +16,7 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
       if (saved) {
         setHasDraft(true);
       }
-    } catch {}
+    } catch { /* localStorage unavailable */ }
   }, [storageKey]);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
     timeoutRef.current = setTimeout(() => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(formRef.current));
-      } catch {}
+      } catch { /* localStorage unavailable */ }
     }, delay);
 
     return () => {
@@ -37,7 +37,7 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
-    } catch {}
+    } catch { /* localStorage unavailable */ }
     return null;
   }, [storageKey]);
 
@@ -45,7 +45,7 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
     try {
       localStorage.removeItem(storageKey);
       setHasDraft(false);
-    } catch {}
+    } catch { /* localStorage unavailable */ }
   }, [storageKey]);
 
   return { hasDraft, loadDraft, clearDraft };

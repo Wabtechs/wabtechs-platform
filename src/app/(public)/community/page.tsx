@@ -17,7 +17,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Communauté",
-  description: "Rejoignez la communauté WabTechs — échangez, partagez et grandissez ensemble.",
+  description: "Rejoignez la communauté Wabtechs — échangez, partagez et grandissez ensemble.",
 };
 
 const CHANNELS = [
@@ -65,7 +65,7 @@ export default function CommunityPage() {
         <PageHeader
           badge="Communauté"
           title="Communauté"
-          highlight="WabTechs"
+          highlight="Wabtechs"
           description="Rejoignez une communauté de développeurs passionnés. Échangez, apprenez et construisez ensemble."
         />
 

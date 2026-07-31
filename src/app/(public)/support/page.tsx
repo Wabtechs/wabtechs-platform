@@ -15,7 +15,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Support",
-  description: "Obtenez de l'aide et du support pour la plateforme WabTechs.",
+  description: "Obtenez de l'aide et du support pour la plateforme Wabtechs.",
 };
 
 const SUPPORT_CHANNELS = [

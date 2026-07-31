@@ -38,7 +38,7 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/images/logos/logo.png" alt="WabTechs" width={60} height={60} className="h-[60px] w-auto" />
+          <Image src="/images/logos/logo.png" alt="Wabtechs" width={60} height={60} className="h-[60px] w-auto" />
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
@@ -71,7 +71,7 @@ export function Navbar() {
 
           {session ? (
             <Button asChild className="hidden md:inline-flex bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
-              <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/admin">Admin</Link>
             </Button>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
@@ -120,7 +120,7 @@ export function Navbar() {
               <div className="mt-3 space-y-2 border-t border-white/10 pt-3">
                 {session ? (
                   <Button asChild className="w-full bg-primary text-[#1e1e1e] hover:bg-[#9333ea]">
-                    <Link href="/dashboard">Dashboard</Link>
+              <Link href="/admin">Admin</Link>
                   </Button>
                 ) : (
                   <>

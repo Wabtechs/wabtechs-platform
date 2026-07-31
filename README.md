@@ -1,6 +1,6 @@
-# WabTechs Platform v2
+# Wabtechs Platform v2
 
-Plateforme technologique officielle de **WabTechs** — Blog, Documentation, Podcast, Vidéos, Projets Open Source, Communauté.
+Plateforme technologique officielle de **Wabtechs** — Blog, Documentation, Podcast, Vidéos, Projets Open Source, Communauté.
 
 > Projet en développement actif. Architecture modulaire et évolutive conçue pour durer plusieurs années.
 
@@ -273,4 +273,4 @@ Variables d'environnement à configurer :
 
 ## Licence
 
-Tous droits réservés © WabTechs — Emmanuel Mulonda Johannes
+Tous droits réservés © Wabtechs — Emmanuel Mulonda Johannes

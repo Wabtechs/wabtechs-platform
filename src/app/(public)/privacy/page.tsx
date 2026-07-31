@@ -5,7 +5,7 @@ import { Shield, Eye, Cookie, Mail, Database, Trash2, UserCheck, FileText } from
 
 export const metadata: Metadata = {
   title: "Politique de confidentialité",
-  description: "Politique de confidentialité de la plateforme WabTechs.",
+  description: "Politique de confidentialité de la plateforme Wabtechs.",
 };
 
 const SECTIONS = [
