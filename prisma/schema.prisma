@@ -496,3 +496,26 @@ model Enrollment {
   @@unique([userId, courseId])
   @@map("enrollments")
 }
+
+model Template {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String
+  longDescription String?
+  image           String?
+  price           Decimal  @default(0)
+  category        String   @default("starter")
+  stack           String?
+  demoUrl         String?
+  repoUrl         String?
+  downloadUrl     String?
+  downloads       Int      @default(0)
+  version         String   @default("1.0.0")
+  published       Boolean  @default(false)
+  featured        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("templates")
+}

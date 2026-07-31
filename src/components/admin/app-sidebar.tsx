@@ -33,6 +33,7 @@ import {
   Star,
   GraduationCap,
   PlayCircle,
+  FileCode2,
 } from "lucide-react";
 import {
   Sidebar,
@@ -82,6 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Tags", href: "/admin/tags", icon: Tag },
       { label: "Cours — Academy", href: "/admin/courses", icon: GraduationCap },
       { label: "Leçons", href: "/admin/lessons", icon: PlayCircle },
+      { label: "Templates", href: "/admin/templates", icon: FileCode2 },
     ],
   },
   {

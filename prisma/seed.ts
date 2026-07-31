@@ -159,6 +159,99 @@ async function main() {
   }
 
   console.log("✓ Pages seeded");
+
+  const templates = [
+    {
+      slug: "admin-dashboard",
+      name: "Admin Dashboard",
+      description: "Dashboard admin complet avec sidebar, KPIs et thème sombre. Dérivé du dashboard Wabtechs.",
+      longDescription:
+        "# Admin Dashboard\n\nUn dashboard admin moderne et complet, directement inspiré de celui de Wabtechs.\n\n- Sidebar collapsible avec navigation groupée\n- Cartes KPI et graphiques\n- Thème clair/sombre\n- Tableaux de données réactifs\n- 60+ pages et composants",
+      price: 29,
+      category: "dashboard",
+      stack: "Next.js, Tailwind, shadcn/ui, Prisma",
+      demoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      repoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      version: "1.0.0",
+      published: true,
+      featured: true,
+      downloads: 120,
+    },
+    {
+      slug: "saas-landing",
+      name: "Landing Page SaaS",
+      description: "Landing page orientée conversion : hero, social proof, tarifs, FAQ.",
+      longDescription:
+        "# Landing Page SaaS\n\nUne landing page conçue pour convertir les visiteurs en clients.\n\n- Hero avec CTA principal et secondaire\n- Preuve sociale (logos, stats, témoignages)\n- Grille de tarifs\n- FAQ accordéon\n- Newsletter CTA",
+      price: 0,
+      category: "landing",
+      stack: "Next.js, Tailwind, shadcn/ui",
+      demoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      repoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      version: "1.1.0",
+      published: true,
+      featured: true,
+      downloads: 340,
+    },
+    {
+      slug: "mdx-blog",
+      name: "Blog MDX",
+      description: "Blog performant avec MDX, SEO, tags et article apparentés.",
+      longDescription:
+        "# Blog MDX\n\nUn blog prêt pour la production.\n\n- Contenu en MDX avec frontmatter\n- SEO complet (JSON-LD, Open Graph)\n- Tags et articles similaires\n- Sitemap généré automatiquement\n- Mode sombre",
+      price: 19,
+      category: "blog",
+      stack: "Next.js, MDX, Tailwind",
+      demoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      repoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      version: "1.0.0",
+      published: true,
+      featured: false,
+      downloads: 85,
+    },
+    {
+      slug: "dev-portfolio",
+      name: "Portfolio Développeur",
+      description: "Portfolio professionnel avec projets, compétences et section blog.",
+      longDescription:
+        "# Portfolio Développeur\n\nUn portfolio qui met en avant vos projets et vos compétences.\n\n- Section projets avec filtres\n- Compétences et expériences\n- Témoignages\n- Blog intégré\n- Formulaire de contact",
+      price: 0,
+      category: "portfolio",
+      stack: "Next.js, Tailwind, shadcn/ui",
+      demoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      repoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      version: "1.2.0",
+      published: true,
+      featured: true,
+      downloads: 510,
+    },
+    {
+      slug: "saas-starter-kit",
+      name: "SaaS Starter Kit",
+      description: "Le kit complet pour lancer un SaaS : auth, paiements, emails, billing.",
+      longDescription:
+        "# SaaS Starter Kit\n\nTout ce qu'il faut pour lancer votre SaaS.\n\n- Authentification (NextAuth)\n- Paiements Stripe et abonnements\n- Emails transactionnels (Resend)\n- Gestion de la facturation\n- Tableau de bord admin\n- Analytics intégrés",
+      price: 49,
+      category: "saas",
+      stack: "Next.js, Prisma, Stripe, Resend, PostHog",
+      demoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      repoUrl: "https://github.com/wabtechs/wabtechs-platform",
+      version: "0.9.0",
+      published: true,
+      featured: true,
+      downloads: 60,
+    },
+  ];
+
+  for (const template of templates) {
+    await prisma.template.upsert({
+      where: { slug: template.slug },
+      update: { ...template },
+      create: { ...template },
+    });
+  }
+
+  console.log("✓ Templates seeded");
 }
 
 main()
