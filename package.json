@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
@@ -28,7 +29,7 @@
     "@radix-ui/react-popover": "^1.1.23",
     "@radix-ui/react-progress": "^1.1",
     "@radix-ui/react-radio-group": "^1.4.7",
-    "@radix-ui/react-scroll-area": "^1.1",
+    "@radix-ui/react-scroll-area": "1.2.18",
     "@radix-ui/react-select": "^2.1",
     "@radix-ui/react-separator": "^1.1",
     "@radix-ui/react-slot": "^1.1",
@@ -46,7 +47,7 @@
     "gray-matter": "^4",
     "jose": "^6.2.4",
     "lucide-react": "^0.511",
-    "next": "16.2.11",
+    "next": "16.3.0",
     "next-auth": "^5.0.0-beta.32",
     "next-mdx-remote": "^6.0.0",
     "next-themes": "^0.4",
@@ -73,6 +74,7 @@
     "prettier-plugin-tailwindcss": "^0.6",
     "prisma": "^6",
     "tailwindcss": "^4",
-    "typescript": "^5.7"
+    "typescript": "^5.7",
+    "vitest": "^4.1.10"
   }
 }
