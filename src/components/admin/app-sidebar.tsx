@@ -46,6 +46,7 @@ import {
   Sparkles,
   FileBarChart,
   Bell,
+  ScrollText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -159,6 +160,7 @@ const NAV_GROUPS: NavGroup[] = [
     title: "SYSTEM",
     items: [
       { label: "Paramètres", href: "/admin/settings", icon: Settings },
+      { label: "Journal d'audit", href: "/admin/audit", icon: ScrollText },
     ],
   },
 ];

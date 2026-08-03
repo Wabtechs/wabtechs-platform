@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Trash2, ToggleLeft, ToggleRight, CheckCircle2, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Pagination } from "@/components/shared/pagination";
 import { formatDate } from "@/lib/utils";
 
 interface Subscriber {
@@ -13,6 +14,8 @@ interface Subscriber {
   active: boolean;
   createdAt: Date;
 }
+
+const PAGE_SIZE = 15;
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -30,6 +33,13 @@ export function SubscribersClient({
   subscribers: Subscriber[];
 }) {
   const [subscribers, setSubscribers] = useState(initialSubs);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(subscribers.length / PAGE_SIZE));
+  const visibleSubscribers = subscribers.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   async function toggleActive(id: string, active: boolean) {
     const res = await fetch("/api/admin/subscribers", {
@@ -51,7 +61,11 @@ export function SubscribersClient({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
-    if (res.ok) setSubscribers(subscribers.filter((s) => s.id !== id));
+    if (res.ok) {
+      const next = subscribers.filter((s) => s.id !== id);
+      setSubscribers(next);
+      setCurrentPage((p) => Math.min(p, Math.max(1, Math.ceil(next.length / PAGE_SIZE))));
+    }
   }
 
   return (
@@ -80,7 +94,7 @@ export function SubscribersClient({
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-2">
           <AnimatePresence>
-            {subscribers.map((sub) => (
+            {visibleSubscribers.map((sub) => (
               <motion.div
                 key={sub.id}
                 variants={item}
@@ -139,6 +153,12 @@ export function SubscribersClient({
           </AnimatePresence>
         </motion.div>
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

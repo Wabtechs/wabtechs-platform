@@ -13,6 +13,7 @@ import {
   Mail,
   MessageSquare,
   Settings,
+  ScrollText,
   Plus,
   Globe,
   type LucideIcon,
@@ -46,6 +47,7 @@ const PAGES: CommandItem[] = [
   { label: "Abonnés", href: "/admin/subscribers", icon: Mail, shortcut: "G B" },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare, shortcut: "G M" },
   { label: "Paramètres", href: "/admin/settings", icon: Settings, shortcut: "G S" },
+  { label: "Journal d'audit", href: "/admin/audit", icon: ScrollText, shortcut: "G L" },
 ];
 
 const ACTIONS: CommandItem[] = [

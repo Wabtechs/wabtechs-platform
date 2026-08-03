@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PaginationLinks } from "@/components/shared/pagination-links";
 import { Plus, Pencil, FileText, Eye } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { DeletePostButton } from "./delete-button";
@@ -10,11 +11,29 @@ import { DeletePostButton } from "./delete-button";
 export const metadata: Metadata = { title: "Gestion des articles" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminPostsPage() {
-  const posts = await db.post.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { author: { select: { name: true } }, tags: true },
-  });
+export const PAGE_SIZE = 20;
+
+export default async function AdminPostsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageRaw } = await searchParams;
+
+  const currentPage = Math.max(1, Number(pageRaw) || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
+  const [total, posts] = await Promise.all([
+    db.post.count(),
+    db.post.findMany({
+      orderBy: { createdAt: "desc" },
+      take: PAGE_SIZE,
+      skip,
+      include: { author: { select: { name: true } }, tags: true },
+    }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div>
@@ -29,7 +48,7 @@ export default async function AdminPostsPage() {
                 Articles
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
-                {posts.length} articles au total
+                {total} articles au total
               </p>
             </div>
           </div>
@@ -126,6 +145,8 @@ export default async function AdminPostsPage() {
           ))
         )}
       </div>
+
+      <PaginationLinks currentPage={currentPage} totalPages={totalPages} basePath="/admin/posts" />
     </div>
   );
 }

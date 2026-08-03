@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma";
 import { OsPageHeader } from "@/components/admin/os/os-page-header";
 import { OsStatusBadge, OsTypeBadge } from "@/components/admin/os/os-badge";
 import { OsEmpty } from "@/components/admin/os/os-empty";
+import { PaginationLinks } from "@/components/shared/pagination-links";
 import { healthColor } from "@/lib/os-labels";
 import { fmtEur, fmtNum } from "@/lib/os-utils";
 import { Layers, ArrowRight } from "lucide-react";
@@ -11,29 +12,46 @@ import { Layers, ArrowRight } from "lucide-react";
 export const metadata: Metadata = { title: "Project OS — Projets" };
 export const dynamic = "force-dynamic";
 
-export default async function OsProjectsPage() {
-  const projects = await db.osProject.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      owner: { select: { name: true, email: true } },
-      _count: { select: { features: true, bugs: true, objectives: true, modules: true, sprints: true, members: true } },
-    },
-  });
+export const PAGE_SIZE = 12;
 
-  const totalMrr = projects.reduce((acc, p) => acc + Number(p.mrr), 0);
+export default async function OsProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageRaw } = await searchParams;
+
+  const currentPage = Math.max(1, Number(pageRaw) || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
+  const [total, sum, projects] = await Promise.all([
+    db.osProject.count(),
+    db.osProject.aggregate({ _sum: { mrr: true } }),
+    db.osProject.findMany({
+      orderBy: { name: "asc" },
+      take: PAGE_SIZE,
+      skip,
+      include: {
+        owner: { select: { name: true, email: true } },
+        _count: { select: { features: true, bugs: true, objectives: true, modules: true, sprints: true, members: true } },
+      },
+    }),
+  ]);
+
+  const totalMrr = Number(sum._sum.mrr ?? 0);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div>
       <OsPageHeader
         title="Projets"
-        description={`${projects.length} projets · ${fmtEur(totalMrr)} MRR cumulé`}
+        description={`${total} projets · ${fmtEur(totalMrr)} MRR cumulé`}
         icon={<Layers className="h-5 w-5" />}
       />
 
       {projects.length === 0 ? (
         <OsEmpty title="Aucun projet" hint="Créez votre premier projet pour piloter son développement." />
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      ) : (        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {projects.map((p) => (
             <Link
               key={p.id}
@@ -89,6 +107,12 @@ export default async function OsProjectsPage() {
           ))}
         </div>
       )}
+
+      <PaginationLinks
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/admin/os/projects"
+      />
     </div>
   );
 }

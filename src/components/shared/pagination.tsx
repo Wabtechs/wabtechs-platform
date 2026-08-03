@@ -10,6 +10,11 @@ interface PaginationProps {
 export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
   if (totalPages <= 1) return null;
 
+  const start = Math.max(1, currentPage - 2);
+  const end = Math.min(totalPages, currentPage + 2);
+  const pageNumbers: number[] = [];
+  for (let i = start; i <= end; i++) pageNumbers.push(i);
+
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
       <Button
@@ -20,7 +25,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      {pageNumbers.map((page) => (
         <Button
           key={page}
           variant={page === currentPage ? "default" : "outline"}

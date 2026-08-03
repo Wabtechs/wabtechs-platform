@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PaginationLinks } from "@/components/shared/pagination-links";
 import { Plus, Pencil, Download } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { DeleteDownloadButton } from "./delete-button";
@@ -10,8 +11,28 @@ import { DeleteDownloadButton } from "./delete-button";
 export const metadata: Metadata = { title: "Gestion des téléchargements" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminDownloadsPage() {
-  const items = await db.download.findMany({ orderBy: { createdAt: "desc" } });
+export const PAGE_SIZE = 20;
+
+export default async function AdminDownloadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageRaw } = await searchParams;
+
+  const currentPage = Math.max(1, Number(pageRaw) || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
+  const [total, items] = await Promise.all([
+    db.download.count(),
+    db.download.findMany({
+      orderBy: { createdAt: "desc" },
+      take: PAGE_SIZE,
+      skip,
+    }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div>
@@ -26,7 +47,7 @@ export default async function AdminDownloadsPage() {
                 Téléchargements
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
-                {items.length} téléchargements au total
+                {total} téléchargements au total
               </p>
             </div>
           </div>
@@ -108,6 +129,8 @@ export default async function AdminDownloadsPage() {
           ))
         )}
       </div>
+
+      <PaginationLinks currentPage={currentPage} totalPages={totalPages} basePath="/admin/downloads" />
     </div>
   );
 }

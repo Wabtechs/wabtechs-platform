@@ -3,24 +3,40 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PaginationLinks } from "@/components/shared/pagination-links";
 import { Plus, Pencil, PlayCircle } from "lucide-react";
 import { DeleteLessonButton } from "./delete-button";
 
 export const metadata: Metadata = { title: "Gestion des leçons" };
 export const dynamic = "force-dynamic";
 
+export const PAGE_SIZE = 20;
+
 export default async function AdminLessonsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ courseId?: string }>;
+  searchParams: Promise<{ courseId?: string; page?: string }>;
 }) {
-  const { courseId } = await searchParams;
+  const { courseId, page: pageRaw } = await searchParams;
   const courses = await db.course.findMany({ orderBy: { title: "asc" } });
-  const items = await db.lesson.findMany({
-    where: courseId ? { courseId } : undefined,
-    orderBy: [{ courseId: "asc" }, { order: "asc" }],
-    include: { course: { select: { title: true } } },
-  });
+
+  const currentPage = Math.max(1, Number(pageRaw) || 1);
+  const skip = (currentPage - 1) * PAGE_SIZE;
+
+  const [total, items] = await Promise.all([
+    db.lesson.count({
+      where: courseId ? { courseId } : undefined,
+    }),
+    db.lesson.findMany({
+      where: courseId ? { courseId } : undefined,
+      orderBy: [{ courseId: "asc" }, { order: "asc" }],
+      include: { course: { select: { title: true } } },
+      take: PAGE_SIZE,
+      skip,
+    }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const title = courseId ? courses.find((c) => c.id === courseId)?.title : undefined;
 
@@ -37,7 +53,7 @@ export default async function AdminLessonsPage({
                 Leçons{title ? ` — ${title}` : ""}
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
-                {items.length} leçons au total
+                {total} leçons au total
               </p>
             </div>
           </div>
@@ -130,6 +146,13 @@ export default async function AdminLessonsPage({
           ))
         )}
       </div>
+
+      <PaginationLinks
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/admin/lessons"
+        searchParams={{ courseId }}
+      />
     </div>
   );
 }

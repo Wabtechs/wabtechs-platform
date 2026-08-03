@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Pagination } from "@/components/shared/pagination";
 import { formatDate } from "@/lib/utils";
 
 interface Message {
@@ -22,6 +23,8 @@ interface Message {
   read: boolean;
   createdAt: Date;
 }
+
+const PAGE_SIZE = 10;
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -39,6 +42,13 @@ export function MessagesClient({
   messages: Message[];
 }) {
   const [messages, setMessages] = useState(initialMessages);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(messages.length / PAGE_SIZE));
+  const visibleMessages = messages.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   async function markRead(id: string) {
     const res = await fetch("/api/admin/messages", {
@@ -60,7 +70,11 @@ export function MessagesClient({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
-    if (res.ok) setMessages(messages.filter((m) => m.id !== id));
+    if (res.ok) {
+      const next = messages.filter((m) => m.id !== id);
+      setMessages(next);
+      setCurrentPage((p) => Math.min(p, Math.max(1, Math.ceil(next.length / PAGE_SIZE))));
+    }
   }
 
   return (
@@ -90,7 +104,7 @@ export function MessagesClient({
       ) : (
         <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-3">
           <AnimatePresence>
-            {messages.map((msg) => (
+            {visibleMessages.map((msg) => (
               <motion.div
                 key={msg.id}
                 variants={item}
@@ -170,6 +184,12 @@ export function MessagesClient({
           </AnimatePresence>
         </motion.div>
       )}
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }
