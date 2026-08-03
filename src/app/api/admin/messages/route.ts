@@ -1,50 +1,30 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const GET = safeHandler(async () => {
+  await requireAdmin();
 
-  try {
-    const messages = await db.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
-    return NextResponse.json(messages);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const messages = await db.contactMessage.findMany({ orderBy: { createdAt: "desc" } });
+  return NextResponse.json(messages);
+});
 
-export async function PATCH(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const PATCH = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const { id, read } = await req.json();
-    const message = await db.contactMessage.update({ where: { id }, data: { read } });
-    await createAuditLog({ action: "UPDATE", entity: "Message", entityId: message.id, userId: session.user.id as string, details: JSON.stringify({ read }) });
-    return NextResponse.json(message);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const { id, read } = await req.json();
+  const message = await db.contactMessage.update({ where: { id }, data: { read } });
+  await createAuditLog({ action: "UPDATE", entity: "Message", entityId: message.id, userId: user.id as string, details: JSON.stringify({ read }) });
+  return NextResponse.json(message);
+});
 
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const DELETE = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const { id } = await req.json();
-    await db.contactMessage.delete({ where: { id } });
-    await createAuditLog({ action: "DELETE", entity: "Message", entityId: id, userId: session.user.id as string });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const { id } = await req.json();
+  await db.contactMessage.delete({ where: { id } });
+  await createAuditLog({ action: "DELETE", entity: "Message", entityId: id, userId: user.id as string });
+  return NextResponse.json({ success: true });
+});
