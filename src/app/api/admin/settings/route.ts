@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
 
 const DEFAULTS: Record<string, Record<string, string>> = {
   general: {
@@ -107,74 +108,53 @@ const DEFAULTS: Record<string, Record<string, string>> = {
   },
 };
 
-export async function GET() {
-  try {
-    const session = await auth();
-    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-    }
+export const GET = safeHandler(async () => {
+  await requireAdmin();
 
-    const settings = await db.siteSetting.findMany();
-    if (settings.length === 0) {
-      const entries = Object.entries(DEFAULTS).flatMap(([group, items]) =>
-        Object.entries(items).map(([key, value]) => ({ key, value, group }))
-      );
-      await db.siteSetting.createMany({ data: entries });
-      const fresh = await db.siteSetting.findMany();
-      return NextResponse.json(fresh);
-    }
-    return NextResponse.json(settings);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  const settings = await db.siteSetting.findMany();
+  if (settings.length === 0) {
+    const entries = Object.entries(DEFAULTS).flatMap(([group, items]) =>
+      Object.entries(items).map(([key, value]) => ({ key, value, group }))
+    );
+    await db.siteSetting.createMany({ data: entries });
+    const fresh = await db.siteSetting.findMany();
+    return NextResponse.json(fresh);
   }
-}
+  return NextResponse.json(settings);
+});
 
-export async function PUT(request: Request) {
-  try {
-    const session = await auth();
-    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-    }
+export const PUT = safeHandler(async (request: Request) => {
+  const user = await requireAdmin();
 
-    const body = await request.json();
-    const { key, value, group } = body as { key: string; value: string; group: string };
+  const body = await request.json();
+  const { key, value, group } = body as { key: string; value: string; group: string };
 
-    const existing = await db.siteSetting.findUnique({ where: { key } });
-    if (existing) {
-      await db.siteSetting.update({ where: { key }, data: { value, group } });
-      await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: key, userId: session.user.id as string, details: JSON.stringify({ key, value, group }) });
-    } else {
-      await db.siteSetting.create({ data: { key, value, group } });
-      await createAuditLog({ action: "CREATE", entity: "Paramètre", entityId: key, userId: session.user.id as string, details: JSON.stringify({ key, value, group }) });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  const existing = await db.siteSetting.findUnique({ where: { key } });
+  if (existing) {
+    await db.siteSetting.update({ where: { key }, data: { value, group } });
+    await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: key, userId: user.id as string, details: JSON.stringify({ key, value, group }) });
+  } else {
+    await db.siteSetting.create({ data: { key, value, group } });
+    await createAuditLog({ action: "CREATE", entity: "Paramètre", entityId: key, userId: user.id as string, details: JSON.stringify({ key, value, group }) });
   }
-}
 
-export async function POST(request: Request) {
-  try {
-    const session = await auth();
-    if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-    }
+  return NextResponse.json({ success: true });
+});
 
-    const body = await request.json();
-    const { settings } = body as { settings: { key: string; value: string; group: string }[] };
+export const POST = safeHandler(async (request: Request) => {
+  const user = await requireAdmin();
 
-    for (const s of settings) {
-      await db.siteSetting.upsert({
-        where: { key: s.key },
-        update: { value: s.value },
-        create: { key: s.key, value: s.value, group: s.group },
-      });
-    }
-    await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: "bulk", userId: session.user.id as string, details: JSON.stringify({ count: settings.length }) });
+  const body = await request.json();
+  const { settings } = body as { settings: { key: string; value: string; group: string }[] };
 
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  for (const s of settings) {
+    await db.siteSetting.upsert({
+      where: { key: s.key },
+      update: { value: s.value },
+      create: { key: s.key, value: s.value, group: s.group },
+    });
   }
-}
+  await createAuditLog({ action: "UPDATE", entity: "Paramètre", entityId: "bulk", userId: user.id as string, details: JSON.stringify({ count: settings.length }) });
+
+  return NextResponse.json({ success: true });
+});
