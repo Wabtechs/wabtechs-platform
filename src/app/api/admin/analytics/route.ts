@@ -18,10 +18,10 @@ export const GET = safeHandler(async () => {
     db.pageView.groupBy({ by: ["path"], _count: { path: true }, orderBy: { _count: { path: "desc" } }, take: 10 }),
     db.pageView.groupBy({ by: ["path"], _count: { path: true }, orderBy: { _count: { path: "desc" } }, take: 10 }),
     db.$queryRaw`
-      SELECT DATE(created_at) as date, COUNT(*)::int as count
-      FROM page_views
-      WHERE created_at >= ${thirtyDaysAgo}
-      GROUP BY DATE(created_at)
+      SELECT DATE("createdAt") as date, COUNT(*)::int as count
+      FROM "page_views"
+      WHERE "createdAt" >= ${thirtyDaysAgo}
+      GROUP BY DATE("createdAt")
       ORDER BY date ASC
     ` as Promise<{ date: Date; count: number }[]>,
   ]);
