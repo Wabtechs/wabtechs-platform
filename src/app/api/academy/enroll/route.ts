@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Connectez-vous pour vous inscrire" }, { status: 401 });
   }
+
+  const key = (session.user.id as string) ?? getClientIp(req);
+  rateLimit(`enroll:${key}`, { windowMs: 60_000, max: 20 });
 
   try {
     const { courseId } = await req.json();

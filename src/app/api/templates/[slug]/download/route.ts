@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
+  rateLimit(`download:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
 
   try {
     const template = await db.template.findUnique({ where: { slug } });
