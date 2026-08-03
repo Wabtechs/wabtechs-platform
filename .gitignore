@@ -43,10 +43,14 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-prisma/migrations/
+# Note: migrations ARE committed (only the dev engine / local DB file would be ignored)
 
 # old site backups
 _backup-old-site/
 _backup-old-Dashboard/
 
-.vercel
+# local dev tooling
+dev-server.log
+dev-server.pid
+npm-install.log
+npm-install.pid
