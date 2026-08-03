@@ -1,70 +1,51 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
+import { AppError, ErrorCode } from "@/lib/errors";
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const GET = safeHandler(async () => {
+  await requireAdmin();
 
-  try {
-    const users = await db.user.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        _count: { select: { posts: true, comments: true } },
-      },
-    });
-    return NextResponse.json(users);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const users = await db.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      _count: { select: { posts: true, comments: true } },
+    },
+  });
+  return NextResponse.json(users);
+});
 
-export async function PATCH(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const PATCH = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const { id, role } = await req.json();
-    if (!id || !role) {
-      return NextResponse.json({ error: "id et role requis" }, { status: 400 });
-    }
-    if (!["USER", "ADMIN", "MODERATOR"].includes(role)) {
-      return NextResponse.json({ error: "Role invalide" }, { status: 400 });
-    }
-    const updated = await db.user.update({ where: { id }, data: { role } });
-    await createAuditLog({ action: "UPDATE", entity: "Utilisateur", entityId: updated.id, userId: session.user.id as string, details: JSON.stringify({ role }) });
-    return NextResponse.json(updated);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  const { id, role } = await req.json();
+  if (!id || !role) {
+    throw new AppError("id et role requis", 400, ErrorCode.BAD_REQUEST);
   }
-}
+  if (!["USER", "ADMIN", "MODERATOR"].includes(role)) {
+    throw new AppError("Role invalide", 400, ErrorCode.BAD_REQUEST);
+  }
+  const updated = await db.user.update({ where: { id }, data: { role } });
+  await createAuditLog({ action: "UPDATE", entity: "Utilisateur", entityId: updated.id, userId: user.id as string, details: JSON.stringify({ role }) });
+  return NextResponse.json(updated);
+});
 
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const DELETE = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const { id } = await req.json();
-    const currentUser = session.user.id as string;
-    if (id === currentUser) {
-      return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 400 });
-    }
-    await db.user.delete({ where: { id } });
-    await createAuditLog({ action: "DELETE", entity: "Utilisateur", entityId: id, userId: session.user.id as string });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  const { id } = await req.json();
+  const currentUser = user.id as string;
+  if (id === currentUser) {
+    throw new AppError("Vous ne pouvez pas supprimer votre propre compte", 400, ErrorCode.BAD_REQUEST);
   }
-}
+  await db.user.delete({ where: { id } });
+  await createAuditLog({ action: "DELETE", entity: "Utilisateur", entityId: id, userId: currentUser });
+  return NextResponse.json({ success: true });
+});

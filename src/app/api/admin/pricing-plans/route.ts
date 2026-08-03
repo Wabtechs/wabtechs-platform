@@ -1,73 +1,48 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+export const GET = safeHandler(async () => {
+  await requireAdmin();
+
+  const items = await db.pricingPlan.findMany({ orderBy: { order: "asc" } });
+  return NextResponse.json(items);
+});
+
+export const POST = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
+
+  const body = await req.json();
+  const { id, ...data } = body;
+
+  if (id) {
+    const updated = await db.pricingPlan.update({ where: { id }, data });
+    await createAuditLog({ action: "UPDATE", entity: "Forfait", entityId: updated.id, userId: user.id as string, details: JSON.stringify(data) });
+    return NextResponse.json(updated);
   }
 
-  try {
-    const items = await db.pricingPlan.findMany({
-      orderBy: { order: "asc" },
-    });
-    return NextResponse.json(items);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const item = await db.pricingPlan.create({
+    data: {
+      name: data.name,
+      save: data.save ?? null,
+      price: data.price,
+      features: data.features ?? [],
+      disabled: data.disabled ?? [],
+      featured: data.featured ?? false,
+      order: data.order ?? 0,
+    },
+  });
+  await createAuditLog({ action: "CREATE", entity: "Forfait", entityId: item.id, userId: user.id as string });
+  return NextResponse.json(item, { status: 201 });
+});
 
-export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const DELETE = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const body = await req.json();
-    const { id, ...data } = body;
-
-    if (id) {
-      const updated = await db.pricingPlan.update({
-        where: { id },
-        data,
-      });
-      await createAuditLog({ action: "UPDATE", entity: "Forfait", entityId: updated.id, userId: session.user.id as string, details: JSON.stringify(data) });
-      return NextResponse.json(updated);
-    }
-
-    const item = await db.pricingPlan.create({
-      data: {
-        name: data.name,
-        save: data.save ?? null,
-        price: data.price,
-        features: data.features ?? [],
-        disabled: data.disabled ?? [],
-        featured: data.featured ?? false,
-        order: data.order ?? 0,
-      },
-    });
-    await createAuditLog({ action: "CREATE", entity: "Forfait", entityId: item.id, userId: session.user.id as string });
-    return NextResponse.json(item, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
-
-  try {
-    const { id } = await req.json();
-    await db.pricingPlan.delete({ where: { id } });
-    await createAuditLog({ action: "DELETE", entity: "Forfait", entityId: id, userId: session.user.id as string });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const { id } = await req.json();
+  await db.pricingPlan.delete({ where: { id } });
+  await createAuditLog({ action: "DELETE", entity: "Forfait", entityId: id, userId: user.id as string });
+  return NextResponse.json({ success: true });
+});
