@@ -38,8 +38,9 @@ export const metadata: Metadata = {
     creator: SITE_CONFIG.twitter,
   },
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   },
   robots: {
     index: true,
@@ -69,7 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             name: SITE_CONFIG.name,
             url: SITE_CONFIG.url,
             email: SITE_CONFIG.email,
-            logo: `${SITE_CONFIG.url}/favicon.svg`,
+            logo: `${SITE_CONFIG.url}/icon.png`,
             sameAs: [SITE_CONFIG.github, `https://twitter.com/${SITE_CONFIG.twitter?.replace("@", "")}`],
           }}
         />
