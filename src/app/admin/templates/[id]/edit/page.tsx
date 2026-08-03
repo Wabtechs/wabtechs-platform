@@ -139,7 +139,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
               <Textarea id="longDescription" rows={5} value={form.longDescription} onChange={(e) => updateForm("longDescription", e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Capture d'écran</Label>
+              <Label>Capture d&apos;écran</Label>
               <FileUpload value={form.image} onChange={(url) => updateForm("image", url)} label="la capture du template" />
             </div>
             <div className="grid grid-cols-2 gap-4">

@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.vercel
+.env
+.env.*
+coverage
+npm-debug.log*
+dev-server.log
+dev-server.pid
+npm-install.log
+npm-install.pid

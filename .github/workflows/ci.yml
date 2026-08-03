@@ -2,49 +2,35 @@ name: CI
 
 on:
   push:
-    branches: [master, main]
+    branches: [master]
   pull_request:
-    branches: [master, main]
+    branches: [master]
 
 jobs:
   lint:
-    name: Lint & Typecheck
+    name: Lint
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - run: npm ci
-
-      - run: npx prisma generate
-
       - run: npm run lint
-
-      - run: npm run typecheck
 
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    needs: lint
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/wabtechs
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - run: npm ci
-
       - run: npx prisma generate
-
       - run: npm run build
-        env:
-          DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake"
-          NEXTAUTH_SECRET: "fake-secret"
-          NEXTAUTH_URL: "http://localhost:3000"

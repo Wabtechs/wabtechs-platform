@@ -6,9 +6,12 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
   const [hasDraft, setHasDraft] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const formRef = useRef(form);
-  formRef.current = form;
 
   const storageKey = `draft_${key}`;
+
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
   useEffect(() => {
     try {

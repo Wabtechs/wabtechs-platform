@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, Lock } from "lucide-react";
 
@@ -23,11 +23,9 @@ export function EnrollButton({ courseId }: { courseId: string }) {
 
   if (!session?.user) {
     return (
-      <Button asChild size="lg" className="w-full sm:w-auto">
-        <a href="/api/auth/signin">
-          <Lock className="mr-2 h-4 w-4" />
-          Se connecter pour s'inscrire
-        </a>
+      <Button size="lg" className="w-full sm:w-auto" onClick={() => signIn()}>
+        <Lock className="mr-2 h-4 w-4" />
+        Se connecter pour s&apos;inscrire
       </Button>
     );
   }

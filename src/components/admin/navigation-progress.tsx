@@ -6,10 +6,12 @@ import { useEffect, useState } from "react";
 export function NavigationProgress() {
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
 
-  useEffect(() => {
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setLoading(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const handleStart = () => setLoading(true);

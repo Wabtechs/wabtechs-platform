@@ -51,7 +51,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         <Button variant="ghost" size="sm" asChild className="mb-6">
           <Link href="/academy">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour à l'Academy
+            Retour à l&apos;Academy
           </Link>
         </Button>
 

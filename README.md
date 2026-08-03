@@ -125,8 +125,8 @@ cp .env.example .env
 # Générer le client Prisma
 npx prisma generate
 
-# Pousser le schéma vers la base
-npx prisma db push
+# Appliquer les migrations
+npx prisma migrate deploy
 
 # Lancer le serveur de développement
 npm run dev
@@ -253,6 +253,13 @@ npx prisma studio            # Ouvrir l'interface web
 # Le déploiement est automatique
 ```
 
+### Docker (production auto-hébergée)
+
+```bash
+docker compose up -d --build
+# Ouvre http://localhost:3000 (PostgreSQL dans le même compose)
+```
+
 ### Autres plateformes
 
 ```bash
@@ -264,6 +271,16 @@ Variables d'environnement à configurer :
 - `DATABASE_URL` — URL de connexion PostgreSQL
 - `REDIS_URL` — URL de connexion Redis
 - `NEXTAUTH_SECRET` — Secret pour l'authentification
+- `NEXTAUTH_URL` — URL publique de l'application
+
+---
+
+## CI/CD
+
+Le dépôt dispose d'une pipeline GitHub Actions (`.github/workflows/ci.yml`) qui exécute sur chaque push/PR :
+
+- `npm run lint` — ESLint (erreurs bloquantes, warnings tolérés)
+- `npm run build` — Build de production (après `prisma generate`)
 
 ---
 

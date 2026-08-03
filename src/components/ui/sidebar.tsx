@@ -28,17 +28,15 @@ function useSidebar() {
 }
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false);
-
-  React.useEffect(() => {
-    const mql = window.matchMedia("(max-width: 768px)");
-    const onChange = () => setIsMobile(mql.matches);
-    mql.addEventListener("change", onChange);
-    setIsMobile(mql.matches);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-
-  return isMobile;
+  return React.useSyncExternalStore(
+    (callback) => {
+      const mql = window.matchMedia("(max-width: 768px)");
+      mql.addEventListener("change", callback);
+      return () => mql.removeEventListener("change", callback);
+    },
+    () => window.matchMedia("(max-width: 768px)").matches,
+    () => false,
+  );
 }
 
 function SidebarProvider({

@@ -15,6 +15,13 @@ const eslintConfig = defineConfig([
     "_backup-old-site/**",
     "_backup-old-Dashboard/**",
   ]),
+  {
+    rules: {
+      // Downgrade to warning: legitimate data-loading-on-mount patterns
+      // (localStorage read, fetch-in-effect) are flagged as errors by this rule.
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;
