@@ -26,7 +26,7 @@ export default async function OsReportsPage() {
   });
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Rapports"
         description="Synthèse par projet — prête à imprimer ou exporter en PDF"
@@ -46,7 +46,7 @@ export default async function OsReportsPage() {
           const progress = totalPts ? Math.round((donePts / totalPts) * 100) : 0;
 
           return (
-            <Card key={p.id} className="print:break-inside-avoid border-gray-200/80 bg-white dark:border-border dark:bg-card">
+            <Card key={p.id} className="print:break-inside-avoid border-border bg-card">
               <CardContent className="p-6">
                 <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4 dark:border-border print:border-0 print:pb-2">
                   <div className="flex items-center gap-3">

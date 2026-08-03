@@ -104,7 +104,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Button variant="ghost" size="sm" asChild className="mb-6">
         <Link href="/admin/templates">
           <ArrowLeft className="mr-2 h-4 w-4" />

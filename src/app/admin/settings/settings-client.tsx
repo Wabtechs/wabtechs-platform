@@ -289,7 +289,7 @@ export function SettingsPageClient() {
           ))}
         </div>
 
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
               <div

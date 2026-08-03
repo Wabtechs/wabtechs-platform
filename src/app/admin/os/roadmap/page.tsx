@@ -19,7 +19,7 @@ export default async function OsRoadmapPage() {
   const actualHours = items.reduce((a, i) => a + i.actualHours, 0);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Roadmap"
         description={`${items.length} items · ${totalHours}h estimées · ${actualHours}h consommées`}
@@ -34,7 +34,7 @@ export default async function OsRoadmapPage() {
             const d = daysUntil(r.endDate);
             const over = r.estimatedHours > 0 && r.actualHours > r.estimatedHours;
             return (
-              <div key={r.id} className="rounded-xl border border-gray-200/80 bg-white p-5 transition-shadow hover:shadow-md dark:border-border dark:bg-card">
+              <div key={r.id} className="rounded-xl border border-border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">

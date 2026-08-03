@@ -131,7 +131,7 @@ export function AnalyticsClient() {
             Suivez les performances de votre plateforme.
           </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-border dark:bg-card">
+        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 border-border bg-card">
           {(["7d", "30d", "all"] as const).map((p) => (
             <button
               key={p}
@@ -152,7 +152,7 @@ export function AnalyticsClient() {
         {metrics.map((m) => (
           <Card
             key={m.label}
-            className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+            className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
           >
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
@@ -177,7 +177,7 @@ export function AnalyticsClient() {
       </motion.div>
 
       <motion.div variants={fadeUp} className="mb-6">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -239,7 +239,7 @@ export function AnalyticsClient() {
       </motion.div>
 
       <motion.div variants={fadeUp}>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

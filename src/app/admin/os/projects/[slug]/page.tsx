@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
   return (
-    <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+    <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
@@ -64,7 +64,7 @@ export default async function OsProjectDetailPage({ params }: { params: Promise<
   const openBugs = project.bugs.filter((b) => ["NEW", "TRIAGED", "IN_PROGRESS"].includes(b.status)).length;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Link href="/admin/os/projects" className="mb-4 inline-flex items-center gap-1.5 text-[12px] font-medium text-gray-400 hover:text-primary">
         <ArrowLeft className="h-3.5 w-3.5" /> Retour aux projets
       </Link>
@@ -89,27 +89,27 @@ export default async function OsProjectDetailPage({ params }: { params: Promise<
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-5">
             <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">Santé</p>
             <p className={`mt-1 text-2xl font-semibold ${healthColor(project.healthScore)}`}>{project.healthScore}/100</p>
           </CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-5">
             <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">Sprint progress</p>
             <p className="mt-1 text-2xl font-semibold">{project.features.length ? `${Math.round((completedPoints / totalFeaturePoints) * 100)}%` : "0%"}</p>
             <p className="mt-0.5 text-[11px] text-gray-400">{completedPoints}/{totalFeaturePoints} story points livrés</p>
           </CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-5">
             <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">Bugs ouverts</p>
             <p className={`mt-1 text-2xl font-semibold ${openBugs ? "text-rose-500" : "text-emerald-500"}`}>{openBugs}</p>
             <p className="mt-0.5 text-[11px] text-gray-400">sur {project.bugs.length} au total</p>
           </CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-5">
             <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">MRR</p>
             <p className="mt-1 text-2xl font-semibold text-emerald-500">{fmtEur(project.mrr)}</p>
@@ -119,7 +119,7 @@ export default async function OsProjectDetailPage({ params }: { params: Promise<
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="p-5">
             <div className="flex items-center gap-2 text-[13px] font-semibold">
               <Users className="h-4 w-4 text-primary" /> Équipe ({project.members.length})
@@ -141,7 +141,7 @@ export default async function OsProjectDetailPage({ params }: { params: Promise<
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="lg:col-span-2 border-border bg-card">
           <CardContent className="p-5">
             <p className="text-[13px] font-semibold">Liens & informations</p>
             <p className="mt-2 text-[12px] leading-relaxed text-gray-500 dark:text-gray-400">{project.description}</p>

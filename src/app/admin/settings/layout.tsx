@@ -30,7 +30,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div
         initial="hidden"
         animate="show"

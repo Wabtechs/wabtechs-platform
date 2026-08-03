@@ -77,7 +77,7 @@ export function AppsClient() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div variants={stagger} initial="hidden" animate="show">
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-6">
@@ -106,10 +106,10 @@ export function AppsClient() {
                 placeholder="Rechercher une app..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-8 rounded-lg border border-gray-200/80 bg-white pl-8 pr-3 text-[13px] text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary/20 dark:border-border dark:bg-card dark:text-foreground"
+                className="h-8 rounded-lg border border-border bg-card pl-8 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20"
               />
             </div>
-            <div className="flex items-center gap-1 rounded-lg border border-gray-200/80 bg-white p-0.5 dark:border-border dark:bg-card">
+            <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-0.5">
               {([
                 ["all", "Tous"],
                 ["connected", "Connectés"],
@@ -147,7 +147,7 @@ export function AppsClient() {
         <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((app) => (
             <motion.div key={app.id} variants={fadeUp} layout>
-              <Card className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+              <Card className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">

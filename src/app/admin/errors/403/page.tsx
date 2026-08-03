@@ -23,7 +23,7 @@ export default function AdminForbidden() {
       className="w-full max-w-md"
     >
       <motion.div variants={fadeUp}>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="flex flex-col items-center p-8 text-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#842ae3]/10">
               <ShieldOff className="h-7 w-7 text-[#842ae3]" />

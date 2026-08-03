@@ -52,7 +52,7 @@ export default async function OsKpiPage({ searchParams }: { searchParams: Promis
   const growth = buildGrowthSeries(snapshots);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="KPI"
         description={selected ? `Indicateurs clés — ${selected.name}` : "Indicateurs clés sur l'ensemble du portfolio"}
@@ -73,21 +73,21 @@ export default async function OsKpiPage({ searchParams }: { searchParams: Promis
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Features par statut</CardTitle>
             <CardDescription>Distribution du pipeline</CardDescription>
           </CardHeader>
           <CardContent>{featureData.length ? <OsBarChart data={featureData} height={260} /> : <OsEmpty title="Aucune feature" />}</CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Bugs par sévérité</CardTitle>
             <CardDescription>Qualité du code</CardDescription>
           </CardHeader>
           <CardContent>{severityData.length ? <OsPieChart data={severityData} height={260} /> : <OsEmpty title="Aucun bug" />}</CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Croissance</CardTitle>
             <CardDescription>Évolution des métriques</CardDescription>

@@ -23,7 +23,7 @@ export default async function OsProjectsPage() {
   const totalMrr = projects.reduce((acc, p) => acc + Number(p.mrr), 0);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Projets"
         description={`${projects.length} projets · ${fmtEur(totalMrr)} MRR cumulé`}
@@ -38,7 +38,7 @@ export default async function OsProjectsPage() {
             <Link
               key={p.id}
               href={`/admin/os/projects/${p.slug}`}
-              className="group flex flex-col rounded-xl border border-gray-200/80 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-border dark:bg-card"
+              className="group flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2.5">

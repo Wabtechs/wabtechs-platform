@@ -36,7 +36,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
   const totalStars = Number(starsAgg._sum?.githubStars ?? 0);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Business"
         description={selected ? `Métriques business — ${selected.name}` : "Métriques business sur l'ensemble du portfolio"}
@@ -53,7 +53,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">MRR par projet</CardTitle>
             <CardDescription>Contribution au revenu récurrent</CardDescription>
@@ -86,7 +86,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
           </CardContent>
         </Card>
 
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">MRR — évolution</CardTitle>
             <CardDescription>Croissance du revenu mensuel</CardDescription>
@@ -102,7 +102,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Croissance — Utilisateurs & Téléchargements</CardTitle>
           </CardHeader>
@@ -117,7 +117,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
             )}
           </CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Croissance — Stars GitHub</CardTitle>
           </CardHeader>
@@ -129,7 +129,7 @@ export default async function OsBusinessPage({ searchParams }: { searchParams: P
             )}
           </CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Répartition des revenus</CardTitle>
           </CardHeader>

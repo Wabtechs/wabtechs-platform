@@ -55,7 +55,7 @@ export function SubscribersClient({
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
           <Mail className="h-5 w-5 text-emerald-500" />
@@ -71,7 +71,7 @@ export function SubscribersClient({
       </div>
 
       {subscribers.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Mail className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun abonné</p>
@@ -85,7 +85,7 @@ export function SubscribersClient({
                 key={sub.id}
                 variants={item}
                 layout
-                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+                className="flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">

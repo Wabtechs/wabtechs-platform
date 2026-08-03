@@ -103,7 +103,7 @@ export default async function OsDashboardPage() {
   const growthData = [...byDate.values()].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Project OS"
         description="Centre de contrôle des projets Wabtechs — vue d'ensemble"
@@ -126,21 +126,21 @@ export default async function OsDashboardPage() {
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Répartition des features</CardTitle>
             <CardDescription>Statut des fonctionnalités</CardDescription>
           </CardHeader>
           <CardContent>{featureData.length ? <OsBarChart data={featureData} height={250} /> : <OsEmpty title="Aucune feature" />}</CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Bugs par sévérité</CardTitle>
             <CardDescription>Distribution des bugs</CardDescription>
           </CardHeader>
           <CardContent>{severityData.length ? <OsPieChart data={severityData} height={250} /> : <OsEmpty title="Aucun bug" />}</CardContent>
         </Card>
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Croissance du portfolio</CardTitle>
             <CardDescription>Évolution des métriques agrégées</CardDescription>
@@ -166,7 +166,7 @@ export default async function OsDashboardPage() {
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="lg:col-span-1 border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Prochains jalons</CardTitle>
             <CardDescription>Milestones à venir</CardDescription>
@@ -194,7 +194,7 @@ export default async function OsDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="lg:col-span-1 border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Roadmap prioritaire</CardTitle>
             <CardDescription>Prochains livrables</CardDescription>
@@ -225,7 +225,7 @@ export default async function OsDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-1 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="lg:col-span-1 border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">Releases récentes</CardTitle>
             <CardDescription>Dernières versions publiées</CardDescription>
@@ -262,7 +262,7 @@ export default async function OsDashboardPage() {
             <Link
               key={p.id}
               href={`/admin/os/projects/${p.slug}`}
-              className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all hover:shadow-md dark:border-border dark:bg-card"
+              className="flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all hover:shadow-md"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5">
@@ -300,7 +300,7 @@ export default async function OsDashboardPage() {
               Tout voir <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
-          <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardContent className="space-y-2 p-4">
               {notifications.length === 0 && <OsEmpty title="Aucune notification" />}
               {notifications.map((n) => (

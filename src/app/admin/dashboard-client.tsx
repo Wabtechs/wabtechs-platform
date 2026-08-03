@@ -213,7 +213,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
   ];
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div variants={stagger} initial="hidden" animate="show">
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-8">
@@ -222,10 +222,10 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
               <Zap className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">
                 Bonjour, {userName}
               </h1>
-              <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
+              <p className="mt-0.5 text-[13px] text-muted-foreground">
                 {today}
               </p>
             </div>
@@ -237,15 +237,15 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
           {primaryMetrics.map((metric) => (
             <Card
               key={metric.label}
-              className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+              className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
+                    <p className="text-[12px] font-medium text-muted-foreground">
                       {metric.label}
                     </p>
-                    <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-foreground leading-none">
+                    <p className="mt-2 text-[28px] font-semibold tracking-tight text-foreground leading-none">
                       {metric.value.toLocaleString()}
                     </p>
                   </div>
@@ -265,7 +265,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                   <span className={`text-[11px] font-medium ${metric.trendUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
                     {metric.trend}
                   </span>
-                  <span className="text-[11px] text-gray-400">ce mois</span>
+                  <span className="text-[11px] text-muted-foreground/70">ce mois</span>
                 </div>
               </CardContent>
             </Card>
@@ -275,7 +275,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
         {/* Tabs */}
         <motion.div variants={fadeUp}>
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="h-9 bg-gray-100/80 dark:bg-white/5">
+            <TabsList className="h-9 bg-muted">
               <TabsTrigger value="overview" className="gap-1.5 text-[13px]">
                 <BarChart3 className="h-3.5 w-3.5" />
                 Vue d&apos;ensemble
@@ -293,7 +293,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                 {secondaryMetrics.map((metric) => (
                   <Card
                     key={metric.label}
-                    className="border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+                    className="border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md"
                   >
                     <CardContent className="flex items-center gap-4 p-4">
                       <div
@@ -303,8 +303,8 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                         <metric.icon className="h-5 w-5" style={{ color: metric.color }} />
                       </div>
                       <div>
-                        <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">{metric.label}</p>
-                        <p className="text-lg font-semibold text-gray-900 dark:text-foreground">{metric.value}</p>
+                        <p className="text-[12px] font-medium text-muted-foreground">{metric.label}</p>
+                        <p className="text-lg font-semibold text-foreground">{metric.value}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -325,7 +325,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                     Nouveau Podcast
                   </Link>
                 </Button>
-                <Button asChild size="sm" variant="outline" className="h-8 border-gray-200/80 dark:border-border">
+                <Button asChild size="sm" variant="outline" className="h-8 border-border">
                   <a href="/" target="_blank">
                     <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                     Voir le site
@@ -334,13 +334,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
               </div>
 
               {/* Monthly Bar Chart */}
-              <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+              <Card className="border-border bg-card shadow-sm">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
                       <BarChart3 className="h-3.5 w-3.5 text-primary" />
                     </div>
-                    <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                    <CardTitle className="text-[14px] font-semibold text-foreground">
                       Vues mensuelles
                     </CardTitle>
                   </div>
@@ -390,14 +390,14 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
                 {/* Posts */}
                 <div className="lg:col-span-2">
-                  <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                  <Card className="border-border bg-card shadow-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
                             <FileText className="h-3.5 w-3.5 text-primary" />
                           </div>
-                          <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                          <CardTitle className="text-[14px] font-semibold text-foreground">
                             Articles récents
                           </CardTitle>
                         </div>
@@ -414,8 +414,8 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                       <div className="divide-y divide-gray-100/80 dark:divide-white/[0.04]">
                         {recentPosts.length === 0 ? (
                           <div className="flex flex-col items-center justify-center py-12">
-                            <FileText className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
-                            <p className="text-[13px] text-gray-500">Aucun article</p>
+                            <FileText className="mb-3 h-8 w-8 text-muted-foreground/40" />
+                            <p className="text-[13px] text-muted-foreground">Aucun article</p>
                             <Link href="/admin/posts/new" className="mt-2 text-[12px] font-medium text-primary hover:underline">
                               Créer un article
                             </Link>
@@ -427,21 +427,21 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                               className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
                             >
                               <div className="min-w-0 flex-1">
-                                <p className="truncate text-[13px] font-medium text-gray-900 dark:text-foreground">
+                                <p className="truncate text-[13px] font-medium text-foreground">
                                   {post.title}
                                 </p>
                                 <div className="mt-1 flex items-center gap-2">
-                                  <span className="text-[11px] text-gray-400">
+                                  <span className="text-[11px] text-muted-foreground/70">
                                     {post.author?.name ?? "Inconnu"}
                                   </span>
-                                  <span className="text-gray-300 dark:text-gray-600">·</span>
-                                  <span className="text-[11px] text-gray-400">
+                                  <span className="text-muted-foreground/40">·</span>
+                                  <span className="text-[11px] text-muted-foreground/70">
                                     {timeAgo(post.createdAt)}
                                   </span>
                                 </div>
                               </div>
                               <div className="ml-4 flex items-center gap-3">
-                                <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                                <span className="flex items-center gap-1 text-[11px] text-muted-foreground/70">
                                   <Eye className="h-3 w-3" />
                                   {post.views}
                                 </span>
@@ -450,7 +450,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                                     Publié
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                                  <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                                     Brouillon
                                   </span>
                                 )}
@@ -466,14 +466,14 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                 {/* Right Column */}
                 <div className="space-y-5">
                   {/* Messages */}
-                  <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                  <Card className="border-border bg-card shadow-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10">
                             <MessageSquare className="h-3.5 w-3.5 text-amber-500" />
                           </div>
-                          <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                          <CardTitle className="text-[14px] font-semibold text-foreground">
                             Messages
                           </CardTitle>
                         </div>
@@ -490,8 +490,8 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                       <div className="divide-y divide-gray-100/80 dark:divide-white/[0.04]">
                         {recentMessages.length === 0 ? (
                           <div className="flex flex-col items-center justify-center py-10">
-                            <MessageSquare className="mb-3 h-7 w-7 text-gray-300 dark:text-gray-600" />
-                            <p className="text-[13px] text-gray-500">Aucun message</p>
+                            <MessageSquare className="mb-3 h-7 w-7 text-muted-foreground/40" />
+                            <p className="text-[13px] text-muted-foreground">Aucun message</p>
                           </div>
                         ) : (
                           recentMessages.map((msg) => (
@@ -504,14 +504,14 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between">
-                                  <p className="truncate text-[13px] font-medium text-gray-900 dark:text-foreground">
+                                  <p className="truncate text-[13px] font-medium text-foreground">
                                     {msg.name}
                                   </p>
-                                  <span className="ml-2 flex-shrink-0 text-[10px] text-gray-400">
+                                  <span className="ml-2 flex-shrink-0 text-[10px] text-muted-foreground/70">
                                     {timeAgo(msg.createdAt)}
                                   </span>
                                 </div>
-                                <p className="mt-0.5 truncate text-[12px] text-gray-500 dark:text-gray-400">
+                                <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
                                   {msg.subject}
                                 </p>
                               </div>
@@ -523,13 +523,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                   </Card>
 
                   {/* Activity Feed */}
-                  <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                  <Card className="border-border bg-card shadow-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10">
                           <Activity className="h-3.5 w-3.5 text-emerald-500" />
                         </div>
-                        <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                        <CardTitle className="text-[14px] font-semibold text-foreground">
                           Activité récente
                         </CardTitle>
                       </div>
@@ -541,11 +541,11 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                             key={activity.id}
                             className="px-5 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
                           >
-                            <p className="text-[12px] text-gray-900 dark:text-foreground">
+                            <p className="text-[12px] text-foreground">
                               {activity.action}{" "}
                               <span className="font-medium text-primary">{activity.target}</span>
                             </p>
-                            <p className="mt-0.5 text-[11px] text-gray-400">{activity.time}</p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground/70">{activity.time}</p>
                           </div>
                         ))}
                       </div>
@@ -553,13 +553,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                   </Card>
 
                   {/* System */}
-                  <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                  <Card className="border-border bg-card shadow-sm">
                     <CardHeader className="pb-3">
                       <div className="flex items-center gap-2">
                         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10">
                           <Activity className="h-3.5 w-3.5 text-emerald-500" />
                         </div>
-                        <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                        <CardTitle className="text-[14px] font-semibold text-foreground">
                           Système
                         </CardTitle>
                       </div>
@@ -572,14 +572,14 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                         { label: "Podcasts", value: stats.podcastCount, ok: true },
                       ].map((item) => (
                         <div key={item.label} className="flex items-center justify-between">
-                          <span className="text-[12px] text-gray-500 dark:text-gray-400">{item.label}</span>
+                          <span className="text-[12px] text-muted-foreground">{item.label}</span>
                           {typeof item.value === "string" ? (
                             <span className="flex items-center gap-1.5 text-[12px] font-medium text-emerald-600 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                               {item.value}
                             </span>
                           ) : (
-                            <span className="text-[12px] font-medium text-gray-900 dark:text-foreground">{item.value}</span>
+                            <span className="text-[12px] font-medium text-foreground">{item.value}</span>
                           )}
                         </div>
                       ))}
@@ -596,15 +596,15 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                 {analyticsMetrics.map((metric) => (
                   <Card
                     key={metric.label}
-                    className="group relative overflow-hidden border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-0.5 dark:border-border dark:bg-card dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]"
+                    className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between">
                         <div>
-                          <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
+                          <p className="text-[12px] font-medium text-muted-foreground">
                             {metric.label}
                           </p>
-                          <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-foreground leading-none">
+                          <p className="mt-2 text-[28px] font-semibold tracking-tight text-foreground leading-none">
                             {typeof metric.value === "number" ? metric.value.toLocaleString() : metric.value}
                           </p>
                         </div>
@@ -620,7 +620,7 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                         <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                           {metric.trend}
                         </span>
-                        <span className="text-[11px] text-gray-400">ce mois</span>
+                        <span className="text-[11px] text-muted-foreground/70">ce mois</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -628,13 +628,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
               </div>
 
               {/* Area Chart - Weekly Traffic */}
-              <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+              <Card className="border-border bg-card shadow-sm">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
                       <TrendingUp className="h-3.5 w-3.5 text-primary" />
                     </div>
-                    <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                    <CardTitle className="text-[14px] font-semibold text-foreground">
                       Trafic hebdomadaire
                     </CardTitle>
                   </div>
@@ -695,13 +695,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
               {/* Referrers + Devices */}
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                 {/* Top Referrers */}
-                <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                <Card className="border-border bg-card shadow-sm">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
                         <Globe className="h-3.5 w-3.5 text-blue-500" />
                       </div>
-                      <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                      <CardTitle className="text-[14px] font-semibold text-foreground">
                         Top référents
                       </CardTitle>
                     </div>
@@ -714,14 +714,14 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                           className="flex items-center justify-between px-5 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
                         >
                           <div className="flex items-center gap-3">
-                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-[11px] font-semibold text-gray-500 dark:bg-white/5 dark:text-gray-400">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-muted text-[11px] font-semibold text-muted-foreground">
                               {i + 1}
                             </span>
-                            <span className="text-[13px] font-medium text-gray-900 dark:text-foreground">
+                            <span className="text-[13px] font-medium text-foreground">
                               {ref.name}
                             </span>
                           </div>
-                          <span className="text-[13px] font-medium text-gray-500 dark:text-gray-400">
+                          <span className="text-[13px] font-medium text-muted-foreground">
                             {ref.visits.toLocaleString()}
                           </span>
                         </div>
@@ -731,13 +731,13 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                 </Card>
 
                 {/* Device Breakdown */}
-                <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+                <Card className="border-border bg-card shadow-sm">
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-2">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10">
                         <Monitor className="h-3.5 w-3.5 text-amber-500" />
                       </div>
-                      <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                      <CardTitle className="text-[14px] font-semibold text-foreground">
                         Appareils
                       </CardTitle>
                     </div>
@@ -761,15 +761,15 @@ export function AdminDashboardClient({ stats, recentPosts, recentMessages, userN
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Icon className="h-4 w-4" style={{ color }} />
-                              <span className="text-[13px] font-medium text-gray-900 dark:text-foreground">
+                              <span className="text-[13px] font-medium text-foreground">
                                 {device.name}
                               </span>
                             </div>
-                            <span className="text-[13px] font-semibold text-gray-900 dark:text-foreground">
+                            <span className="text-[13px] font-semibold text-foreground">
                               {device.percentage}%
                             </span>
                           </div>
-                          <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                             <div
                               className="h-full rounded-full transition-all duration-500"
                               style={{ width: `${device.percentage}%`, backgroundColor: color }}

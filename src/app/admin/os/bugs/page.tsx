@@ -14,7 +14,7 @@ export default async function OsBugsPage() {
   });
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Bugs"
         description="Suivi des bugs et défauts sur l'ensemble des projets"

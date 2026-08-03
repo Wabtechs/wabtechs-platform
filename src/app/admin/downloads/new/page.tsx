@@ -46,7 +46,7 @@ export default function NewDownloadPage() {
   }
 
   return (
-    <div className="pt-24 pb-16">
+    <div>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-center justify-between">
           <Button variant="ghost" size="sm" asChild>
@@ -60,7 +60,7 @@ export default function NewDownloadPage() {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-foreground">Nouveau téléchargement</h1>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <Card className="border-gray-200 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-foreground">Contenu</CardTitle>
             </CardHeader>
@@ -126,7 +126,7 @@ export default function NewDownloadPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-gray-200 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardHeader>
               <CardTitle className="text-gray-900 dark:text-foreground">Options</CardTitle>
             </CardHeader>

@@ -122,7 +122,7 @@ export function BugsTable({ projects }: { projects: OsProject[] }) {
         </Button>
       </div>
 
-      <div className="rounded-xl border border-gray-200/80 bg-white dark:border-border dark:bg-card">
+      <div className="rounded-xl border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

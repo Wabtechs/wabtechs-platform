@@ -64,7 +64,7 @@ export function MessagesClient({
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10">
           <MessageSquare className="h-5 w-5 text-amber-500" />
@@ -81,7 +81,7 @@ export function MessagesClient({
       </div>
 
       {messages.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <MessageSquare className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun message</p>

@@ -148,7 +148,7 @@ export function ChatsClient() {
   const totalUnread = conversations.reduce((sum, c) => sum + c.unread, 0);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div variants={stagger} initial="hidden" animate="show">
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-5">
@@ -171,7 +171,7 @@ export function ChatsClient() {
 
         {/* Chat Container */}
         <motion.div variants={fadeUp}>
-          <Card className="flex h-[calc(100vh-220px)] overflow-hidden border-gray-200/80 bg-white dark:border-border dark:bg-card">
+          <Card className="flex h-[calc(100vh-220px)] overflow-hidden border-border bg-card">
             {/* Sidebar */}
             <div
               className={cn(

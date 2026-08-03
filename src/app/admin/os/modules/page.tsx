@@ -31,7 +31,7 @@ export default async function OsModulesPage() {
   const avgDebt = modules.length ? Math.round(modules.reduce((a, m) => a + m.technicalDebt, 0) / modules.length) : 0;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Modules"
         description={`${modules.length} modules · couverture moyenne ${pct(avgCoverage)} · dette moyenne ${pct(avgDebt)}`}
@@ -41,7 +41,7 @@ export default async function OsModulesPage() {
       {modules.length === 0 ? (
         <OsEmpty title="Aucun module" />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow>

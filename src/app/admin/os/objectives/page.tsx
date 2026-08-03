@@ -27,7 +27,7 @@ export default async function OsObjectivesPage() {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Objectifs"
         description={`${objectives.length} objectifs · OKR & SMART sur l'ensemble des projets`}
@@ -49,7 +49,7 @@ export default async function OsObjectivesPage() {
                     {g.items.map((o) => {
                       const d = daysUntil(o.deadline);
                       return (
-                        <div key={o.id} className="rounded-xl border border-gray-200/80 bg-white p-5 dark:border-border dark:bg-card">
+                        <div key={o.id} className="rounded-xl border border-border bg-card p-5">
                           <div className="flex flex-wrap items-start justify-between gap-2">
                             <div className="min-w-0">
                               <p className="text-[14px] font-medium">{o.title}</p>

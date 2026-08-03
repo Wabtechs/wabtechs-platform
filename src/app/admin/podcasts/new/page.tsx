@@ -52,7 +52,7 @@ export default function NewPodcastPage() {
   }
 
   return (
-    <div className="pt-24 pb-16">
+    <div>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-6">
           <Link href="/admin/podcasts">

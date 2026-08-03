@@ -11,9 +11,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <NavigationProgress />
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="bg-muted/50 dark:bg-background">
         <AdminHeader />
-        <div className="flex-1 overflow-auto">{children}</div>
+        <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

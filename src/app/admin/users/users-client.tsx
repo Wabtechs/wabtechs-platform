@@ -381,7 +381,7 @@ export function UsersClient({
   const statusColumn = table.getColumn("status");
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div variants={stagger} initial="hidden" animate="show">
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-8">
@@ -415,7 +415,7 @@ export function UsersClient({
 
         {/* Table Card */}
         <motion.div variants={fadeUp}>
-          <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardContent className="p-0">
               {/* Toolbar */}
               <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-white/[0.04]">

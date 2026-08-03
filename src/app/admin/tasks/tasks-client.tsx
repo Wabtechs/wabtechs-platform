@@ -337,7 +337,7 @@ export function TasksClient({ initialTasks }: Props) {
   const doneCount = tasks.filter((t) => t.status === "done").length;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <motion.div variants={stagger} initial="hidden" animate="show">
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-8">
@@ -389,7 +389,7 @@ export function TasksClient({ initialTasks }: Props) {
           ].map((stat) => (
             <Card
               key={stat.label}
-              className="border-gray-200/80 bg-white transition-all duration-300 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+              className="border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md"
             >
               <CardContent className="flex items-center gap-4 p-4">
                 <div
@@ -409,7 +409,7 @@ export function TasksClient({ initialTasks }: Props) {
 
         {/* Data Table */}
         <motion.div variants={fadeUp}>
-          <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

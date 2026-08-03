@@ -31,7 +31,7 @@ export default async function OsNotificationsPage() {
   const unread = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Notifications"
         description={`${unread} non lue${unread > 1 ? "s" : ""} · ${notifications.length} notifications au total`}
@@ -47,7 +47,7 @@ export default async function OsNotificationsPage() {
           {notifications.map((n) => (
             <div
               key={n.id}
-              className={`flex items-start gap-3 rounded-xl border border-gray-200/80 bg-white px-5 py-4 dark:border-border dark:bg-card ${!n.read ? "border-l-2 border-l-primary" : "opacity-60"}`}
+              className={`flex items-start gap-3 rounded-xl border border-border bg-card px-5 py-4 ${!n.read ? "border-l-2 border-l-primary" : "opacity-60"}`}
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 dark:bg-white/5">
                 {TYPE_ICONS[n.type] ?? <Bell className="h-3.5 w-3.5 text-gray-400" />}

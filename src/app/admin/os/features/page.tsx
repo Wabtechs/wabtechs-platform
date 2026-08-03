@@ -14,7 +14,7 @@ export default async function OsFeaturesPage() {
   });
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Features"
         description="Kanban des fonctionnalités sur l'ensemble des projets"

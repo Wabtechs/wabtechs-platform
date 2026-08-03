@@ -33,7 +33,7 @@ export default async function OsHealthPage() {
   const atRisk = projects.filter((p) => p.healthScore < 60).length;
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Santé"
         description={`${projects.length} projets · santé moyenne ${pct(avgAll)} · ${healthy} sains · ${atRisk} à risque`}
@@ -58,7 +58,7 @@ export default async function OsHealthPage() {
             };
 
             return (
-              <Card key={p.id} className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+              <Card key={p.id} className="border-border bg-card">
                 <CardHeader className="pb-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">

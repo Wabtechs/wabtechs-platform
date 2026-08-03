@@ -184,7 +184,7 @@ export default function OsAiPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <OsPageHeader
         title="Intelligence"
         description="Insights et recommandations générés à partir des données du Project OS"
@@ -198,7 +198,7 @@ export default function OsAiPage() {
       )}
 
       {!loading && !data && (
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="py-16 text-center">
             <Sparkles className="mx-auto mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Impossible de charger les données.</p>
@@ -209,7 +209,7 @@ export default function OsAiPage() {
       {!loading && data && (
         <div className="grid gap-4 md:grid-cols-2">
           {insights.length === 0 && (
-            <Card className="md:col-span-2 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+            <Card className="md:col-span-2 border-border bg-card">
               <CardContent className="py-16 text-center">
                 <Lightbulb className="mx-auto mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
                 <p className="text-[13px] text-gray-500">Aucun signal particulier détecté pour l&apos;instant.</p>
@@ -217,7 +217,7 @@ export default function OsAiPage() {
             </Card>
           )}
           {insights.map((ins, i) => (
-            <Card key={i} className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+            <Card key={i} className="border-border bg-card">
               <CardHeader className="flex flex-row items-start gap-3 space-y-0 pb-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 dark:bg-white/5">{ins.icon}</div>
                 <div>
@@ -242,7 +242,7 @@ export default function OsAiPage() {
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {data.notifications.map((n) => (
-              <div key={n.id} className="rounded-lg border border-gray-100 bg-white p-3 dark:border-border dark:bg-card">
+              <div key={n.id} className="rounded-lg border border-gray-100 bg-white p-3 border-border bg-card">
                 <p className="text-[13px] font-medium">{n.title}</p>
                 {n.content && <p className="mt-0.5 text-[11px] text-gray-400">{n.content}</p>}
               </div>

@@ -15,7 +15,7 @@ export default async function AdminPricingPlansPage() {
   });
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
@@ -46,7 +46,7 @@ export default async function AdminPricingPlansPage() {
 
       <div className="space-y-2">
         {items.length === 0 ? (
-          <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+          <Card className="border-border bg-card">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <DollarSign className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
               <p className="text-[13px] text-gray-500">Aucun forfait</p>
@@ -62,7 +62,7 @@ export default async function AdminPricingPlansPage() {
           items.map((item) => (
             <div
               key={item.id}
-              className="group flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-4 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+              className="group flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">

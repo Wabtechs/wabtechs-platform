@@ -65,7 +65,7 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
           <Tag className="h-5 w-5 text-primary" />
@@ -103,7 +103,7 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
       </div>
 
       {tags.length === 0 ? (
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Tag className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
             <p className="text-[13px] text-gray-500">Aucun tag</p>
@@ -117,7 +117,7 @@ export function TagsClient({ tags: initialTags }: { tags: TagItem[] }) {
                 key={tag.id}
                 variants={item}
                 layout
-                className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-5 py-3.5 transition-all duration-200 hover:shadow-[0_4px_20px_rgb(0,0,0,0.03)] dark:border-border dark:bg-card dark:hover:shadow-[0_4px_20px_rgb(0,0,0,0.15)]"
+                className="flex items-center justify-between rounded-xl border border-border bg-card px-5 py-3.5 shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">

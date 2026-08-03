@@ -84,7 +84,7 @@ export default function AccountPage() {
   return (
     <motion.div variants={fadeUp} initial="hidden" animate="show" className="space-y-6">
       {/* Email */}
-      <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+      <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -132,7 +132,7 @@ export default function AccountPage() {
       </Card>
 
       {/* Password */}
-      <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+      <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">

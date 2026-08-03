@@ -56,7 +56,7 @@ export default function NewLessonPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div>
       <Button variant="ghost" size="sm" asChild className="mb-6">
         <Link href="/admin/lessons">
           <ArrowLeft className="mr-2 h-4 w-4" />

@@ -70,7 +70,7 @@ export default function ProfilePage() {
     <motion.div variants={fadeUp} initial="hidden" animate="show">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Avatar & Basic Info */}
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
@@ -156,7 +156,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Social Links */}
-        <Card className="border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="border-border bg-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
