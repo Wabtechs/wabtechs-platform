@@ -1,63 +1,31 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const GET = safeHandler(async (req: Request) => {
+  await requireAdmin();
 
   const { searchParams } = new URL(req.url);
   const published = searchParams.get("published");
 
-  try {
-    const templates = await db.template.findMany({
-      where: published ? { published: published === "true" } : undefined,
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json(templates);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const templates = await db.template.findMany({
+    where: published ? { published: published === "true" } : undefined,
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json(templates);
+});
 
-export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const POST = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const body = await req.json();
-    const { id, ...data } = body;
+  const body = await req.json();
+  const { id, ...data } = body;
 
-    if (id) {
-      const updated = await db.template.update({
-        where: { id },
-        data: {
-          slug: data.slug,
-          name: data.name,
-          description: data.description,
-          longDescription: data.longDescription ?? null,
-          image: data.image ?? null,
-          price: data.price ?? 0,
-          category: data.category ?? "starter",
-          stack: data.stack ?? null,
-          demoUrl: data.demoUrl ?? null,
-          repoUrl: data.repoUrl ?? null,
-          downloadUrl: data.downloadUrl ?? null,
-          version: data.version ?? "1.0.0",
-          published: data.published ?? false,
-          featured: data.featured ?? false,
-        },
-      });
-      await createAuditLog({ action: "UPDATE", entity: "Template", entityId: updated.id, userId: session.user.id as string });
-      return NextResponse.json(updated);
-    }
-
-    const template = await db.template.create({
+  if (id) {
+    const updated = await db.template.update({
+      where: { id },
       data: {
         slug: data.slug,
         name: data.name,
@@ -75,25 +43,37 @@ export async function POST(req: Request) {
         featured: data.featured ?? false,
       },
     });
-    await createAuditLog({ action: "CREATE", entity: "Template", entityId: template.id, userId: session.user.id as string });
-    return NextResponse.json(template, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    await createAuditLog({ action: "UPDATE", entity: "Template", entityId: updated.id, userId: user.id as string });
+    return NextResponse.json(updated);
   }
 
-  try {
-    const { id } = await req.json();
-    await db.template.delete({ where: { id } });
-    await createAuditLog({ action: "DELETE", entity: "Template", entityId: id, userId: session.user.id as string });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const template = await db.template.create({
+    data: {
+      slug: data.slug,
+      name: data.name,
+      description: data.description,
+      longDescription: data.longDescription ?? null,
+      image: data.image ?? null,
+      price: data.price ?? 0,
+      category: data.category ?? "starter",
+      stack: data.stack ?? null,
+      demoUrl: data.demoUrl ?? null,
+      repoUrl: data.repoUrl ?? null,
+      downloadUrl: data.downloadUrl ?? null,
+      version: data.version ?? "1.0.0",
+      published: data.published ?? false,
+      featured: data.featured ?? false,
+    },
+  });
+  await createAuditLog({ action: "CREATE", entity: "Template", entityId: template.id, userId: user.id as string });
+  return NextResponse.json(template, { status: 201 });
+});
+
+export const DELETE = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
+
+  const { id } = await req.json();
+  await db.template.delete({ where: { id } });
+  await createAuditLog({ action: "DELETE", entity: "Template", entityId: id, userId: user.id as string });
+  return NextResponse.json({ success: true });
+});
