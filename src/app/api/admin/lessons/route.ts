@@ -1,57 +1,31 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { createAuditLog } from "@/lib/audit";
+import { safeHandler } from "@/lib/safe-handler";
+import { requireAdmin } from "@/lib/auth-guard";
 
-export async function GET(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const GET = safeHandler(async (req: Request) => {
+  await requireAdmin();
 
   const { searchParams } = new URL(req.url);
   const courseId = searchParams.get("courseId");
 
-  try {
-    const lessons = await db.lesson.findMany({
-      where: courseId ? { courseId } : undefined,
-      orderBy: [{ courseId: "asc" }, { order: "asc" }],
-    });
-    return NextResponse.json(lessons);
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const lessons = await db.lesson.findMany({
+    where: courseId ? { courseId } : undefined,
+    orderBy: [{ courseId: "asc" }, { order: "asc" }],
+  });
+  return NextResponse.json(lessons);
+});
 
-export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
+export const POST = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
 
-  try {
-    const body = await req.json();
-    const { id, ...data } = body;
+  const body = await req.json();
+  const { id, ...data } = body;
 
-    if (id) {
-      const updated = await db.lesson.update({
-        where: { id },
-        data: {
-          courseId: data.courseId,
-          title: data.title,
-          description: data.description ?? null,
-          videoUrl: data.videoUrl ?? null,
-          duration: data.duration ?? 0,
-          order: data.order ?? 0,
-          content: data.content ?? null,
-          free: data.free ?? false,
-        },
-      });
-      await createAuditLog({ action: "UPDATE", entity: "Leçon", entityId: updated.id, userId: session.user.id as string });
-      return NextResponse.json(updated);
-    }
-
-    const lesson = await db.lesson.create({
+  if (id) {
+    const updated = await db.lesson.update({
+      where: { id },
       data: {
         courseId: data.courseId,
         title: data.title,
@@ -63,25 +37,31 @@ export async function POST(req: Request) {
         free: data.free ?? false,
       },
     });
-    await createAuditLog({ action: "CREATE", entity: "Leçon", entityId: lesson.id, userId: session.user.id as string });
-    return NextResponse.json(lesson, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: Request) {
-  const session = await auth();
-  if (!session?.user || (session.user as { role?: string }).role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    await createAuditLog({ action: "UPDATE", entity: "Leçon", entityId: updated.id, userId: user.id as string });
+    return NextResponse.json(updated);
   }
 
-  try {
-    const { id } = await req.json();
-    await db.lesson.delete({ where: { id } });
-    await createAuditLog({ action: "DELETE", entity: "Leçon", entityId: id, userId: session.user.id as string });
-    return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  const lesson = await db.lesson.create({
+    data: {
+      courseId: data.courseId,
+      title: data.title,
+      description: data.description ?? null,
+      videoUrl: data.videoUrl ?? null,
+      duration: data.duration ?? 0,
+      order: data.order ?? 0,
+      content: data.content ?? null,
+      free: data.free ?? false,
+    },
+  });
+  await createAuditLog({ action: "CREATE", entity: "Leçon", entityId: lesson.id, userId: user.id as string });
+  return NextResponse.json(lesson, { status: 201 });
+});
+
+export const DELETE = safeHandler(async (req: Request) => {
+  const user = await requireAdmin();
+
+  const { id } = await req.json();
+  await db.lesson.delete({ where: { id } });
+  await createAuditLog({ action: "DELETE", entity: "Leçon", entityId: id, userId: user.id as string });
+  return NextResponse.json({ success: true });
+});
