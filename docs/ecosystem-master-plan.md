@@ -7,13 +7,13 @@
 
 ## 0. Décisions prises (Août 2026)
 
-| Décision | Choix |
-|---|---|
-| Phase de départ | Phase 0 + 1 (fondations + 6 produits) |
-| Visibilité de `wabtechs-platform` / `Dhayaro` | **Reporté** — restent publics pour l'instant (rappel : risque de fuite d'IP) |
-| `sante_connect` | **Gardé séparé** de `Dhayaro` (pas de fusion) |
-| Branche par défaut | Conservée (`master` / `main`) — pas de rename |
-| Scope GitHub `workflow` | Accordé via device-flow (code `E327-DBA1`) — nécessaire pour pousser `.github/workflows/*` |
+| Décision                                      | Choix                                                                                      |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Phase de départ                               | Phase 0 + 1 (fondations + 6 produits)                                                      |
+| Visibilité de `wabtechs-platform` / `Dhayaro` | **Reporté** — restent publics pour l'instant (rappel : risque de fuite d'IP)               |
+| `sante_connect`                               | **Gardé séparé** de `Dhayaro` (pas de fusion)                                              |
+| Branche par défaut                            | Conservée (`master` / `main`) — pas de rename                                              |
+| Scope GitHub `workflow`                       | Accordé via device-flow (code `E327-DBA1`) — nécessaire pour pousser `.github/workflows/*` |
 
 ## 1. Contexte et objectif
 
@@ -35,13 +35,13 @@ Wabtechs Company. Aucun code n'est publié en Open Source.
 
 ## 2. État des lieux — audit des dépôts existants (Août 2026)
 
-| Dépôt | Visibilité | Branche défaut | État | Action |
-|---|---|---|---|---|
-| `Wabtechs/wabtechs-platform` | **PUBLIC** ❌ | `master` | App active (Next.js 16, Prisma, CI) | Passer en **privé**, renommer branche `main`, enrichir docs |
-| `Wabtechs/Dhayaro` | **PUBLIC** ❌ | `main` | Existant (santé) | Passer en **privé**, harmoniser structure |
-| `Wabtechs/Taxium` | PRIVATE ✅ | `master` | Existant (fiscalité, RDC) | Renommer branche `main`, harmoniser structure |
-| `Wabtechs/Archivium` | PRIVATE ✅ | `main` | Existant (GED) | Harmoniser structure |
-| `Wabtechs/sante_connect` | PRIVATE ✅ | `main` | Santé (précurseur Dhayaro) | **Fusionner ou archiver** dans `Dhayaro` (décision à valider) |
+| Dépôt                        | Visibilité    | Branche défaut | État                                | Action                                                        |
+| ---------------------------- | ------------- | -------------- | ----------------------------------- | ------------------------------------------------------------- |
+| `Wabtechs/wabtechs-platform` | **PUBLIC** ❌ | `master`       | App active (Next.js 16, Prisma, CI) | Passer en **privé**, renommer branche `main`, enrichir docs   |
+| `Wabtechs/Dhayaro`           | **PUBLIC** ❌ | `main`         | Existant (santé)                    | Passer en **privé**, harmoniser structure                     |
+| `Wabtechs/Taxium`            | PRIVATE ✅    | `master`       | Existant (fiscalité, RDC)           | Renommer branche `main`, harmoniser structure                 |
+| `Wabtechs/Archivium`         | PRIVATE ✅    | `main`         | Existant (GED)                      | Harmoniser structure                                          |
+| `Wabtechs/sante_connect`     | PRIVATE ✅    | `main`         | Santé (précurseur Dhayaro)          | **Fusionner ou archiver** dans `Dhayaro` (décision à valider) |
 
 **Manquants** : `MyEduc360`, `Bilengi Marketplace` + les 35 projets `360` + les dépôts d'infrastructure commune.
 
@@ -75,14 +75,14 @@ Wabtechs Company. Aucun code n'est publié en Open Source.
 
 ### 4.2 Familles de dépôts
 
-| Famille | Exemple | Règle |
-|---|---|---|
-| **Plateforme centrale** | `wabtechs-platform` | SSO, licences, API Gateway, billing, monitoring, admin |
-| **Produits de marque** | `dhayaro`, `myeduc360`, `archivium`, `taxium`, `bilengi-marketplace` | Nom de marque en minuscules, `-` entre mots |
-| **Famille 360** | `gov360`, `civil360`, `justice360`, … | `{domaine}360`, tout en minuscules |
-| **Fondations partagées** | `wabtechs-packages`, `wabtechs-design-system`, `wabtechs-api-contracts` | Préfixe `wabtechs-` |
-| **Infrastructure** | `wabtechs-infra`, `wabtechs-repo-template` | Préfixe `wabtechs-` |
-| **Déploiement/plateforme** | `wabtechs-deploy` | Préfixe `wabtechs-` |
+| Famille                    | Exemple                                                                 | Règle                                                  |
+| -------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Plateforme centrale**    | `wabtechs-platform`                                                     | SSO, licences, API Gateway, billing, monitoring, admin |
+| **Produits de marque**     | `dhayaro`, `myeduc360`, `archivium`, `taxium`, `bilengi-marketplace`    | Nom de marque en minuscules, `-` entre mots            |
+| **Famille 360**            | `gov360`, `civil360`, `justice360`, …                                   | `{domaine}360`, tout en minuscules                     |
+| **Fondations partagées**   | `wabtechs-packages`, `wabtechs-design-system`, `wabtechs-api-contracts` | Préfixe `wabtechs-`                                    |
+| **Infrastructure**         | `wabtechs-infra`, `wabtechs-repo-template`                              | Préfixe `wabtechs-`                                    |
+| **Déploiement/plateforme** | `wabtechs-deploy`                                                       | Préfixe `wabtechs-`                                    |
 
 ### 4.3 Conventions de nommage
 
@@ -99,24 +99,24 @@ Wabtechs Company. Aucun code n'est publié en Open Source.
 
 ## 5. Dépendances communes (stack de référence)
 
-| Couche | Technologie |
-|---|---|
-| Framework | Next.js (App Router) |
-| Langage | TypeScript (strict) |
-| UI | React, Tailwind CSS, shadcn/ui, Radix UI |
-| Forms / Validation | React Hook Form + Zod |
-| State / Data | Zustand, TanStack Query |
-| ORM | Drizzle ORM (norme écosystème) — Prisma toléré en migration |
-| Base de données | PostgreSQL |
-| Cache / Queue | Redis |
-| Auth | SSO Wabtechs (NextAuth) + RBAC |
-| Paiements | Gateway commune (adaptateurs) |
-| IA | Moteur IA commun (LLM) |
-| Logs / Monitoring | OpenTelemetry + plateforme centrale |
-| Conteneurisation | Docker, Docker Compose |
-| CI/CD | GitHub Actions, Vercel, Cloudflare |
-| Tests | Vitest (unitaire), Playwright (E2E), pytest (services python) |
-| Qualité | ESLint, Prettier, `tsc --noEmit` en CI |
+| Couche             | Technologie                                                   |
+| ------------------ | ------------------------------------------------------------- |
+| Framework          | Next.js (App Router)                                          |
+| Langage            | TypeScript (strict)                                           |
+| UI                 | React, Tailwind CSS, shadcn/ui, Radix UI                      |
+| Forms / Validation | React Hook Form + Zod                                         |
+| State / Data       | Zustand, TanStack Query                                       |
+| ORM                | Drizzle ORM (norme écosystème) — Prisma toléré en migration   |
+| Base de données    | PostgreSQL                                                    |
+| Cache / Queue      | Redis                                                         |
+| Auth               | SSO Wabtechs (NextAuth) + RBAC                                |
+| Paiements          | Gateway commune (adaptateurs)                                 |
+| IA                 | Moteur IA commun (LLM)                                        |
+| Logs / Monitoring  | OpenTelemetry + plateforme centrale                           |
+| Conteneurisation   | Docker, Docker Compose                                        |
+| CI/CD              | GitHub Actions, Vercel, Cloudflare                            |
+| Tests              | Vitest (unitaire), Playwright (E2E), pytest (services python) |
+| Qualité            | ESLint, Prettier, `tsc --noEmit` en CI                        |
 
 > ⚠️ **Écart** : la stack commune prévoit Drizzle ORM, le dépôt `wabtechs-platform` utilise Prisma.
 > → La migration vers Drizzle est planifiée dans la Phase 1 (risque maîtrisé, données abstraites
@@ -124,18 +124,18 @@ Wabtechs Company. Aucun code n'est publié en Open Source.
 
 ### 5.1 Packages partagés (`wabtechs-packages` — monorepo npm workspace)
 
-| Package | Rôle |
-|---|---|
-| `@wabtechs/ui` | Design System + composants shadcn personnalisés + thèmes |
-| `@wabtechs/auth` | SSO, sessions, RBAC, permissions |
-| `@wabtechs/db` | Schémas Drizzle, migrations, seed |
-| `@wabtechs/api-contracts` | Contrats d'API versionnés, DTO, schémas Zod partagés |
-| `@wabtechs/audit` | Journal d'audit normalisé |
-| `@wabtechs/notifications` | Notification engine (email, SMS, in-app, push) |
-| `@wabtechs/ai` | Moteur IA commun (LLM, prompts, modération) |
-| `@wabtechs/billing` | Facturation, licences, paiements |
-| `@wabtechs/logging` | Logs structurés, OpenTelemetry |
-| `@wabtechs/config` | Configuration commune, feature flags |
+| Package                   | Rôle                                                     |
+| ------------------------- | -------------------------------------------------------- |
+| `@wabtechs/ui`            | Design System + composants shadcn personnalisés + thèmes |
+| `@wabtechs/auth`          | SSO, sessions, RBAC, permissions                         |
+| `@wabtechs/db`            | Schémas Drizzle, migrations, seed                        |
+| `@wabtechs/api-contracts` | Contrats d'API versionnés, DTO, schémas Zod partagés     |
+| `@wabtechs/audit`         | Journal d'audit normalisé                                |
+| `@wabtechs/notifications` | Notification engine (email, SMS, in-app, push)           |
+| `@wabtechs/ai`            | Moteur IA commun (LLM, prompts, modération)              |
+| `@wabtechs/billing`       | Facturation, licences, paiements                         |
+| `@wabtechs/logging`       | Logs structurés, OpenTelemetry                           |
+| `@wabtechs/config`        | Configuration commune, feature flags                     |
 
 ---
 
@@ -200,55 +200,55 @@ environnements `preview` / `production` · templates d'issues et de PR.
 
 ## 8. Fondations partagées (construites une seule fois)
 
-| Fondation | Livré par | Consommé par |
-|---|---|---|
-| SSO / gestion utilisateurs | `wabtechs-platform` | Tous |
-| RBAC / rôles | `@wabtechs/auth` | Tous |
-| API Gateway | `wabtechs-platform` | Tous |
-| Billing / licences / paiements | `wabtechs-platform` + `@wabtechs/billing` | Tous |
-| Notifications | `@wabtechs/notifications` | Tous |
-| IA | `@wabtechs/ai` | Tous |
-| Logs / monitoring | `wabtechs-platform` + `@wabtechs/logging` | Tous |
-| Audit | `@wabtechs/audit` | Tous |
-| Interopérabilité / FHIR (santé) | `dhayaro` | Secteur santé |
+| Fondation                       | Livré par                                 | Consommé par  |
+| ------------------------------- | ----------------------------------------- | ------------- |
+| SSO / gestion utilisateurs      | `wabtechs-platform`                       | Tous          |
+| RBAC / rôles                    | `@wabtechs/auth`                          | Tous          |
+| API Gateway                     | `wabtechs-platform`                       | Tous          |
+| Billing / licences / paiements  | `wabtechs-platform` + `@wabtechs/billing` | Tous          |
+| Notifications                   | `@wabtechs/notifications`                 | Tous          |
+| IA                              | `@wabtechs/ai`                            | Tous          |
+| Logs / monitoring               | `wabtechs-platform` + `@wabtechs/logging` | Tous          |
+| Audit                           | `@wabtechs/audit`                         | Tous          |
+| Interopérabilité / FHIR (santé) | `dhayaro`                                 | Secteur santé |
 
 ---
 
 ## 9. Plan de création par phases
 
-### Phase 0 — Fondation écosystème *(priorité : CRITIQUE — tout en dépend)*
+### Phase 0 — Fondation écosystème _(priorité : CRITIQUE — tout en dépend)_
 
-| Tâche | Effort | Risque | Bénéfice |
-|---|---|---|---|
-| Passage en privé de `wabtechs-platform` et `Dhayaro` | S | ⚠️ Leak existant | Conformité confidentialité |
-| Création `wabtechs-repo-template` (squelette standard) | M | Faible | Homogénéité 100 % |
-| Création `wabtechs-packages` (monorepo npm workspace) | M | Moyen (Drizzle/prisma) | Fondations réutilisables |
-| Création `wabtechs-design-system` | M | Moyen | Marque + UX unifiées |
-| Standardisation labels/milestones/projects/équipes GitHub | S | Faible | Gouvernance |
-| CI/CD + branch protection + Dependabot + CodeQL sur tous les dépôts | M | Faible | Qualité continue |
+| Tâche                                                               | Effort | Risque                 | Bénéfice                   |
+| ------------------------------------------------------------------- | ------ | ---------------------- | -------------------------- |
+| Passage en privé de `wabtechs-platform` et `Dhayaro`                | S      | ⚠️ Leak existant       | Conformité confidentialité |
+| Création `wabtechs-repo-template` (squelette standard)              | M      | Faible                 | Homogénéité 100 %          |
+| Création `wabtechs-packages` (monorepo npm workspace)               | M      | Moyen (Drizzle/prisma) | Fondations réutilisables   |
+| Création `wabtechs-design-system`                                   | M      | Moyen                  | Marque + UX unifiées       |
+| Standardisation labels/milestones/projects/équipes GitHub           | S      | Faible                 | Gouvernance                |
+| CI/CD + branch protection + Dependabot + CodeQL sur tous les dépôts | M      | Faible                 | Qualité continue           |
 
 **Décisions à valider en Phase 0** : sort de `sante_connect` (fusion/archivage), migration
 Prisma → Drizzle, licence propriétaire type.
 
-### Phase 1 — Produits existants (noyau commercial) *(priorité : HAUTE)*
+### Phase 1 — Produits existants (noyau commercial) _(priorité : HAUTE)_
 
-| Dépôt | Secteur | Effort | Risque | Bénéfice |
-|---|---|---|---|---|
-| `wabtechs-platform` | Plateforme centrale | L | Moyen | Hub SSO/billing/monitoring |
-| `dhayaro` | Santé | L | Moyen | 1er produit santé commercialisable |
-| `myeduc360` | Éducation | L | Moyen | 1er produit éducation |
-| `archivium` | GED | M | Faible | Revenus B2B rapides |
-| `taxium` | Fiscalité | L | Moyen | Contrats gouvernementaux RDC |
-| `bilengi-marketplace` | Marketplace | L | Moyen | Revenus B2B/B2C |
+| Dépôt                 | Secteur             | Effort | Risque | Bénéfice                           |
+| --------------------- | ------------------- | ------ | ------ | ---------------------------------- |
+| `wabtechs-platform`   | Plateforme centrale | L      | Moyen  | Hub SSO/billing/monitoring         |
+| `dhayaro`             | Santé               | L      | Moyen  | 1er produit santé commercialisable |
+| `myeduc360`           | Éducation           | L      | Moyen  | 1er produit éducation              |
+| `archivium`           | GED                 | M      | Faible | Revenus B2B rapides                |
+| `taxium`              | Fiscalité           | L      | Moyen  | Contrats gouvernementaux RDC       |
+| `bilengi-marketplace` | Marketplace         | L      | Moyen  | Revenus B2B/B2C                    |
 
-### Phase 2 — État civil, citoyen et finances (socle RDC) *(priorité : HAUTE)*
+### Phase 2 — État civil, citoyen et finances (socle RDC) _(priorité : HAUTE)_
 
 `gov360` · `civil360` · `citizen360` · `justice360` · `finance360` · `budget360` · `payment360` · `hr360`
 
 - **Effort** : L · **Risque** : Moyen (données sensibles, réglementaire) · **Bénéfice** : adoption
   gouvernementale de masse, contrat-cadre DRC.
 
-### Phase 3 — Fonctions régaliennes et documentaires *(priorité : MOYENNE)*
+### Phase 3 — Fonctions régaliennes et documentaires _(priorité : MOYENNE)_
 
 `police360` · `immigration360` · `customs360` · `document360` · `archive360` · `statistics360` ·
 `election360` · `parliament360` · `license360` · `audit360` · `procurement360`
@@ -256,7 +256,7 @@ Prisma → Drizzle, licence propriétaire type.
 - **Effort** : L · **Risque** : Élevé (sécurité nationale, interopérabilité institutionnelle) ·
   **Bénéfice** : socle « État numérique » complet et différenciant.
 
-### Phase 4 — Secteurs économiques *(priorité : MOYENNE)*
+### Phase 4 — Secteurs économiques _(priorité : MOYENNE)_
 
 `agri360` · `land360` (cadastre) · `energy360` · `water360` · `transport360` · `road360` ·
 `mining360` · `tourism360` · `environment360`
@@ -264,7 +264,7 @@ Prisma → Drizzle, licence propriétaire type.
 - **Effort** : M–L · **Risque** : Moyen · **Bénéfice** : revenus sectoriels, crédibilité
   internationale.
 
-### Phase 5 — Développement social *(priorité : BASSE)*
+### Phase 5 — Développement social _(priorité : BASSE)_
 
 `employment360` · `youth360` · `women360` · `housing360` · `disaster360` · `culture360` · `sport360`
 
@@ -278,7 +278,7 @@ Prisma → Drizzle, licence propriétaire type.
 2. **Générateur** : script (`scripts/`) qui clone le template, applique la carte d'identité du projet
    (nom, description, modules, branding, roadmap, licence) et génère tous les fichiers standard.
 3. **Création GitHub** : `gh repo create Wabtechs/<name> --private --enable-wiki --enable-discussions
-   --template=Wabtechs/wabtechs-repo-template` puis application automatique des paramètres
+--template=Wabtechs/wabtechs-repo-template` puis application automatique des paramètres
    (labels, milestones, projects, branch protection, Dependabot, CodeQL, secrets).
 4. **Déploiement** : CI/CD standard (`ci.yml`) adapté à chaque produit ; déploiement Vercel/Cloudflare
    paramétré via GitHub Secrets.
@@ -298,65 +298,68 @@ Prisma → Drizzle, licence propriétaire type.
 
 ---
 
-## 12. Récapitulatif du portefeuille (41 dépôts produits)
+## 12. Récapitulatif du portefeuille (46 dépôts)
 
-- **Phase 1 (6)** : `wabtechs-platform`, `dhayaro`, `myeduc360`, `archivium`, `taxium`,
-  `bilengi-marketplace`
-- **Phase 2 (8)** : `gov360`, `civil360`, `citizen360`, `justice360`, `finance360`, `budget360`,
-  `payment360`, `hr360`
-- **Phase 3 (11)** : `police360`, `immigration360`, `customs360`, `document360`, `archive360`,
-  `statistics360`, `election360`, `parliament360`, `license360`, `audit360`, `procurement360`
-- **Phase 4 (9)** : `agri360`, `land360`, `energy360`, `water360`, `transport360`, `road360`,
-  `mining360`, `tourism360`, `environment360`
-- **Phase 5 (7)** : `employment360`, `youth360`, `women360`, `housing360`, `disaster360`,
-  `culture360`, `sport360`
-
-**+ Infrastructure (3–4)** : `wabtechs-repo-template`, `wabtechs-packages`,
-`wabtechs-design-system`, `wabtechs-infra`.
-
----
+- **Produits (41)**
+  - Phase 1 (6) : `wabtechs-platform`, `dhayaro`, `myeduc360`, `archivium`, `taxium`, `bilengi-marketplace`
+  - Phase 2 (8) : `gov360`, `civil360`, `citizen360`, `justice360`, `finance360`, `budget360`, `payment360`, `hr360`
+  - Phase 3 (11) : `police360`, `immigration360`, `customs360`, `document360`, `archive360`, `statistics360`, `election360`, `parliament360`, `license360`, `audit360`, `procurement360`
+  - Phase 4 (9) : `agri360`, `land360`, `energy360`, `water360`, `transport360`, `road360`, `environment360`, `mining360`, `tourism360`
+  - Phase 5 (7) : `culture360`, `sport360`, `employment360`, `youth360`, `women360`, `housing360`, `disaster360`
+- **Infrastructure (5)** : `wabtechs-repo-template`, `wabtechs-packages`, `wabtechs-design-system`, `wabtechs-scaffolding`, `sante_connect` (séparé, santé).
 
 ## 13. Roadmap d'exécution recommandée
 
 1. **Aujourd'hui** : valider ce plan + corriger la confidentialité (passage en privé).
 2. **Semaine 1** : Phase 0 (template, packages, design system, gouvernance GitHub).
-3. **Semaines 2–4** : Phase 1 (les 6 produits existants harmonisés + docs complètes).
+3. **Semaines 2–4** : Phase 1 (harmonisation des 6 produits).
 4. **Mois 2–3** : Phase 2 (socle État RDC).
-5. **Mois 4+** : Phases 3, 4 puis 5 (rythme : 2–3 dépôts / semaine via scaffolding).
+5. **Phase 3/4/5** : générés en une passe via le scaffolding.
 
 ---
 
-## 14. État d'avancement — Phase 0 + 1 (Août 2026)
+## 14. État d'avancement — Août 2026
 
-### Fondations (Phase 0) — terminées
-- ✅ `wabtechs-repo-template` (repo template, privé) — skeleton standard + docs + CI/CodeQL.
-- ✅ `wabtechs-packages` (monorepo npm `@wabtechs/*`) — packages scaffolding.
-- ✅ `wabtechs-design-system` — tokens, thèmes, composants shadcn.
-- ✅ Gouvernance GitHub : labels/topics, wiki, discussions activés sur chaque dépôt.
+### Fondations (Phase 0) — ✅ terminées
 
-### Produits (Phase 1)
-- ✅ `myeduc360` (créé — privé).
-- ✅ `bilengi-marketplace` (créé — privé).
-- ✅ `dhayaro` (harmonisé — overlay fichiers standards, poussé sur `main`).
-- ✅ `archivium` (harmonisé — poussé sur `main`).
-- ✅ `taxium` (harmonisé — poussé sur `master`).
-- 🟡 `wabtechs-platform` (overlay des fichiers standards **locaux** — AGENTS.md, LICENSE,
-  docs/, assets/, .github templates, CodeQL). À **commiter/revue** localement (les
-  commits en cours du développeur ne sont pas poussés).
+- ✅ `wabtechs-repo-template` (privé, repo template) — squelette standard + CI/CodeQL/Dependabot.
+- ✅ `wabtechs-packages` (privé, monorepo npm `@wabtechs/*`).
+- ✅ `wabtechs-design-system` (privé).
+- ✅ `wabtechs-scaffolding` (privé) — générateur + manifests (outil réutilisable pour les futures phases).
+- ✅ Gouvernance GitHub (discussions, issues, topics, Dependabot, CodeQL) sur tous les dépôts.
+- ⚠️ **Branch protection & secret scanning** : exigent GitHub Pro / Advanced Security (compte gratuit) —
+  reportés. Alternatives gratuables activées : Dependabot alerts, alerts pour dépôts publics.
+
+### Produits (Phases 1–5) — ✅ créés/harmonisés
+
+- ✅ Phase 1 : `myeduc360`, `bilengi-marketplace` (créés privés) ; `dhayaro`, `archivium`, `taxium`
+  (harmonisés, poussés — code existant préservé) ; `wabtechs-platform` (overlay local — à committer).
+- ✅ Phase 2 : `gov360`, `civil360`, `citizen360`, `justice360`, `finance360`, `budget360`, `payment360`, `hr360`.
+- ✅ Phase 3 : `police360`, `immigration360`, `customs360`, `document360`, `archive360`,
+  `statistics360`, `election360`, `parliament360`, `license360`, `audit360`, `procurement360`.
+- ✅ Phase 4 : `agri360`, `land360`, `energy360`, `water360`, `transport360`, `road360`,
+  `environment360`, `mining360`, `tourism360`.
+- ✅ Phase 5 : `culture360`, `sport360`, `employment360`, `youth360`, `women360`, `housing360`, `disaster360`.
 
 > Tous les dépôts produits exposent : README · LICENSE (propriétaire) · CONTRIBUTING ·
 > CODE_OF_CONDUCT · SECURITY · CHANGELOG · ROADMAP · AGENTS.md · docs/ (vision, roadmap,
 > architecture, modules, api, deployment, branding, security, installation) · assets/
-> (logo, favicon) · .github/ (issue templates, PR template, Dependabot, CI, CodeQL, release).
+> (logo, favicon) · .github/ (issue templates, PR template, Dependabot, CI, CodeQL, release) ·
+> squelette Next.js minimal + Docker + vitest.
+
+### Questions ouvertes (à valider)
+
+- `wabtechs-platform` et `Dhayaro` restent **publics** (reporté) — voir risque IP §2.
+- `sante_connect` gardé **séparé** de `Dhayaro` (décision maintenue).
 
 ## 15. Prochaine étape
 
-- **Validation** de la visibilité (`wabtechs-platform` / `Dhayaro` → privatiser) et de la
-  fusion éventuelle de `sante_connect`.
-- Phase 2 : création des 8 dépôts du socle État (gov360, civil360, citizen360, …) via le
-  générateur de scaffolding (`scripts/generate-repo.mjs`).
+- **Validation** de la visibilité `wabtechs-platform` / `Dhayaro` → privatiser (ou plan Pro).
+- Commitment du **overlay local** `wabtechs-platform` (fichiers standards ajoutés, non committés).
+- Phase 6 (déploiement) : config Vercel/Cloudflare + GitHub Secrets par produit ; connexion au
+  package `@wabtechs/*` (GitHub Packages) — planifiée après validation du socle.
 
 ---
 
-*Document confidentiel — Wabtechs Company. Reproduction, distribution ou utilisation interdites sans
-autorisation écrite.*
+_Document confidentiel — Wabtechs Company. Reproduction, distribution ou utilisation interdites sans
+autorisation écrite._
