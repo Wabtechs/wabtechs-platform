@@ -34,6 +34,7 @@ export default function NewPostPage() {
   useEffect(() => {
     const saved = loadDraft();
     if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restauration du brouillon localStorage au montage
       setForm((prev) => ({
         title: String(saved.title ?? prev.title),
         slug: String(saved.slug ?? prev.slug),

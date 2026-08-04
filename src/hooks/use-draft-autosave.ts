@@ -17,6 +17,7 @@ export function useDraftAutosave(key: string, form: Record<string, string | bool
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- lecture localStorage au montage (source externe)
         setHasDraft(true);
       }
     } catch { /* localStorage unavailable */ }

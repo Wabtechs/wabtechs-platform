@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +32,7 @@ export default function LoginPage() {
       setError("Email ou mot de passe incorrect.");
       setLoading(false);
     } else {
-      window.location.href = "/admin";
+      router.push("/admin");
     }
   }
 

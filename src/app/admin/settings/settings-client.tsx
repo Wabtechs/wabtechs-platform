@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -203,6 +204,7 @@ export function SettingsPageClient() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- chargement initial des paramètres au montage
     fetchSettings();
   }, [fetchSettings]);
 
@@ -344,10 +346,12 @@ export function SettingsPageClient() {
                     />
                     {draft[field.key] && (
                       <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200/80 dark:border-border">
-                        <img
-                          src={draft[field.key]}
+                        <Image
+                          src={draft[field.key] ?? ""}
                           alt={field.label}
-                          className="h-full w-full object-cover"
+                          fill
+                          unoptimized
+                          className="object-cover"
                         />
                       </div>
                     )}

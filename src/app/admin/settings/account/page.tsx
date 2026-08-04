@@ -56,7 +56,7 @@ export default function AccountPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  const onEmailSubmit = async (_data: EmailForm) => {
+  const onEmailSubmit = async () => {
     setSavingEmail(true);
     try {
       await new Promise((r) => setTimeout(r, 1000));
@@ -68,7 +68,7 @@ export default function AccountPage() {
     }
   };
 
-  const onPasswordSubmit = async (_data: PasswordForm) => {
+  const onPasswordSubmit = async () => {
     setSavingPassword(true);
     try {
       await new Promise((r) => setTimeout(r, 1000));

@@ -49,7 +49,7 @@ export default function ProfilePage() {
     },
   });
 
-  const onSubmit = async (_data: ProfileForm) => {
+  const onSubmit = async () => {
     setSaving(true);
     try {
       // TODO: API call

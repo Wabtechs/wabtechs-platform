@@ -20,6 +20,10 @@ const eslintConfig = defineConfig([
       // Downgrade to warning: legitimate data-loading-on-mount patterns
       // (localStorage read, fetch-in-effect) are flagged as errors by this rule.
       "react-hooks/set-state-in-effect": "warn",
+      // TanStack Table `useReactTable()` returns functions that cannot be
+      // memoized by the React Compiler; React Compiler is not enabled in
+      // next.config.ts, so this rule only produces noise.
+      "react-hooks/incompatible-library": "off",
     },
   },
 ]);
