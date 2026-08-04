@@ -10,47 +10,52 @@
 Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 
 ### P0.1 — CI/CD & Qualité
-**Score actuel: 5/100 • Effort: 3 jours • Sans budget**
 
-- [ ] GitHub Actions: lint automatique sur push/PR
-- [ ] GitHub Actions: typecheck automatique
-- [ ] GitHub Actions: build check
-- [ ] Setup Vitest pour tests unitaires
-- [ ] Setup Playwright pour tests e2e critiques
-- [ ] Husky + lint-staged (pre-commit hooks)
+**Score actuel: 5/100 → 85/100 • Effort: 3 jours • Sans budget**
+
+- [x] GitHub Actions: lint automatique sur push/PR
+- [x] GitHub Actions: typecheck automatique
+- [x] GitHub Actions: build check
+- [x] Setup Vitest pour tests unitaires (41 tests)
+- [x] Setup Playwright pour tests e2e critiques (7 tests, job CI dédié)
+- [x] Husky + lint-staged (pre-commit hooks)
 - [ ] Code coverage minimal (80%)
 
 ### P0.2 — Branding & Identité
-**Score actuel: 40/100 • Effort: 5 jours • Budget: 200€**
 
-- [ ] Décider du nom définitif: `Wabtechs` (tout en minuscules)
-- [ ] Créer le logo (SVG): symbole + logotype + favicon
-- [ ] Définir la palette exacte (primary, secondary, accents, neutres)
+**Score actuel: 40/100 → 75/100 • Effort: 5 jours • Budget: 200€**
+
+- [x] Décider du nom définitif: `Wabtechs` (tout en minuscules)
+- [x] Créer le logo (SVG): symbole + logotype + favicon (placeholder `assets/logo.svg`)
+- [x] Définir la palette exacte (primary, secondary, accents, neutres) — voir `docs/branding.md`
 - [ ] Tagline: "Build. Ship. Scale."
-- [ ] Appliquer le favicon sur toutes les pages
-- [ ] Créer un `BRANDING.md` avec les règles
+- [x] Appliquer le favicon sur toutes les pages (`/icon.png`)
+- [x] Créer un `BRANDING.md` avec les règles (`docs/branding.md`)
 
 ### P0.3 — SEO Fondations
-**Score actuel: 30/100 • Effort: 5 jours • Sans budget**
 
-- [ ] Ajouter JSON-LD structuré (Organization, Website, BlogPosting, Article)
-- [ ] Métadonnées dynamiques complètes (title, description, OG, Twitter)
+**Score actuel: 30/100 → 55/100 • Effort: 5 jours • Sans budget**
+
+- [x] Ajouter JSON-LD structuré (Organization, Website — `src/app/layout.tsx`)
+- [x] Métadonnées dynamiques complètes (title, description, OG, Twitter)
 - [ ] Breadcrumbs JSON-LD sur toutes les pages
 - [ ] Balisage Article sur le blog (datePublished, author, image)
-- [ ] Robots.txt optimisé
-- [ ] Sitemap.xml avec priorités et fréquences
-- [ ] Canonical URLs strictes
+- [x] Robots.txt optimisé (`src/app/robots.ts`)
+- [x] Sitemap.xml avec priorités et fréquences (`src/app/sitemap.ts`)
+- [x] Canonical URLs strictes (metadataBase configuré)
 - [ ] Schema.org SoftwareApplication pour les projets
 
 ### P0.4 — Analytics & Monitoring
-**Score actuel: 0/100 • Effort: 2 jours • Budget: 50€/mois**
 
-- [ ] Installer PostHog (self-host ou cloud) — analytics + session recordings
+**Score actuel: 0/100 → 40/100 • Effort: 2 jours • Budget: 50€/mois**
+
+- [x] Installer PostHog (self-host ou cloud) — analytics + session recordings
 - [ ] Installer Sentry — error tracking
 - [ ] Tableau de bord des KPIs (visiteurs, pages vues, conversions)
 - [ ] Console.log/error tracking supprimé
 
 ### P0.5 — Page d'accueil (Conversion)
+
 **Score actuel: 50/100 • Effort: 5 jours • Sans budget**
 
 - [ ] Hero section: valeur proposition claire en 3 secondes
@@ -67,6 +72,7 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 Ces chantiers génèrent les premiers revenus.
 
 ### P1.1 — Academy
+
 **Effort: 4 semaines • Budget: 500€ (micro, caméra, hébergement vidéo)**
 
 - [x] Créer le modèle `Course` + `Lesson` + `Enrollment` dans Prisma
@@ -78,6 +84,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Certificat de complétion (PDF généré)
 
 ### P1.2 — Templates Premium
+
 **Effort: 2 semaines • Budget: 0€**
 
 - [x] Créer le modèle `Template` dans Prisma
@@ -91,6 +98,7 @@ Ces chantiers génèrent les premiers revenus.
   - [x] SaaS Starter Kit
 
 ### P1.3 — Newsletter
+
 **Effort: 1 semaine • Budget: 0€ (Buttondown gratuit)**
 
 - [x] Double opt-in fonctionnel
@@ -100,6 +108,7 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Popup de sortie (exit intent)
 
 ### P1.4 — GitHub Sponsors
+
 **Effort: 2 jours • Budget: 0€**
 
 - [x] Configurer GitHub Sponsors profile
@@ -113,6 +122,7 @@ Ces chantiers génèrent les premiers revenus.
 ## Priorité 2 (P2) — Croissance
 
 ### P2.1 — Marketplace
+
 **Effort: 6 semaines • Budget: 2 000€**
 
 - [ ] Modèles: `Product`, `Order`, `Review`, `Payout`
@@ -123,6 +133,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Commission 70/30 (créateur/Wabtechs)
 
 ### P2.2 — API Publique
+
 **Effort: 4 semaines • Budget: 500€**
 
 - [ ] API keys management (Dev Portal)
@@ -133,6 +144,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Plans API (Free: 1K/jour, Pro: 10K/jour, Enterprise: illimité)
 
 ### P2.3 — Communauté
+
 **Effort: 3 semaines • Budget: 0€**
 
 - [ ] Serveur Discord structuré (channels par produit)
@@ -142,6 +154,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Forum de discussions (intégré au site)
 
 ### P2.4 — Job Board
+
 **Effort: 2 semaines • Budget: 500€**
 
 - [ ] Modèles: `JobListing`, `Application`
@@ -155,6 +168,7 @@ Ces chantiers génèrent les premiers revenus.
 ## Priorité 3 (P3) — Scale
 
 ### P3.1 — Support Enterprise
+
 **Effort: 4 semaines • Budget: 1 000€**
 
 - [ ] Système de tickets (Zendesk/Freshdesk ou custom)
@@ -164,6 +178,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Portail support client
 
 ### P3.2 — Wabtechs Cloud (Beta)
+
 **Effort: 12 semaines • Budget: 10 000€**
 
 - [ ] Dashboard de déploiement
@@ -175,6 +190,7 @@ Ces chantiers génèrent les premiers revenus.
 - [ ] Pricing: $19/mois (1 projet), $49/mois (5 projets), $199/mois (illimité)
 
 ### P3.3 — AI Assistant
+
 **Effort: 6 semaines • Budget: 500€/mois (LLM API)**
 
 - [ ] Chatbot site (documentation, aide)
@@ -202,23 +218,24 @@ Projets à long terme, post-rentabilité.
 
 ## Roadmap temporelle
 
-| Période | Focus | Objectif clé |
-|---------|-------|-------------|
-| **Jours 1-7** | P0.1 + P0.2 | CI/CD vert, branding OK |
-| **Semaine 2** | P0.3 + P0.4 | SEO baseline, analytics actif |
-| **Semaine 3** | P0.5 | Homepage convertissante |
-| **Semaine 4** | P1.3 + P1.4 | Newsletter active, sponsors live |
-| **Mois 2** | P1.1 | Premier cours Academy en ligne |
-| **Mois 3** | P1.2 + P2.1 | 5 templates, marketplace beta |
-| **Mois 4-6** | P2.2 + P2.3 + P2.4 | API, communauté, job board |
-| **Mois 7-12** | P3.1 + P3.2 + P3.3 | Support, Cloud beta, AI |
-| **Année 2** | P4 | Scale international, levée de fonds |
+| Période       | Focus              | Objectif clé                        |
+| ------------- | ------------------ | ----------------------------------- |
+| **Jours 1-7** | P0.1 + P0.2        | CI/CD vert, branding OK             |
+| **Semaine 2** | P0.3 + P0.4        | SEO baseline, analytics actif       |
+| **Semaine 3** | P0.5               | Homepage convertissante             |
+| **Semaine 4** | P1.3 + P1.4        | Newsletter active, sponsors live    |
+| **Mois 2**    | P1.1               | Premier cours Academy en ligne      |
+| **Mois 3**    | P1.2 + P2.1        | 5 templates, marketplace beta       |
+| **Mois 4-6**  | P2.2 + P2.3 + P2.4 | API, communauté, job board          |
+| **Mois 7-12** | P3.1 + P3.2 + P3.3 | Support, Cloud beta, AI             |
+| **Année 2**   | P4                 | Scale international, levée de fonds |
 
 ---
 
 ## Indicateurs de succès (OKRs)
 
 ### Q1 (30 jours)
+
 - [ ] CI/CD passe à 100%
 - [ ] SEO score > 60
 - [ ] Analytics actif
@@ -226,6 +243,7 @@ Projets à long terme, post-rentabilité.
 - [ ] GitHub Sponsors: 5 sponsors
 
 ### Q2 (90 jours)
+
 - [ ] MRR > 1 000€
 - [ ] Academy: 50 étudiants
 - [ ] Templates: 20 ventes
@@ -233,6 +251,7 @@ Projets à long terme, post-rentabilité.
 - [ ] Newsletter: 1 000 abonnés
 
 ### Q3 (6 mois)
+
 - [ ] MRR > 5 000€
 - [ ] 500 stars GitHub
 - [ ] 5 000 visiteurs/mois organiques
@@ -240,6 +259,7 @@ Projets à long terme, post-rentabilité.
 - [ ] Community Discord: 500 membres
 
 ### Q1 Année 2
+
 - [ ] MRR > 20 000€
 - [ ] Rentabilité atteinte
 - [ ] 50 000 visiteurs/mois
@@ -248,5 +268,5 @@ Projets à long terme, post-rentabilité.
 
 ---
 
-**Dernière mise à jour**: 31 juillet 2026
+**Dernière mise à jour**: 3 août 2026
 **Prochaine révision**: 31 octobre 2026
