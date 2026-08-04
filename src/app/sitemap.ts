@@ -1,123 +1,95 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts, getAllDocs } from "@/lib/mdx";
+import { SITE_CONFIG } from "@/lib/utils";
 import { db } from "@/lib/prisma";
 
-const BASE_URL = "https://wabtechs.com";
-
-const staticRoutes = [
+const STATIC_ROUTES = [
   "",
   "/about",
+  "/academy",
   "/blog",
-  "/docs",
-  "/projects",
-  "/podcast",
-  "/videos",
-  "/snippets",
-  "/resources",
-  "/downloads",
+  "/changelog",
   "/community",
-  "/newsletter",
-  "/faq",
-  "/events",
-  "/open-source",
-  "/roadmaps",
-  "/tutorials",
   "/contact",
+  "/docs",
+  "/downloads",
+  "/events",
+  "/faq",
+  "/newsletter",
+  "/open-source",
+  "/podcast",
+  "/pricing",
   "/privacy",
+  "/projects",
+  "/resources",
+  "/roadmaps",
+  "/snippets",
+  "/sponsors",
+  "/support",
+  "/templates",
   "/terms",
+  "/tutorials",
+  "/videos",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
-    url: `${BASE_URL}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route === "" ? "daily" as const : "monthly" as const,
-    priority:
-      route === "" ? 1.0 :
-      route === "/blog" ? 0.8 :
-      route === "/docs" || route === "/projects" ? 0.7 :
-      0.5,
+  const [posts, templates, courses, projects] = await Promise.all([
+    db.post.findMany({
+      where: { published: true },
+      select: { slug: true, publishedAt: true, updatedAt: true },
+    }),
+    db.template.findMany({
+      where: { published: true },
+      select: { slug: true, updatedAt: true },
+    }),
+    db.course.findMany({
+      where: { published: true },
+      select: { slug: true, updatedAt: true },
+    }),
+    db.project.findMany({
+      where: { archived: false },
+      select: { slug: true, updatedAt: true },
+    }),
+  ]);
+
+  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
+    url: `${SITE_CONFIG.url}${route}`,
+    changeFrequency: "weekly",
+    priority: route === "" ? 1 : 0.8,
   }));
 
-  const blogEntries: MetadataRoute.Sitemap = getAllPosts().map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  const docEntries: MetadataRoute.Sitemap = getAllDocs().map((doc) => ({
-    url: `${BASE_URL}/docs/${doc.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
+  const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
+    url: `${SITE_CONFIG.url}/blog/${post.slug}`,
+    lastModified: post.publishedAt ?? post.updatedAt,
+    changeFrequency: "weekly",
     priority: 0.7,
   }));
 
-  let projectEntries: MetadataRoute.Sitemap = [];
-  try {
-    const projects = await db.project.findMany({ select: { slug: true, updatedAt: true } });
-    projectEntries = projects.map((p) => ({
-      url: `${BASE_URL}/projects/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
-  } catch {}
+  const templateEntries: MetadataRoute.Sitemap = templates.map((t) => ({
+    url: `${SITE_CONFIG.url}/templates/${t.slug}`,
+    lastModified: t.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
-  let podcastEntries: MetadataRoute.Sitemap = [];
-  try {
-    const podcasts = await db.podcast.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } });
-    podcastEntries = podcasts.map((p) => ({
-      url: `${BASE_URL}/podcast/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch {}
+  const courseEntries: MetadataRoute.Sitemap = courses.map((c) => ({
+    url: `${SITE_CONFIG.url}/academy/${c.slug}`,
+    lastModified: c.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
-  let videoEntries: MetadataRoute.Sitemap = [];
-  try {
-    const videos = await db.video.findMany({ select: { slug: true, updatedAt: true } });
-    videoEntries = videos.map((v) => ({
-      url: `${BASE_URL}/videos/${v.slug}`,
-      lastModified: v.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch {}
+  const projectEntries: MetadataRoute.Sitemap = projects.map((p) => ({
+    url: `${SITE_CONFIG.url}/projects/${p.slug}`,
+    lastModified: p.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
-  let tutorialEntries: MetadataRoute.Sitemap = [];
-  try {
-    const tutorials = await db.tutorial.findMany({ select: { slug: true, updatedAt: true } });
-    tutorialEntries = tutorials.map((t) => ({
-      url: `${BASE_URL}/tutorials/${t.slug}`,
-      lastModified: t.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch {}
-
-  let eventEntries: MetadataRoute.Sitemap = [];
-  try {
-    const events = await db.event.findMany({ select: { slug: true, updatedAt: true } });
-    eventEntries = events.map((e) => ({
-      url: `${BASE_URL}/events/${e.slug}`,
-      lastModified: e.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch {}
-
-  let changelogEntries: MetadataRoute.Sitemap = [];
-  try {
-    const changelogs = await db.changelog.findMany({ select: { slug: true, updatedAt: true } });
-    changelogEntries = changelogs.map((c) => ({
-      url: `${BASE_URL}/changelog/${c.slug}`,
-      lastModified: c.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
-  } catch {}
-
-  return [...staticEntries, ...blogEntries, ...docEntries, ...projectEntries, ...podcastEntries, ...videoEntries, ...tutorialEntries, ...eventEntries, ...changelogEntries];
+  return [
+    ...staticEntries,
+    ...postEntries,
+    ...templateEntries,
+    ...courseEntries,
+    ...projectEntries,
+  ];
 }
