@@ -47,6 +47,7 @@ import {
   FileBarChart,
   Bell,
   ScrollText,
+  Smartphone,
 } from "lucide-react";
 import {
   Sidebar,
@@ -163,6 +164,17 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Journal d'audit", href: "/admin/audit", icon: ScrollText },
     ],
   },
+  {
+    title: "MOBILE",
+    items: [
+      { label: "Mobile Center", href: "/admin/mobile", icon: Smartphone },
+      { label: "Applications", href: "/admin/mobile/apps", icon: AppWindow },
+      { label: "Builds", href: "/admin/mobile/builds", icon: Boxes },
+      { label: "Releases", href: "/admin/mobile/releases", icon: GitCompare },
+      { label: "Certificats", href: "/admin/mobile/certificates", icon: Star },
+      { label: "Paramètres", href: "/admin/mobile/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -183,18 +195,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <Link
               href="/admin"
-              className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group-data-[collapsible=icon]:justify-center"
+              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none group-data-[collapsible=icon]:justify-center"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
+              <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
                 W
               </div>
               <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="text-sm font-semibold text-sidebar-foreground">
-                  Wabtechs
-                </span>
-                <span className="text-[11px] text-sidebar-foreground/60">
-                  Admin
-                </span>
+                <span className="text-sidebar-foreground text-sm font-semibold">Wabtechs</span>
+                <span className="text-sidebar-foreground/60 text-[11px]">Admin</span>
               </div>
             </Link>
           </SidebarMenuItem>
@@ -214,13 +222,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <Link
                         href={navItem.href}
                         className={cn(
-                          "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none transition-colors",
+                          "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none",
                           "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                          "focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+                          "focus-visible:ring-sidebar-ring focus-visible:ring-2",
                           "[&>svg]:size-4 [&>svg]:shrink-0",
                           "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-2",
                           active
-                            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                             : "text-sidebar-foreground/70",
                         )}
                       >
@@ -230,9 +238,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </span>
                       </Link>
                       {!active && navItem.badge && (
-                        <SidebarMenuBadge>
-                          {navItem.badge}
-                        </SidebarMenuBadge>
+                        <SidebarMenuBadge>{navItem.badge}</SidebarMenuBadge>
                       )}
                     </SidebarMenuItem>
                   );
@@ -250,18 +256,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <Link
               href="/admin"
-              className="flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors group-data-[collapsible=icon]:justify-center"
+              className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none group-data-[collapsible=icon]:justify-center"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
+              <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white shadow-sm shadow-[#842ae3]/20">
                 E
               </div>
               <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                <span className="text-sm font-semibold text-sidebar-foreground">
-                  Emmanuel
-                </span>
-                <span className="text-[11px] text-sidebar-foreground/60">
-                  Admin
-                </span>
+                <span className="text-sidebar-foreground text-sm font-semibold">Emmanuel</span>
+                <span className="text-sidebar-foreground/60 text-[11px]">Admin</span>
               </div>
             </Link>
           </SidebarMenuItem>

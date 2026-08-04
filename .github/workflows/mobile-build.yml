@@ -1,0 +1,162 @@
+name: Mobile Build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "src/modules/mobile-builder/**"
+      - "prisma/schema.prisma"
+  workflow_dispatch:
+    inputs:
+      appId:
+        description: 'Mobile App ID'
+        required: true
+      platform:
+        description: 'Platform (android/ios)'
+        required: true
+        default: 'android'
+      version:
+        description: 'Version name (e.g. 1.0.0)'
+        required: true
+      flavor:
+        description: 'Android flavor (apk/aab)'
+        required: false
+        default: 'aab'
+
+jobs:
+  android-build:
+    name: Android Build
+    runs-on: ubuntu-latest
+    if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'both'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup PostgreSQL
+        uses: Harsha707/Setup-postgres@v2
+        with:
+          postgresql_db: wabtechs
+          postgresql_user: postgres
+          postgresql_password: postgres
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/wabtechs
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 34
+          ndk: 26.1.10909125
+          ndk-script: yes
+
+      - name: Accept SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses --channel=13
+
+      - name: Install Capacitor
+        run: npx cap add android
+
+      - name: Sync Capacitor
+        run: npx cap copy android && npx cap sync android
+
+      - name: Configure signing
+        run: |
+          echo "Create key.properties and signing config"
+
+      - name: Build AAB
+        if: inputs.flavor == 'aab'
+        run: cd android && ./gradlew bundleRelease
+
+      - name: Build APK
+        if: inputs.flavor == 'apk'
+        run: cd android && ./gradlew assembleRelease
+
+      - name: Upload AAB artifact
+        if: inputs.flavor == 'aab'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-app-${{ github.sha }}-aab
+          path: android/app/build/outputs/bundle/release/*.aab
+
+      - name: Upload APK artifact
+        if: inputs.flavor == 'apk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-app-${{ github.sha }}-apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+      - name: Generate debug APK
+        run: cd android && ./gradlew assembleDebug
+        if: always()
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-app-${{ github.sha }}-debug
+          path: android/app/build/outputs/apk/debug/*.apk
+        if: always()
+
+  ios-build:
+    name: iOS Build
+    runs-on: macos-latest
+    if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'both'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup PostgreSQL
+        uses: Harsha707/Setup-postgres@v2
+        with:
+          postgresql_db: wabtechs
+          postgresql_user: postgres
+          postgresql_password: postgres
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/wabtechs
+
+      - name: Install Capacitor
+        run: npm install @capacitor/ios @capacitor/cli
+
+      - name: Add iOS platform
+        run: npx cap add ios
+
+      - name: Sync iOS
+        run: npx cap sync ios
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v2
+        with:
+          xcode-version: latest-stable
+
+      - name: Build IPA
+        run: |
+          cd ios
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -archivePath App.xcarchive archive
+          xcodebuild -exportArchive -archivePath App.xcarchive -exportPath . -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-app-${{ github.sha }}-ipa
+          path: ios/App.ipa
