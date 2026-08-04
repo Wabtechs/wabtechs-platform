@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Wabtechs Platform logo">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="oklch(0.585 0.233 277.117)" />
+      <stop offset="1" stop-color="oklch(0.723 0.219 149.579)" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)" />
+  <text x="256" y="256" text-anchor="middle" dominant-baseline="central"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="200" font-weight="800" fill="#ffffff" letter-spacing="4">
+    WA
+  </text>
+</svg>
+
