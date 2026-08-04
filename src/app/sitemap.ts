@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { SITE_CONFIG } from "@/lib/utils";
 import { db } from "@/lib/prisma";
 
@@ -32,6 +33,8 @@ const STATIC_ROUTES = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection();
+
   const [posts, templates, courses, projects] = await Promise.all([
     db.post.findMany({
       where: { published: true },
