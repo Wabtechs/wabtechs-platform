@@ -34,6 +34,7 @@ model User {
   assignedObjectives Objective[]
   osComments         OsComment[]
   notifications      Notification[]
+  mobileAuditLogs    MobileAuditLog[]
 
   @@map("users")
 }
@@ -934,3 +935,149 @@ model MetricSnapshot {
   @@index([metric, date])
   @@map("metric_snapshots")
 }
+
+// ============================================================
+// MOBILE APP BUILDER
+// ============================================================
+
+enum MobileFramework {
+  NEXT_JS
+  REACT_NATIVE
+  EXPO
+  VUE
+  SVELTEKIT
+  CUSTOM
+}
+
+enum PlatformTarget {
+  ANDROID
+  IOS
+  BOTH
+}
+
+enum BuildStatus {
+  PENDING
+  BUILDING
+  SUCCESS
+  FAILED
+}
+
+enum ReleaseStatus {
+  DRAFT
+  INTERNAL_TESTING
+  BETA
+  PRODUCTION
+}
+
+model MobileApp {
+  id              String           @id @default(cuid())
+  name            String
+  slug            String           @unique
+  packageName     String           @unique
+  bundleId        String           @unique
+  description     String?
+  icon            String?
+  splashScreen    String?
+  repositoryUrl   String
+  framework       MobileFramework  @default(NEXT_JS)
+  version         String           @default("1.0.0")
+  status          BuildStatus      @default(PENDING)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  builds          MobileBuild[]
+  certificates    MobileCertificate[]
+  releases        MobileRelease[]
+  storeIntegrations StoreIntegration[]
+  auditLogs       MobileAuditLog[]
+
+  @@index([slug])
+  @@map("mobile_apps")
+}
+
+model MobileBuild {
+  id           String       @id @default(cuid())
+  appId        String
+  platform     PlatformTarget
+  version      String
+  status       BuildStatus  @default(PENDING)
+  logs         String?
+  artifactUrl  String?
+  duration     Int?
+  createdAt    DateTime     @default(now())
+  completedAt  DateTime?
+
+  app          MobileApp    @relation(fields: [appId], references: [id], onDelete: Cascade)
+  releases     MobileRelease[]
+
+  @@index([appId])
+  @@index([status])
+  @@map("mobile_builds")
+}
+
+model MobileCertificate {
+  id             String           @id @default(cuid())
+  appId          String
+  provider       String           // "android-keystore" | "apple-certificate"
+  name           String
+  encryptedSecret String          // AES-256-GCM encrypted
+  status         String           @default("active") // active, expired, revoked
+  createdAt      DateTime         @default(now())
+  expiresAt      DateTime?
+
+  app            MobileApp        @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@index([appId])
+  @@map("mobile_certificates")
+}
+
+model MobileRelease {
+  id          String         @id @default(cuid())
+  appId       String
+  version     String
+  status      ReleaseStatus  @default(DRAFT)
+  changelog   String?
+  buildId     String?
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  app         MobileApp      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  build       MobileBuild?   @relation(fields: [buildId], references: [id], onDelete: SetNull)
+
+  @@index([appId])
+  @@index([status])
+  @@map("mobile_releases")
+}
+
+model StoreIntegration {
+  id          String    @id @default(cuid())
+  appId       String
+  provider    String    // "google-play" | "app-store"
+  credentials String    // encrypted
+  status      String    @default("disconnected") // connected, disconnected, error
+  lastSync    DateTime?
+  createdAt   DateTime  @default(now())
+
+  app         MobileApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@index([appId])
+  @@map("store_integrations")
+}
+
+model MobileAuditLog {
+  id          String   @id @default(cuid())
+  appId       String
+  action      String   // BUILD_STARTED, BUILD_COMPLETED, APP_RELEASED, CERTIFICATE_UPDATED, APP_CREATED, APP_UPDATED
+  userId      String?
+  details     Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  app        MobileApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([appId])
+  @@index([action])
+  @@map("mobile_audit_logs")
+}
+
