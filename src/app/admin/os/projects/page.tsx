@@ -12,7 +12,7 @@ import { Layers, ArrowRight } from "lucide-react";
 export const metadata: Metadata = { title: "Project OS — Projets" };
 export const dynamic = "force-dynamic";
 
-export const PAGE_SIZE = 12;
+const PAGE_SIZE = 12;
 
 export default async function OsProjectsPage({
   searchParams,
@@ -33,7 +33,16 @@ export default async function OsProjectsPage({
       skip,
       include: {
         owner: { select: { name: true, email: true } },
-        _count: { select: { features: true, bugs: true, objectives: true, modules: true, sprints: true, members: true } },
+        _count: {
+          select: {
+            features: true,
+            bugs: true,
+            objectives: true,
+            modules: true,
+            sprints: true,
+            members: true,
+          },
+        },
       },
     }),
   ]);
@@ -50,28 +59,39 @@ export default async function OsProjectsPage({
       />
 
       {projects.length === 0 ? (
-        <OsEmpty title="Aucun projet" hint="Créez votre premier projet pour piloter son développement." />
-      ) : (        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <OsEmpty
+          title="Aucun projet"
+          hint="Créez votre premier projet pour piloter son développement."
+        />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {projects.map((p) => (
             <Link
               key={p.id}
               href={`/admin/os/projects/${p.slug}`}
-              className="group flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
+              className="group border-border bg-card flex flex-col rounded-xl border p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg text-[13px] font-bold text-white" style={{ background: p.color }}>
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-[13px] font-bold text-white"
+                    style={{ background: p.color }}
+                  >
                     {p.name.charAt(0)}
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-[14px] font-semibold">{p.name}</p>
-                    <p className="text-[11px] text-gray-400">v{p.version} · {p.environment}</p>
+                    <p className="text-[11px] text-gray-400">
+                      v{p.version} · {p.environment}
+                    </p>
                   </div>
                 </div>
                 <OsStatusBadge status={p.status} />
               </div>
 
-              <p className="mt-3 line-clamp-2 text-[12px] text-gray-500 dark:text-gray-400">{p.description}</p>
+              <p className="mt-3 line-clamp-2 text-[12px] text-gray-500 dark:text-gray-400">
+                {p.description}
+              </p>
 
               <div className="mt-4 grid grid-cols-4 gap-2 rounded-lg bg-gray-50 p-3 text-center dark:bg-white/5">
                 <div>
@@ -92,15 +112,17 @@ export default async function OsProjectsPage({
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4 dark:border-border">
+              <div className="dark:border-border mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
                 <div className="flex items-center gap-2 text-[11px] text-gray-400">
                   <OsTypeBadge type={p.type} />
                   <span>·</span>
                   <span>{fmtEur(p.mrr)} MRR</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[12px] font-semibold ${healthColor(p.healthScore)}`}>{p.healthScore}% santé</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-300 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
+                  <span className={`text-[12px] font-semibold ${healthColor(p.healthScore)}`}>
+                    {p.healthScore}% santé
+                  </span>
+                  <ArrowRight className="group-hover:text-primary h-3.5 w-3.5 text-gray-300 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
             </Link>

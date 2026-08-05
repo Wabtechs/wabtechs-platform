@@ -6,7 +6,7 @@ import { AuditClient } from "./audit-client";
 export const metadata: Metadata = { title: "Journal d'audit" };
 export const dynamic = "force-dynamic";
 
-export const PAGE_SIZE = 25;
+const PAGE_SIZE = 25;
 
 export default async function AdminAuditPage({
   searchParams,

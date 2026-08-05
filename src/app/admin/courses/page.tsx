@@ -10,7 +10,7 @@ import { DeleteCourseButton } from "./delete-button";
 export const metadata: Metadata = { title: "Gestion des cours" };
 export const dynamic = "force-dynamic";
 
-export const PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 export default async function AdminCoursesPage({
   searchParams,
@@ -43,7 +43,7 @@ export default async function AdminCoursesPage({
               <GraduationCap className="h-5 w-5 text-blue-500" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+              <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
                 Cours — Academy
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -55,7 +55,7 @@ export default async function AdminCoursesPage({
         <Button
           asChild
           size="sm"
-          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           <Link href="/admin/courses/new">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -72,7 +72,7 @@ export default async function AdminCoursesPage({
               <p className="text-[13px] text-gray-500">Aucun cours</p>
               <Link
                 href="/admin/courses/new"
-                className="mt-2 text-[12px] font-medium text-primary hover:underline"
+                className="text-primary mt-2 text-[12px] font-medium hover:underline"
               >
                 Créer votre premier cours
               </Link>
@@ -82,14 +82,14 @@ export default async function AdminCoursesPage({
           items.map((item) => (
             <div
               key={item.id}
-              className="group flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
+              className="group border-border bg-card flex items-center justify-between rounded-xl border px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-foreground">
+                  <p className="dark:text-foreground truncate text-[14px] font-medium text-gray-900">
                     {item.title}
                   </p>
-                  <span className="inline-flex items-center rounded-full bg-primary/[0.06] px-2 py-0.5 text-[10px] font-medium text-primary capitalize">
+                  <span className="bg-primary/[0.06] text-primary inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium capitalize">
                     {item.level}
                   </span>
                   {item.published ? (
@@ -115,17 +115,15 @@ export default async function AdminCoursesPage({
                   variant="ghost"
                   size="sm"
                   asChild
-                  className="h-8 text-gray-400 hover:text-gray-900 dark:hover:text-foreground"
+                  className="dark:hover:text-foreground h-8 text-gray-400 hover:text-gray-900"
                 >
-                  <Link href={`/admin/lessons?courseId=${item.id}`}>
-                    Leçons
-                  </Link>
+                  <Link href={`/admin/lessons?courseId=${item.id}`}>Leçons</Link>
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   asChild
-                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-foreground"
+                  className="dark:hover:text-foreground h-8 w-8 text-gray-400 hover:text-gray-900"
                 >
                   <Link href={`/admin/courses/${item.id}/edit`}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -138,7 +136,11 @@ export default async function AdminCoursesPage({
         )}
       </div>
 
-      <PaginationLinks currentPage={currentPage} totalPages={totalPages} basePath="/admin/courses" />
+      <PaginationLinks
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/admin/courses"
+      />
     </div>
   );
 }

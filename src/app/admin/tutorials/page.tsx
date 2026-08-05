@@ -11,7 +11,7 @@ import { DeleteTutorialButton } from "./delete-button";
 export const metadata: Metadata = { title: "Gestion des tutoriels" };
 export const dynamic = "force-dynamic";
 
-export const PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 export default async function AdminTutorialsPage({
   searchParams,
@@ -43,7 +43,7 @@ export default async function AdminTutorialsPage({
               <BookOpen className="h-5 w-5 text-orange-500" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+              <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
                 Tutoriels
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -55,7 +55,7 @@ export default async function AdminTutorialsPage({
         <Button
           asChild
           size="sm"
-          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           <Link href="/admin/tutorials/new">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -72,7 +72,7 @@ export default async function AdminTutorialsPage({
               <p className="text-[13px] text-gray-500">Aucun tutoriel</p>
               <Link
                 href="/admin/tutorials/new"
-                className="mt-2 text-[12px] font-medium text-primary hover:underline"
+                className="text-primary mt-2 text-[12px] font-medium hover:underline"
               >
                 Créer votre premier tutoriel
               </Link>
@@ -82,11 +82,11 @@ export default async function AdminTutorialsPage({
           items.map((item) => (
             <div
               key={item.id}
-              className="group flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
+              className="group border-border bg-card flex items-center justify-between rounded-xl border px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-foreground">
+                  <p className="dark:text-foreground truncate text-[14px] font-medium text-gray-900">
                     {item.title}
                   </p>
                   {item.published ? (
@@ -110,7 +110,7 @@ export default async function AdminTutorialsPage({
                   variant="ghost"
                   size="icon"
                   asChild
-                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-foreground"
+                  className="dark:hover:text-foreground h-8 w-8 text-gray-400 hover:text-gray-900"
                 >
                   <Link href={`/admin/tutorials/${item.id}/edit`}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -123,7 +123,11 @@ export default async function AdminTutorialsPage({
         )}
       </div>
 
-      <PaginationLinks currentPage={currentPage} totalPages={totalPages} basePath="/admin/tutorials" />
+      <PaginationLinks
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/admin/tutorials"
+      />
     </div>
   );
 }

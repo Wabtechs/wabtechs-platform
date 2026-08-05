@@ -11,7 +11,7 @@ import { DeleteProjectButton } from "./delete-button";
 export const metadata: Metadata = { title: "Gestion des projets" };
 export const dynamic = "force-dynamic";
 
-export const PAGE_SIZE = 20;
+const PAGE_SIZE = 20;
 
 export default async function AdminProjectsPage({
   searchParams,
@@ -43,7 +43,7 @@ export default async function AdminProjectsPage({
               <Layers className="h-5 w-5 text-cyan-500" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+              <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
                 Projets
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -55,7 +55,7 @@ export default async function AdminProjectsPage({
         <Button
           asChild
           size="sm"
-          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           <Link href="/admin/projects/new">
             <Plus className="mr-1.5 h-3.5 w-3.5" />
@@ -72,7 +72,7 @@ export default async function AdminProjectsPage({
               <p className="text-[13px] text-gray-500">Aucun projet</p>
               <Link
                 href="/admin/projects/new"
-                className="mt-2 text-[12px] font-medium text-primary hover:underline"
+                className="text-primary mt-2 text-[12px] font-medium hover:underline"
               >
                 Créer votre premier projet
               </Link>
@@ -82,11 +82,11 @@ export default async function AdminProjectsPage({
           projects.map((project) => (
             <div
               key={project.id}
-              className="group flex items-center justify-between rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
+              className="group border-border bg-card flex items-center justify-between rounded-xl border px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="truncate text-[14px] font-medium text-gray-900 dark:text-foreground">
+                  <p className="dark:text-foreground truncate text-[14px] font-medium text-gray-900">
                     {project.title}
                   </p>
                   {project.featured && (
@@ -108,9 +108,7 @@ export default async function AdminProjectsPage({
                     <>
                       <span>·</span>
                       <span>{project.techStack.slice(0, 3).join(", ")}</span>
-                      {project.techStack.length > 3 && (
-                        <span>+{project.techStack.length - 3}</span>
-                      )}
+                      {project.techStack.length > 3 && <span>+{project.techStack.length - 3}</span>}
                     </>
                   )}
                 </div>
@@ -120,7 +118,7 @@ export default async function AdminProjectsPage({
                   variant="ghost"
                   size="icon"
                   asChild
-                  className="h-8 w-8 text-gray-400 hover:text-gray-900 dark:hover:text-foreground"
+                  className="dark:hover:text-foreground h-8 w-8 text-gray-400 hover:text-gray-900"
                 >
                   <Link href={`/admin/projects/${project.id}/edit`}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -133,7 +131,11 @@ export default async function AdminProjectsPage({
         )}
       </div>
 
-      <PaginationLinks currentPage={currentPage} totalPages={totalPages} basePath="/admin/projects" />
+      <PaginationLinks
+        currentPage={currentPage}
+        totalPages={totalPages}
+        basePath="/admin/projects"
+      />
     </div>
   );
 }
