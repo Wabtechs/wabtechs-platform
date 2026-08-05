@@ -1,10 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { AppError } from "@/lib/errors";
-import {
-  getClientIp,
-  rateLimit,
-  resetRateLimit,
-} from "@/lib/rate-limit";
+import { getClientIp, rateLimit, resetRateLimit } from "@/lib/rate-limit";
 
 describe("getClientIp", () => {
   it("extrait la première IP du header x-forwarded-for", () => {
@@ -27,34 +23,32 @@ describe("getClientIp", () => {
 });
 
 describe("rateLimit", () => {
-  beforeEach(() => {
-    resetRateLimit("test:key");
+  beforeEach(async () => {
+    await resetRateLimit("test:key");
   });
 
-  it("autorise les requêtes sous le maximum", () => {
-    rateLimit("test:key", { windowMs: 60_000, max: 3 });
-    rateLimit("test:key", { windowMs: 60_000, max: 3 });
-    const result = rateLimit("test:key", { windowMs: 60_000, max: 3 });
+  it("autorise les requêtes sous le maximum", async () => {
+    await rateLimit("test:key", { windowMs: 60_000, max: 3 });
+    await rateLimit("test:key", { windowMs: 60_000, max: 3 });
+    const result = await rateLimit("test:key", { windowMs: 60_000, max: 3 });
     expect(result.remaining).toBe(0);
   });
 
-  it("lève une AppError 429 au-delà du maximum", () => {
+  it("lève une AppError 429 au-delà du maximum", async () => {
     for (let i = 0; i < 3; i++) {
-      rateLimit("test:key", { windowMs: 60_000, max: 3 });
+      await rateLimit("test:key", { windowMs: 60_000, max: 3 });
     }
-    expect(() => rateLimit("test:key", { windowMs: 60_000, max: 3 })).toThrowError(
+    await expect(rateLimit("test:key", { windowMs: 60_000, max: 3 })).rejects.toThrowError(
       AppError,
     );
-    expect(() => rateLimit("test:key", { windowMs: 60_000, max: 3 })).toThrowError(
+    await expect(rateLimit("test:key", { windowMs: 60_000, max: 3 })).rejects.toThrowError(
       "Trop de requêtes",
     );
   });
 
-  it("renouvelle la fenêtre après expiration", () => {
-    rateLimit("test:key", { windowMs: -1, max: 1 });
-    rateLimit("test:key", { windowMs: -1, max: 1 });
-    expect(() =>
-      rateLimit("test:key", { windowMs: 60_000, max: 1 }),
-    ).not.toThrowError();
+  it("renouvelle la fenêtre après expiration", async () => {
+    await rateLimit("test:key", { windowMs: -1, max: 1 });
+    await rateLimit("test:key", { windowMs: -1, max: 1 });
+    await expect(rateLimit("test:key", { windowMs: 60_000, max: 1 })).resolves.toBeDefined();
   });
 });

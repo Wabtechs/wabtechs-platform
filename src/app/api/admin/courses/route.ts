@@ -4,14 +4,34 @@ import { createAuditLog } from "@/lib/audit";
 import { safeHandler } from "@/lib/safe-handler";
 import { requireAdmin } from "@/lib/auth-guard";
 
-export const GET = safeHandler(async () => {
+const PAGE_SIZE = 50;
+
+export const GET = safeHandler(async (req: Request) => {
   await requireAdmin();
 
-  const courses = await db.course.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { lessons: true, enrollments: true } } },
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [total, courses] = await Promise.all([
+    db.course.count(),
+    db.course.findMany({
+      skip,
+      take: PAGE_SIZE,
+      orderBy: { createdAt: "desc" },
+      include: { _count: { select: { lessons: true, enrollments: true } } },
+    }),
+  ]);
+
+  return NextResponse.json({
+    courses,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
+    },
   });
-  return NextResponse.json(courses);
 });
 
 export const POST = safeHandler(async (req: Request) => {
@@ -35,7 +55,12 @@ export const POST = safeHandler(async (req: Request) => {
         featured: data.featured ?? false,
       },
     });
-    await createAuditLog({ action: "UPDATE", entity: "Cours", entityId: updated.id, userId: user.id as string });
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "Cours",
+      entityId: updated.id,
+      userId: user.id as string,
+    });
     return NextResponse.json(updated);
   }
 
@@ -52,7 +77,12 @@ export const POST = safeHandler(async (req: Request) => {
       featured: data.featured ?? false,
     },
   });
-  await createAuditLog({ action: "CREATE", entity: "Cours", entityId: course.id, userId: user.id as string });
+  await createAuditLog({
+    action: "CREATE",
+    entity: "Cours",
+    entityId: course.id,
+    userId: user.id as string,
+  });
   return NextResponse.json(course, { status: 201 });
 });
 
@@ -61,6 +91,11 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   await db.course.delete({ where: { id } });
-  await createAuditLog({ action: "DELETE", entity: "Cours", entityId: id, userId: user.id as string });
+  await createAuditLog({
+    action: "DELETE",
+    entity: "Cours",
+    entityId: id,
+    userId: user.id as string,
+  });
   return NextResponse.json({ success: true });
 });

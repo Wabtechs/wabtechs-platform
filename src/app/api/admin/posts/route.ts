@@ -4,14 +4,34 @@ import { createAuditLog } from "@/lib/audit";
 import { safeHandler } from "@/lib/safe-handler";
 import { requireAdmin } from "@/lib/auth-guard";
 
-export const GET = safeHandler(async () => {
+const PAGE_SIZE = 50;
+
+export const GET = safeHandler(async (req: Request) => {
   await requireAdmin();
 
-  const posts = await db.post.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { author: { select: { name: true } }, tags: true },
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [total, posts] = await Promise.all([
+    db.post.count(),
+    db.post.findMany({
+      skip,
+      take: PAGE_SIZE,
+      orderBy: { createdAt: "desc" },
+      include: { author: { select: { name: true } }, tags: true },
+    }),
+  ]);
+
+  return NextResponse.json({
+    posts,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
+    },
   });
-  return NextResponse.json(posts);
 });
 
 export const POST = safeHandler(async (req: Request) => {
@@ -31,7 +51,13 @@ export const POST = safeHandler(async (req: Request) => {
     }
 
     const updated = await db.post.update({ where: { id }, data });
-    await createAuditLog({ action: "UPDATE", entity: "Article", entityId: updated.id, userId: user.id as string, details: JSON.stringify(data) });
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "Article",
+      entityId: updated.id,
+      userId: user.id as string,
+      details: JSON.stringify(data),
+    });
 
     if (tags !== undefined && Array.isArray(tags)) {
       await db.post.update({ where: { id }, data: { tags: { set: [] } } });
@@ -66,7 +92,12 @@ export const POST = safeHandler(async (req: Request) => {
       authorId: user.id as string,
     },
   });
-  await createAuditLog({ action: "CREATE", entity: "Article", entityId: post.id, userId: user.id as string });
+  await createAuditLog({
+    action: "CREATE",
+    entity: "Article",
+    entityId: post.id,
+    userId: user.id as string,
+  });
 
   if (tags !== undefined && Array.isArray(tags)) {
     for (const tagName of tags) {
@@ -88,6 +119,11 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   await db.post.delete({ where: { id } });
-  await createAuditLog({ action: "DELETE", entity: "Article", entityId: id, userId: user.id as string });
+  await createAuditLog({
+    action: "DELETE",
+    entity: "Article",
+    entityId: id,
+    userId: user.id as string,
+  });
   return NextResponse.json({ success: true });
 });

@@ -6,53 +6,46 @@ import { requireAdmin } from "@/lib/auth-guard";
 export const GET = safeHandler(async () => {
   const user = await requireAdmin();
 
-  const [
-    projects,
-    featureGroups,
-    bugGroups,
-    bugSevGroups,
-    sprintGroups,
-    objectiveGroups,
-    releases,
-    milestones,
-    notifications,
-    healthAgg,
-    mrrAgg,
-    roadmapItems,
-    growth,
-  ] = await Promise.all([
-    db.osProject.findMany({
-      orderBy: { name: "asc" },
-      include: {
-        owner: { select: { id: true, name: true, email: true } },
-        _count: { select: { features: true, bugs: true, objectives: true, modules: true, sprints: true } },
-      },
-    }),
-    db.feature.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.bug.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.bug.groupBy({ by: ["severity"], _count: { _all: true } }),
-    db.sprint.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.objective.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.release.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 6,
-      include: { project: { select: { id: true, slug: true, name: true, color: true } } },
-    }),
-    db.milestone.findMany({
-      orderBy: { date: "asc" },
-      take: 6,
-      include: { project: { select: { id: true, slug: true, name: true, color: true } } },
-    }),
-    db.notification.findMany({
-      where: { userId: user.id as string, read: false },
-      orderBy: { createdAt: "desc" },
-      take: 8,
-    }),
-    db.osProject.aggregate({ _avg: { healthScore: true } }),
-    db.osProject.aggregate({ _sum: { mrr: true } }),
-    db.roadmapItem.findMany({ orderBy: { endDate: "asc" }, take: 8 }),
-    db.metricSnapshot.findMany({ orderBy: { date: "asc" } }),
-  ]);
+  const [projects, releases, milestones, notifications, healthAgg, mrrAgg, roadmapItems] =
+    await Promise.all([
+      db.osProject.findMany({
+        orderBy: { name: "asc" },
+        include: {
+          owner: { select: { id: true, name: true, email: true } },
+          _count: {
+            select: { features: true, bugs: true, objectives: true, modules: true, sprints: true },
+          },
+        },
+      }),
+      db.release.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 6,
+        include: { project: { select: { id: true, slug: true, name: true, color: true } } },
+      }),
+      db.milestone.findMany({
+        orderBy: { date: "asc" },
+        take: 6,
+        include: { project: { select: { id: true, slug: true, name: true, color: true } } },
+      }),
+      db.notification.findMany({
+        where: { userId: user.id as string, read: false },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+      }),
+      db.osProject.aggregate({ _avg: { healthScore: true } }),
+      db.osProject.aggregate({ _sum: { mrr: true } }),
+      db.roadmapItem.findMany({ orderBy: { endDate: "asc" }, take: 8 }),
+    ]);
+
+  const [featureGroups, bugGroups, bugSevGroups, sprintGroups, objectiveGroups, growth] =
+    await Promise.all([
+      db.feature.groupBy({ by: ["status"], _count: { _all: true } }),
+      db.bug.groupBy({ by: ["status"], _count: { _all: true } }),
+      db.bug.groupBy({ by: ["severity"], _count: { _all: true } }),
+      db.sprint.groupBy({ by: ["status"], _count: { _all: true } }),
+      db.objective.groupBy({ by: ["status"], _count: { _all: true } }),
+      db.metricSnapshot.findMany({ orderBy: { date: "asc" } }),
+    ]);
 
   const featureCounts: Record<string, number> = {};
   for (const g of featureGroups) featureCounts[g.status] = g._count._all;

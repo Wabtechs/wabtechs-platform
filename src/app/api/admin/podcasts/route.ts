@@ -4,14 +4,34 @@ import { createAuditLog } from "@/lib/audit";
 import { safeHandler } from "@/lib/safe-handler";
 import { requireAdmin } from "@/lib/auth-guard";
 
-export const GET = safeHandler(async () => {
+const PAGE_SIZE = 50;
+
+export const GET = safeHandler(async (req: Request) => {
   await requireAdmin();
 
-  const podcasts = await db.podcast.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { tags: true },
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(1, Number(searchParams.get("page") || 1));
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [total, podcasts] = await Promise.all([
+    db.podcast.count(),
+    db.podcast.findMany({
+      skip,
+      take: PAGE_SIZE,
+      orderBy: { createdAt: "desc" },
+      include: { tags: { select: { id: true, name: true, slug: true } } },
+    }),
+  ]);
+
+  return NextResponse.json({
+    podcasts,
+    pagination: {
+      page,
+      pageSize: PAGE_SIZE,
+      total,
+      totalPages: Math.ceil(total / PAGE_SIZE),
+    },
   });
-  return NextResponse.json(podcasts);
 });
 
 export const POST = safeHandler(async (req: Request) => {
@@ -26,7 +46,13 @@ export const POST = safeHandler(async (req: Request) => {
       data.publishedAt = new Date();
     }
     const updated = await db.podcast.update({ where: { id }, data });
-    await createAuditLog({ action: "UPDATE", entity: "Podcast", entityId: updated.id, userId: user.id as string, details: JSON.stringify(data) });
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "Podcast",
+      entityId: updated.id,
+      userId: user.id as string,
+      details: JSON.stringify(data),
+    });
 
     if (tags !== undefined && Array.isArray(tags)) {
       await db.podcast.update({ where: { id }, data: { tags: { set: [] } } });
@@ -61,7 +87,12 @@ export const POST = safeHandler(async (req: Request) => {
       ogImage: data.ogImage ?? null,
     },
   });
-  await createAuditLog({ action: "CREATE", entity: "Podcast", entityId: podcast.id, userId: user.id as string });
+  await createAuditLog({
+    action: "CREATE",
+    entity: "Podcast",
+    entityId: podcast.id,
+    userId: user.id as string,
+  });
 
   if (tags !== undefined && Array.isArray(tags)) {
     for (const tagName of tags) {
@@ -71,7 +102,10 @@ export const POST = safeHandler(async (req: Request) => {
         update: {},
         create: { name: tagName, slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, "-") },
       });
-      await db.podcast.update({ where: { id: podcast.id }, data: { tags: { connect: { id: tag.id } } } });
+      await db.podcast.update({
+        where: { id: podcast.id },
+        data: { tags: { connect: { id: tag.id } } },
+      });
     }
   }
 
@@ -83,6 +117,11 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   await db.podcast.delete({ where: { id } });
-  await createAuditLog({ action: "DELETE", entity: "Podcast", entityId: id, userId: user.id as string });
+  await createAuditLog({
+    action: "DELETE",
+    entity: "Podcast",
+    entityId: id,
+    userId: user.id as string,
+  });
   return NextResponse.json({ success: true });
 });
