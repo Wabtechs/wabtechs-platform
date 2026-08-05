@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   LayoutDashboard,
   BarChart3,
@@ -48,7 +48,9 @@ import {
   Bell,
   ScrollText,
   Smartphone,
+  ChevronDown,
 } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -61,6 +63,7 @@ import {
   SidebarMenuBadge,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
@@ -177,8 +180,26 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+const STORAGE_KEY = "admin-sidebar:collapsed-groups";
+
+function getStoredCollapsed(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((value): value is string => typeof value === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const { state: sidebarState } = useSidebar();
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>(getStoredCollapsed);
 
   const isActive = useCallback(
     (href: string) => {
@@ -187,6 +208,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     [pathname],
   );
+
+  const activeGroupTitle = NAV_GROUPS.find((group) =>
+    group.items.some((item) => isActive(item.href)),
+  )?.title;
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    if (activeGroupTitle) {
+      setCollapsedGroups((prev) =>
+        prev.includes(activeGroupTitle) ? prev.filter((title) => title !== activeGroupTitle) : prev,
+      );
+    }
+  }
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(collapsedGroups));
+    } catch {
+      // ignore
+    }
+  }, [collapsedGroups]);
+
+  const setGroupOpen = useCallback((title: string, open: boolean) => {
+    setCollapsedGroups((prev) =>
+      open ? prev.filter((t) => t !== title) : prev.includes(title) ? prev : [...prev, title],
+    );
+  }, []);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -210,43 +259,63 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        {NAV_GROUPS.map((group) => (
-          <SidebarGroup key={group.title}>
-            <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((navItem) => {
-                  const active = isActive(navItem.href);
-                  return (
-                    <SidebarMenuItem key={navItem.href}>
-                      <Link
-                        href={navItem.href}
-                        className={cn(
-                          "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none",
-                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                          "focus-visible:ring-sidebar-ring focus-visible:ring-2",
-                          "[&>svg]:size-4 [&>svg]:shrink-0",
-                          "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-2",
-                          active
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                            : "text-sidebar-foreground/70",
-                        )}
-                      >
-                        <navItem.icon className="h-4 w-4" />
-                        <span className="truncate group-data-[collapsible=icon]:hidden">
-                          {navItem.label}
-                        </span>
-                      </Link>
-                      {!active && navItem.badge && (
-                        <SidebarMenuBadge>{navItem.badge}</SidebarMenuBadge>
-                      )}
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {NAV_GROUPS.map((group) => {
+          const collapsed = sidebarState !== "collapsed" && collapsedGroups.includes(group.title);
+          return (
+            <Collapsible
+              key={group.title}
+              open={!collapsed}
+              onOpenChange={(open) => setGroupOpen(group.title, open)}
+              className="group/collapsible"
+            >
+              <SidebarGroup>
+                <SidebarGroupLabel
+                  asChild
+                  className="hover:text-sidebar-foreground/80 w-full cursor-pointer select-none"
+                >
+                  <CollapsibleTrigger className="flex items-center gap-2">
+                    {group.title}
+                    <ChevronDown className="ml-auto h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                  </CollapsibleTrigger>
+                </SidebarGroupLabel>
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {group.items.map((navItem) => {
+                        const active = isActive(navItem.href);
+                        return (
+                          <SidebarMenuItem key={navItem.href}>
+                            <Link
+                              href={navItem.href}
+                              className={cn(
+                                "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none",
+                                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                "focus-visible:ring-sidebar-ring focus-visible:ring-2",
+                                "[&>svg]:size-4 [&>svg]:shrink-0",
+                                "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-2",
+                                active
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                  : "text-sidebar-foreground/70",
+                              )}
+                            >
+                              <navItem.icon className="h-4 w-4" />
+                              <span className="truncate group-data-[collapsible=icon]:hidden">
+                                {navItem.label}
+                              </span>
+                            </Link>
+                            {!active && navItem.badge && (
+                              <SidebarMenuBadge>{navItem.badge}</SidebarMenuBadge>
+                            )}
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          );
+        })}
       </SidebarContent>
 
       <SidebarSeparator />
