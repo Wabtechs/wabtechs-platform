@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   LayoutDashboard,
@@ -77,6 +77,12 @@ interface NavItem {
 interface NavGroup {
   title: string;
   items: NavItem[];
+}
+
+interface OsSidebarModule {
+  id: string;
+  name: string;
+  project?: { name: string; color: string };
 }
 
 const NAV_GROUPS: NavGroup[] = [
@@ -198,8 +204,33 @@ function getStoredCollapsed(): string[] {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { state: sidebarState } = useSidebar();
   const [collapsedGroups, setCollapsedGroups] = useState<string[]>(getStoredCollapsed);
+  const [osModules, setOsModules] = useState<OsSidebarModule[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/admin/os/modules")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: unknown) => {
+        if (cancelled || !Array.isArray(data)) return;
+        const list = data as OsSidebarModule[];
+        setOsModules(
+          [...list].sort(
+            (a, b) =>
+              (a.project?.name ?? "").localeCompare(b.project?.name ?? "") ||
+              a.name.localeCompare(b.name),
+          ),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setOsModules([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isActive = useCallback(
     (href: string) => {
@@ -212,6 +243,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const activeGroupTitle = NAV_GROUPS.find((group) =>
     group.items.some((item) => isActive(item.href)),
   )?.title;
+
+  const moduleId = searchParams.get("moduleId");
 
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (prevPathname !== pathname) {
@@ -310,6 +343,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         );
                       })}
                     </SidebarMenu>
+                    {group.title === "PROJECT OS" && osModules.length > 0 && (
+                      <div className="mt-1">
+                        <SidebarSeparator className="mx-2" />
+                        <SidebarGroupLabel className="mt-2">Modules</SidebarGroupLabel>
+                        <SidebarMenu>
+                          {osModules.map((m) => {
+                            const active = pathname === "/admin/os/features" && moduleId === m.id;
+                            return (
+                              <SidebarMenuItem key={m.id}>
+                                <Link
+                                  href={`/admin/os/features?moduleId=${m.id}`}
+                                  className={cn(
+                                    "flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-sm transition-colors outline-none",
+                                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                    "focus-visible:ring-sidebar-ring focus-visible:ring-2",
+                                    "[&>svg]:size-4 [&>svg]:shrink-0",
+                                    "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-2",
+                                    active
+                                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                      : "text-sidebar-foreground/70",
+                                  )}
+                                >
+                                  <Blocks className="h-4 w-4" />
+                                  <span className="truncate group-data-[collapsible=icon]:hidden">
+                                    {m.name}
+                                  </span>
+                                </Link>
+                              </SidebarMenuItem>
+                            );
+                          })}
+                        </SidebarMenu>
+                      </div>
+                    )}
                   </SidebarGroupContent>
                 </CollapsibleContent>
               </SidebarGroup>

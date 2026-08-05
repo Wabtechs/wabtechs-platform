@@ -3,13 +3,32 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { OsPriorityBadge } from "@/components/admin/os/os-badge";
 import { OS_STATUS_META, getPriorityMeta } from "@/lib/os-labels";
 import { Plus, Loader2, MoreHorizontal, GripVertical } from "lucide-react";
@@ -19,6 +38,12 @@ interface OsProject {
   slug: string;
   name: string;
   color: string;
+}
+
+interface OsModule {
+  id: string;
+  name: string;
+  project: { id: string; name: string; color: string };
 }
 
 interface OsFeature {
@@ -43,19 +68,39 @@ const COLUMNS = [
 ];
 
 const ALL_STATUSES = Object.keys(OS_STATUS_META).filter((s) =>
-  ["BACKLOG", "PLANNED", "READY", "DEVELOPMENT", "REVIEW", "TESTING", "VALIDATION", "DONE", "RELEASED"].includes(s),
+  [
+    "BACKLOG",
+    "PLANNED",
+    "READY",
+    "DEVELOPMENT",
+    "REVIEW",
+    "TESTING",
+    "VALIDATION",
+    "DONE",
+    "RELEASED",
+  ].includes(s),
 );
 
-export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
+export function FeaturesBoard({
+  projects,
+  modules,
+  initialModuleId,
+}: {
+  projects: OsProject[];
+  modules: OsModule[];
+  initialModuleId?: string;
+}) {
   const queryClient = useQueryClient();
   const [projectId, setProjectId] = useState("all");
+  const [moduleId, setModuleId] = useState(initialModuleId ?? "");
   const [createOpen, setCreateOpen] = useState(false);
 
   const featuresQuery = useQuery<OsFeature[]>({
-    queryKey: ["os-features", projectId],
+    queryKey: ["os-features", projectId, moduleId],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (projectId !== "all") params.set("projectId", projectId);
+      if (moduleId) params.set("moduleId", moduleId);
+      else if (projectId !== "all") params.set("projectId", projectId);
       const res = await fetch(`/api/admin/os/features?${params.toString()}`);
       if (!res.ok) throw new Error("Erreur");
       return res.json();
@@ -102,7 +147,32 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Select value={projectId} onValueChange={setProjectId}>
+          <Select
+            value={moduleId || "all"}
+            onValueChange={(v) => {
+              setModuleId(v === "all" ? "" : v);
+              if (v !== "all") setProjectId("all");
+            }}
+          >
+            <SelectTrigger className="w-[220px] text-xs">
+              <SelectValue placeholder="Tous les modules" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les modules</SelectItem>
+              {modules.map((m) => (
+                <SelectItem key={m.id} value={m.id}>
+                  {m.name} · {m.project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={projectId}
+            onValueChange={(v) => {
+              setProjectId(v);
+              if (v !== "all") setModuleId("");
+            }}
+          >
             <SelectTrigger className="w-[220px] text-xs">
               <SelectValue placeholder="Tous les projets" />
             </SelectTrigger>
@@ -116,7 +186,11 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
             </SelectContent>
           </Select>
         </div>
-        <Button size="sm" className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4]" onClick={() => setCreateOpen(true)}>
+        <Button
+          size="sm"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4]"
+          onClick={() => setCreateOpen(true)}
+        >
           <Plus className="mr-1.5 h-3.5 w-3.5" /> Nouvelle feature
         </Button>
       </div>
@@ -126,11 +200,16 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
           const items = features.filter((f) => col.statuses.includes(f.status));
           const points = items.reduce((a, f) => a + f.points, 0);
           return (
-            <div key={col.title} className="flex min-h-[300px] flex-col rounded-xl border border-gray-200/80 bg-gray-50/60 dark:border-border dark:bg-white/[0.03]">
+            <div
+              key={col.title}
+              className="dark:border-border flex min-h-[300px] flex-col rounded-xl border border-gray-200/80 bg-gray-50/60 dark:bg-white/[0.03]"
+            >
               <div className="flex items-center justify-between px-3 py-2.5">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full" style={{ background: col.color }} />
-                  <p className="text-[12px] font-semibold text-gray-600 dark:text-gray-300">{col.title}</p>
+                  <p className="text-[12px] font-semibold text-gray-600 dark:text-gray-300">
+                    {col.title}
+                  </p>
                 </div>
                 <span className="rounded-md bg-white px-1.5 py-0.5 text-[10px] font-semibold text-gray-400 shadow-sm dark:bg-white/10">
                   {items.length} · {points} pts
@@ -142,15 +221,22 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
                     <Loader2 className="h-5 w-5 animate-spin text-gray-300" />
                   </div>
                 )}
-                {!loading && items.length === 0 && <p className="px-1 py-4 text-center text-[11px] text-gray-400">Aucune feature</p>}
+                {!loading && items.length === 0 && (
+                  <p className="px-1 py-4 text-center text-[11px] text-gray-400">Aucune feature</p>
+                )}
                 {items.map((f) => (
-                  <div key={f.id} className="group rounded-lg border border-border bg-card p-3 shadow-sm transition-shadow hover:shadow-md">
+                  <div
+                    key={f.id}
+                    className="group border-border bg-card rounded-lg border p-3 shadow-sm transition-shadow hover:shadow-md"
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <GripVertical className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-200 dark:text-gray-600" />
-                      <p className="min-w-0 flex-1 text-[13px] font-medium leading-snug">{f.title}</p>
+                      <p className="min-w-0 flex-1 text-[13px] leading-snug font-medium">
+                        {f.title}
+                      </p>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="shrink-0 rounded-md p-1 text-gray-300 opacity-0 transition-opacity hover:bg-gray-100 hover:text-gray-600 group-hover:opacity-100 dark:hover:bg-white/10 dark:hover:text-gray-300">
+                          <button className="shrink-0 rounded-md p-1 text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300">
                             <MoreHorizontal className="h-3.5 w-3.5" />
                           </button>
                         </DropdownMenuTrigger>
@@ -158,15 +244,24 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
                           <DropdownMenuLabel>Déplacer vers</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           {ALL_STATUSES.map((s) => (
-                            <DropdownMenuItem key={s} disabled={f.status === s} onClick={() => moveMutation.mutate({ id: f.id, status: s })}>
+                            <DropdownMenuItem
+                              key={s}
+                              disabled={f.status === s}
+                              onClick={() => moveMutation.mutate({ id: f.id, status: s })}
+                            >
                               <span className="flex w-full items-center justify-between">
                                 {OS_STATUS_META[s]?.label ?? s}
-                                {f.status === s && <span className="text-[10px] text-gray-400">actuel</span>}
+                                {f.status === s && (
+                                  <span className="text-[10px] text-gray-400">actuel</span>
+                                )}
                               </span>
                             </DropdownMenuItem>
                           ))}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-rose-500 focus:text-rose-500" onClick={() => deleteMutation.mutate(f.id)}>
+                          <DropdownMenuItem
+                            className="text-rose-500 focus:text-rose-500"
+                            onClick={() => deleteMutation.mutate(f.id)}
+                          >
                             Supprimer
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -181,7 +276,10 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
                     <div className="mt-2 flex items-center gap-1.5 text-[10px] text-gray-400">
                       {f.project && (
                         <>
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: f.project.color }} />
+                          <span
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ background: f.project.color }}
+                          />
                           <span className="truncate">{f.project.name}</span>
                         </>
                       )}
@@ -206,7 +304,12 @@ export function FeaturesBoard({ projects }: { projects: OsProject[] }) {
         })}
       </div>
 
-      <CreateFeatureDialog open={createOpen} onOpenChange={setCreateOpen} projects={projects} onCreated={invalidate} />
+      <CreateFeatureDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        projects={projects}
+        onCreated={invalidate}
+      />
     </div>
   );
 }
@@ -255,7 +358,14 @@ function CreateFeatureDialog({
       });
       if (!res.ok) throw new Error();
       toast.success("Feature créée");
-      setForm({ title: "", description: "", projectId: "", status: "BACKLOG", priority: "MEDIUM", points: "3" });
+      setForm({
+        title: "",
+        description: "",
+        projectId: "",
+        status: "BACKLOG",
+        priority: "MEDIUM",
+        points: "3",
+      });
       onOpenChange(false);
       queryClient.invalidateQueries({ queryKey: ["os-features"] });
       onCreated();
@@ -276,20 +386,35 @@ function CreateFeatureDialog({
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1.5">
             <Label>Titre</Label>
-            <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Ex. Paiement Stripe" />
+            <Input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="Ex. Paiement Stripe"
+            />
           </div>
           <div className="space-y-1.5">
             <Label>Description</Label>
-            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
+            <Textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows={2}
+            />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Projet</Label>
-              <Select value={form.projectId} onValueChange={(v) => setForm({ ...form, projectId: v })}>
-                <SelectTrigger className="text-xs"><SelectValue placeholder="Choisir" /></SelectTrigger>
+              <Select
+                value={form.projectId}
+                onValueChange={(v) => setForm({ ...form, projectId: v })}
+              >
+                <SelectTrigger className="text-xs">
+                  <SelectValue placeholder="Choisir" />
+                </SelectTrigger>
                 <SelectContent>
                   {projects.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -297,33 +422,56 @@ function CreateFeatureDialog({
             <div className="space-y-1.5">
               <Label>Statut</Label>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
-                <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {ALL_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{OS_STATUS_META[s]?.label ?? s}</SelectItem>
+                    <SelectItem key={s} value={s}>
+                      {OS_STATUS_META[s]?.label ?? s}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label>Priorité</Label>
-              <Select value={form.priority} onValueChange={(v) => setForm({ ...form, priority: v })}>
-                <SelectTrigger className="text-xs"><SelectValue /></SelectTrigger>
+              <Select
+                value={form.priority}
+                onValueChange={(v) => setForm({ ...form, priority: v })}
+              >
+                <SelectTrigger className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {["URGENT", "HIGH", "MEDIUM", "LOW"].map((p) => (
-                    <SelectItem key={p} value={p}>{getPriorityMeta(p).label}</SelectItem>
+                    <SelectItem key={p} value={p}>
+                      {getPriorityMeta(p).label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
               <Label>Points (story points)</Label>
-              <Input type="number" min={1} value={form.points} onChange={(e) => setForm({ ...form, points: e.target.value })} />
+              <Input
+                type="number"
+                min={1}
+                value={form.points}
+                onChange={(e) => setForm({ ...form, points: e.target.value })}
+              />
             </div>
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => onOpenChange(false)}>Annuler</Button>
-            <Button type="submit" size="sm" disabled={pending} className="bg-primary text-white hover:bg-[#7323c4]">
+            <Button type="button" variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={pending}
+              className="bg-primary text-white hover:bg-[#7323c4]"
+            >
               {pending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}Créer
             </Button>
           </div>
