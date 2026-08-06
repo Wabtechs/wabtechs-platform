@@ -37,6 +37,8 @@ model User {
   mobileAuditLogs    MobileAuditLog[]
   errorLogs          ErrorLog[]
   githubConnection   GithubConnection?
+  lessonProgress     LessonProgress[]
+  certificates       Certificate[]
 
   @@map("users")
 }
@@ -512,6 +514,7 @@ model Course {
 
   lessons     Lesson[]
   enrollments Enrollment[]
+  certificates Certificate[]
 
   @@map("courses")
 }
@@ -530,6 +533,7 @@ model Lesson {
   updatedAt   DateTime @updatedAt
 
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
 
   @@index([courseId, order])
   @@map("lessons")
@@ -550,6 +554,36 @@ model Enrollment {
 
   @@unique([userId, courseId])
   @@map("enrollments")
+}
+
+model LessonProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  lessonId  String
+  courseId  String
+  watchedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId, courseId])
+  @@map("lesson_progress")
+}
+
+model Certificate {
+  id       String   @id @default(cuid())
+  number   String   @unique
+  userId   String
+  courseId String
+  issuedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@map("certificates")
 }
 
 model Template {

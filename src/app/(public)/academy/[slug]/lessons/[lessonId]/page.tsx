@@ -4,11 +4,16 @@ import { notFound, redirect } from "next/navigation";
 import { db } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
-import { ArrowLeft, ArrowRight, Lock } from "lucide-react";
+import { LessonCompleteButton } from "@/components/academy/lesson-complete-button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string; lessonId: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; lessonId: string }>;
+}): Promise<Metadata> {
   const { lessonId } = await params;
   const lesson = await db.lesson.findUnique({ where: { id: lessonId } });
   if (!lesson) return { title: "Leçon introuvable" };
@@ -58,6 +63,12 @@ export default async function LessonPage({
   const prev = idx > 0 ? lessons[idx - 1] : null;
   const next = idx < lessons.length - 1 ? lessons[idx + 1] : null;
 
+  const lessonProgress = session?.user
+    ? await db.lessonProgress.findUnique({
+        where: { userId_lessonId: { userId: session.user.id as string, lessonId: lesson.id } },
+      })
+    : null;
+
   const youtubeId = getYouTubeId(lesson.videoUrl);
 
   return (
@@ -71,13 +82,13 @@ export default async function LessonPage({
         </Button>
 
         <h1 className="text-3xl font-bold tracking-tight">{lesson.title}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-2 text-sm">
           Leçon {idx + 1} sur {lessons.length}
           {lesson.duration > 0 ? ` · ${lesson.duration} min` : ""}
         </p>
 
         {youtubeId && (
-          <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-black">
+          <div className="border-border mt-8 overflow-hidden rounded-2xl border bg-black">
             <iframe
               className="aspect-video w-full"
               src={`https://www.youtube.com/embed/${youtubeId}`}
@@ -89,7 +100,7 @@ export default async function LessonPage({
         )}
 
         {lesson.content && (
-          <div className="prose prose-gray mt-10 max-w-none dark:prose-invert prose-headings:tracking-tight">
+          <div className="prose prose-gray dark:prose-invert prose-headings:tracking-tight mt-10 max-w-none">
             {lesson.content.split(/\n\n+/).map((block, i) =>
               block.startsWith("# ") ? (
                 <h2 key={i} className="text-2xl font-bold">
@@ -100,7 +111,7 @@ export default async function LessonPage({
                   {block.slice(3)}
                 </h3>
               ) : (
-                <p key={i} className="mb-4 text-[15px] leading-relaxed text-muted-foreground">
+                <p key={i} className="text-muted-foreground mb-4 text-[15px] leading-relaxed">
                   {block}
                 </p>
               ),
@@ -119,6 +130,7 @@ export default async function LessonPage({
           ) : (
             <span />
           )}
+          <LessonCompleteButton lessonId={lesson.id} initialWatched={!!lessonProgress} />
           {next ? (
             <Button size="sm" asChild>
               <Link href={`/academy/${slug}/lessons/${next.id}`}>
@@ -127,10 +139,12 @@ export default async function LessonPage({
               </Link>
             </Button>
           ) : (
-            <span className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Lock className="h-3.5 w-3.5" />
-              Fin du cours
-            </span>
+            <Button size="sm" variant="outline" asChild>
+              <Link href={`/academy/${slug}`}>
+                Terminer le cours
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           )}
         </div>
       </div>
