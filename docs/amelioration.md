@@ -38,12 +38,12 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 
 - [x] Ajouter JSON-LD structuré (Organization, Website — `src/app/layout.tsx`)
 - [x] Métadonnées dynamiques complètes (title, description, OG, Twitter)
-- [ ] Breadcrumbs JSON-LD sur toutes les pages
-- [ ] Balisage Article sur le blog (datePublished, author, image)
+- [x] Breadcrumbs JSON-LD sur toutes les pages
+- [x] Balisage Article sur le blog (datePublished, author, image)
 - [x] Robots.txt optimisé (`src/app/robots.ts`)
 - [x] Sitemap.xml avec priorités et fréquences (`src/app/sitemap.ts`)
 - [x] Canonical URLs strictes (metadataBase configuré)
-- [ ] Schema.org SoftwareApplication pour les projets
+- [x] Schema.org SoftwareApplication pour les projets
 
 ### P0.4 — Analytics & Monitoring
 
