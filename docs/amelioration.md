@@ -81,7 +81,7 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Page publique des cours /academy
 - [ ] Paiement Stripe pour l'accès
 - [ ] Premier cours: "Next.js 16 — De zéro à pro" (10h de contenu)
-- [ ] Certificat de complétion (PDF généré)
+- [x] Certificat de complétion (PDF généré) — génération PDF (pdf-lib) + récupération HTTPS
 
 ### P1.2 — Templates Premium
 

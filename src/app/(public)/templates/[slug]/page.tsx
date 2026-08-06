@@ -11,7 +11,11 @@ import { Download, Github, Star, ExternalLink, Check, ArrowLeft } from "lucide-r
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const template = await db.template.findUnique({ where: { slug } });
   if (!template) return { title: "Template introuvable" };
@@ -54,7 +58,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           description={template.description}
         />
 
-        <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mx-auto mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
           <Badge className="capitalize">{template.category}</Badge>
           {template.stack && <span className="truncate">{template.stack}</span>}
           <span className="text-white/10">·</span>
@@ -69,20 +73,20 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           )}
         </div>
 
-        <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-[#1F1F1F] to-[#2a2a2a]">
+        <div className="border-border mt-10 overflow-hidden rounded-2xl border bg-gradient-to-br from-[#1F1F1F] to-[#2a2a2a]">
           {template.image ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={template.image} alt={template.name} className="w-full object-cover" />
           ) : (
             <div className="flex h-72 items-center justify-center">
-              <Download className="h-16 w-16 text-primary/40" />
+              <Download className="text-primary/40 h-16 w-16" />
             </div>
           )}
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <DownloadButton
-            templateId={template.id}
+            slug={template.slug}
             downloadUrl={template.downloadUrl}
             repoUrl={template.repoUrl}
             free={free}
@@ -107,14 +111,14 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
         </div>
 
         {template.longDescription && (
-          <div className="prose prose-gray mx-auto mt-12 max-w-none dark:prose-invert">
+          <div className="prose prose-gray dark:prose-invert mx-auto mt-12 max-w-none">
             {template.longDescription.split(/\n\n+/).map((block, i) =>
               block.startsWith("# ") ? (
                 <h2 key={i} className="text-2xl font-bold">
                   {block.slice(2)}
                 </h2>
               ) : (
-                <p key={i} className="mb-4 text-[15px] leading-relaxed text-muted-foreground">
+                <p key={i} className="text-muted-foreground mb-4 text-[15px] leading-relaxed">
                   {block}
                 </p>
               ),
@@ -122,7 +126,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
           </div>
         )}
 
-        <Card className="mt-12 border-gray-200/80 bg-white dark:border-border dark:bg-card">
+        <Card className="dark:border-border dark:bg-card mt-12 border-gray-200/80 bg-white">
           <CardContent className="p-8">
             <h2 className="text-xl font-bold tracking-tight">Ce qui est inclus</h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,18 +137,18 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
                 </div>
               ))}
             </div>
-            <div className="mt-8 border-t border-gray-100 pt-8 text-center dark:border-border">
+            <div className="dark:border-border mt-8 border-t border-gray-100 pt-8 text-center">
               <p className="text-3xl font-bold">
                 {free ? "Gratuit" : `${Number(template.price)}€`}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {free
                   ? "Une seule licence par projet. Attribution appréciée."
                   : "Paiement unique, licence commerciale incluse. Paiement bientôt disponible."}
               </p>
               <div className="mt-6 flex justify-center">
                 <DownloadButton
-                  templateId={template.id}
+                  slug={template.slug}
                   downloadUrl={template.downloadUrl}
                   repoUrl={template.repoUrl}
                   free={free}
