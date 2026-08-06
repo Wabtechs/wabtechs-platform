@@ -3,15 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
-import {
-  BarChart3,
-  Eye,
-  Calendar,
-  TrendingUp,
-  Globe,
-  Loader2,
-  ArrowUpRight,
-} from "lucide-react";
+import { BarChart3, Eye, Calendar, TrendingUp, Globe, Loader2, ArrowUpRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LineChart,
@@ -40,7 +32,11 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
 };
 
 export function AnalyticsClient() {
@@ -55,17 +51,17 @@ export function AnalyticsClient() {
       window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
-    fetch("/api/admin/analytics")
+    fetch(`/api/admin/analytics?period=${period}`)
       .then((r) => r.json())
       .then(setData)
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [period]);
 
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="text-primary h-6 w-6 animate-spin" />
       </div>
     );
   }
@@ -81,9 +77,16 @@ export function AnalyticsClient() {
     );
   }
 
+  const periodLabel =
+    period === "7d"
+      ? "7 derniers jours"
+      : period === "30d"
+        ? "30 derniers jours"
+        : "Tous les temps";
+
   const metrics = [
     {
-      label: "Total vues",
+      label: `Vues (${periodLabel})`,
       value: data.totalViews.toLocaleString(),
       icon: Eye,
       color: "#3b82f6",
@@ -124,21 +127,24 @@ export function AnalyticsClient() {
     <motion.div variants={stagger} initial="hidden" animate="show">
       <motion.div variants={fadeUp} className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+          <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
             Analytics
           </h1>
           <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
             Suivez les performances de votre plateforme.
           </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5 border-border bg-card">
+        <div className="border-border bg-card flex gap-1 rounded-lg border border-gray-200 bg-gray-50 p-0.5">
           {(["7d", "30d", "all"] as const).map((p) => (
             <button
               key={p}
-              onClick={() => setPeriod(p)}
+              onClick={() => {
+                setPeriod(p);
+                setLoading(true);
+              }}
               className={`rounded-md px-3 py-1.5 text-[12px] font-medium transition-all duration-200 ${
                 period === p
-                  ? "bg-white text-gray-900 shadow-sm dark:bg-card dark:text-foreground"
+                  ? "dark:bg-card dark:text-foreground bg-white text-gray-900 shadow-sm"
                   : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
@@ -148,11 +154,14 @@ export function AnalyticsClient() {
         </div>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <motion.div
+        variants={fadeUp}
+        className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         {metrics.map((m) => (
           <Card
             key={m.label}
-            className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+            className="group border-border bg-card relative overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
           >
             <CardContent className="p-5">
               <div className="flex items-start justify-between">
@@ -160,7 +169,7 @@ export function AnalyticsClient() {
                   <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">
                     {m.label}
                   </p>
-                  <p className="mt-2 text-[28px] font-semibold tracking-tight text-gray-900 dark:text-foreground leading-none">
+                  <p className="dark:text-foreground mt-2 text-[28px] leading-none font-semibold tracking-tight text-gray-900">
                     {m.value}
                   </p>
                 </div>
@@ -180,10 +189,10 @@ export function AnalyticsClient() {
         <Card className="border-border bg-card">
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+                <TrendingUp className="text-primary h-3.5 w-3.5" />
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+              <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
                 Vues dans le temps
               </CardTitle>
             </div>
@@ -224,7 +233,12 @@ export function AnalyticsClient() {
                       stroke="#842ae3"
                       strokeWidth={2}
                       dot={{ fill: "#842ae3", strokeWidth: 0, r: 3 }}
-                      activeDot={{ r: 5, fill: "#842ae3", stroke: isDark ? "#111" : "#fff", strokeWidth: 2 }}
+                      activeDot={{
+                        r: 5,
+                        fill: "#842ae3",
+                        stroke: isDark ? "#111" : "#fff",
+                        strokeWidth: 2,
+                      }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -246,7 +260,7 @@ export function AnalyticsClient() {
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
                   <Globe className="h-3.5 w-3.5 text-blue-500" />
                 </div>
-                <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+                <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
                   Pages les plus visitées
                 </CardTitle>
               </div>
@@ -261,13 +275,13 @@ export function AnalyticsClient() {
                 {data.topPages.map((page, i) => (
                   <div
                     key={page.path}
-                    className="flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-50/80 dark:hover:bg-accent/[0.02]"
+                    className="dark:hover:bg-accent/[0.02] flex items-center justify-between px-6 py-3 transition-colors hover:bg-gray-50/80"
                   >
                     <div className="flex items-center gap-3">
                       <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-[11px] font-semibold text-gray-500 dark:bg-white/5 dark:text-gray-400">
                         {i + 1}
                       </span>
-                      <span className="font-mono text-[13px] font-medium text-gray-900 dark:text-foreground">
+                      <span className="dark:text-foreground font-mono text-[13px] font-medium text-gray-900">
                         {page.path}
                       </span>
                     </div>
@@ -281,9 +295,7 @@ export function AnalyticsClient() {
                 ))}
               </div>
             ) : (
-              <p className="px-6 py-8 text-center text-sm text-gray-500">
-                Aucune donnée de pages.
-              </p>
+              <p className="px-6 py-8 text-center text-sm text-gray-500">Aucune donnée de pages.</p>
             )}
           </CardContent>
         </Card>

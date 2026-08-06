@@ -51,7 +51,7 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 
 - [x] Installer PostHog (self-host ou cloud) — analytics + session recordings
 - [x] Installer Sentry — error tracking (`@sentry/nextjs`, actif dès qu'un DSN est défini dans l'environnement)
-- [ ] Tableau de bord des KPIs (visiteurs, pages vues, conversions)
+- [x] Tableau de bord des KPIs (visiteurs, pages vues, conversions) — `/admin/analytics` (filtres 7j/30j/tout)
 - [x] Console.log/error tracking supprimé — logging serveur migré vers Sentry, plus de bruit console en production
 
 ### P0.5 — Page d'accueil (Conversion)
