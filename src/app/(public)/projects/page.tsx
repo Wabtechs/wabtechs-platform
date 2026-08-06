@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { Breadcrumb } from "@/components/shared/breadcrumb";
-import { db } from "@/lib/prisma";
+import { getPublicProjects } from "@/lib/data-cache";
 import { ExternalLink, Github, Star, GitFork, Globe, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -21,10 +21,7 @@ const LANG_COLORS: Record<string, string> = {
 };
 
 export default async function ProjectsPage() {
-  const projects = await db.project.findMany({
-    where: { archived: false },
-    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-  });
+  const projects = await getPublicProjects();
 
   const featured = projects.find((p) => p.featured);
   const others = projects.filter((p) => !p.featured);

@@ -10,17 +10,11 @@ import { WhyWabtechs } from "@/components/home/why-wabtechs";
 import { NewsletterInlineCTA } from "@/components/home/newsletter-inline-cta";
 import { BgLines } from "@/components/shared/bg-lines";
 import { AnimateOnScroll } from "@/components/shared/animate-on-scroll";
-import { db } from "@/lib/prisma";
+import { getHomeData } from "@/lib/data-cache";
 
 export default async function HomePage() {
-  const [services, skills, resumeItems, pricingPlans, testimonials, clients] = await Promise.all([
-    db.service.findMany({ orderBy: { order: "asc" } }),
-    db.skill.findMany({ orderBy: { order: "asc" } }),
-    db.resumeItem.findMany({ orderBy: { order: "asc" } }),
-    db.pricingPlan.findMany({ orderBy: { order: "asc" } }),
-    db.testimonial.findMany({ orderBy: { order: "asc" } }),
-    db.client.findMany({ orderBy: { order: "asc" } }),
-  ]);
+  const { services, skills, resumeItems, pricingPlans, testimonials, clients } =
+    await getHomeData();
 
   return (
     <>
