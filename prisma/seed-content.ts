@@ -324,7 +324,8 @@ const PODCASTS: {
   {
     slug: "le-web-2026-entre-react-et-ia",
     title: "Le web en 2026 : entre React, RSC et l'IA",
-    description: "Analyse des tendances qui façonnent le développement web : Server Components, agents IA et DX.",
+    description:
+      "Analyse des tendances qui façonnent le développement web : Server Components, agents IA et DX.",
     duration: 1845,
     episode: 1,
     season: 1,
@@ -334,7 +335,8 @@ const PODCASTS: {
   {
     slug: "postgresql-pour-les-produits-scalables",
     title: "PostgreSQL pour des produits scalables",
-    description: "Index, partitions, pooling : comment faire passer PostgreSQL à l'échelle sans douleur.",
+    description:
+      "Index, partitions, pooling : comment faire passer PostgreSQL à l'échelle sans douleur.",
     duration: 2220,
     episode: 2,
     season: 1,
@@ -344,7 +346,8 @@ const PODCASTS: {
   {
     slug: "backstage-architecture-wabtechs",
     title: "Backstage : l'architecture de la Wabtechs Platform",
-    description: "Comment nous avons structuré la plateforme, le Project OS et nos 6 projets open source.",
+    description:
+      "Comment nous avons structuré la plateforme, le Project OS et nos 6 projets open source.",
     duration: 2100,
     episode: 3,
     season: 1,
@@ -354,7 +357,8 @@ const PODCASTS: {
   {
     slug: "design-systems-accessibles",
     title: "Design systems accessibles : la méthode",
-    description: "Design tokens, contrastes, navigation clavier : rendre un design system vraiment accessible.",
+    description:
+      "Design tokens, contrastes, navigation clavier : rendre un design system vraiment accessible.",
     duration: 1680,
     episode: 4,
     season: 1,
@@ -398,7 +402,8 @@ const VIDEOS: {
   {
     slug: "authjs-v5-credentials-prisma",
     title: "Auth.js v5 avec Credentials et Prisma",
-    description: "Mise en place complète de l'authentification : sessions JWT, rôles et protection.",
+    description:
+      "Mise en place complète de l'authentification : sessions JWT, rôles et protection.",
     videoUrl: "https://www.youtube.com/watch?v=1rJ0J1QnQ1o",
     duration: 2100,
     daysAgo: 26,
@@ -419,10 +424,32 @@ const TUTORIALS: {
   description: string;
   daysAgo: number;
 }[] = [
-  { slug: "creer-un-theme-sombre-tailwind", title: "Créer un thème sombre avec Tailwind", description: "Variables CSS, class dark et préférences système : le thème sombre sans surcharge.", daysAgo: 4 },
-  { slug: "pagination-prisma-sans-douleur", title: "Pagination Prisma sans douleur", description: "cursor vs offset, tri stable et interfaces de pagination avec TanStack Query.", daysAgo: 11 },
-  { slug: "formulaires-react-19-avances", title: "Formulaires React 19 avancés", description: "useActionState, useOptimistic et validation Zod pour des formulaires robustes.", daysAgo: 18 },
-  { slug: "seo-nextjs-16-guide-complet", title: "SEO Next.js 16 : le guide complet", description: "Metadata API, JSON-LD, sitemap et Open Graph pour dominer les résultats de recherche.", daysAgo: 30 },
+  {
+    slug: "creer-un-theme-sombre-tailwind",
+    title: "Créer un thème sombre avec Tailwind",
+    description:
+      "Variables CSS, class dark et préférences système : le thème sombre sans surcharge.",
+    daysAgo: 4,
+  },
+  {
+    slug: "pagination-prisma-sans-douleur",
+    title: "Pagination Prisma sans douleur",
+    description: "cursor vs offset, tri stable et interfaces de pagination avec TanStack Query.",
+    daysAgo: 11,
+  },
+  {
+    slug: "formulaires-react-19-avances",
+    title: "Formulaires React 19 avancés",
+    description: "useActionState, useOptimistic et validation Zod pour des formulaires robustes.",
+    daysAgo: 18,
+  },
+  {
+    slug: "seo-nextjs-16-guide-complet",
+    title: "SEO Next.js 16 : le guide complet",
+    description:
+      "Metadata API, JSON-LD, sitemap et Open Graph pour dominer les résultats de recherche.",
+    daysAgo: 30,
+  },
 ];
 
 const SNIPPETS: {
@@ -526,11 +553,41 @@ const RESOURCES: {
   url: string;
   type: string;
 }[] = [
-  { slug: "cheatsheet-nextjs-app-router", title: "Cheatsheet App Router", description: "Les fichiers, conventions et options du App Router sur une page.", url: "https://nextjs.org/docs", type: "Cheatsheet" },
-  { slug: "guide-prisma-relations", title: "Guide des relations Prisma", description: "1-1, 1-n, n-n : bien modéliser ses relations.", url: "https://prisma.io/docs", type: "Guide" },
-  { slug: "checklist-lancement-produit", title: "Checklist de lancement produit", description: "SEO, analytics, monitoring, backups : tout vérifier avant le go live.", url: "https://vercel.com/docs", type: "Checklist" },
-  { slug: "glossaire-http", title: "Glossaire des statuts HTTP", description: "2xx, 3xx, 4xx, 5xx : les codes HTTP expliqués simplement.", url: "https://developer.mozilla.org", type: "Référence" },
-  { slug: "patterns-react-hooks", title: "Patterns de hooks React", description: "15 hooks réutilisables avec leurs tests.", url: "https://github.com/wabtechs/react-hook-patterns", type: "Open Source" },
+  {
+    slug: "cheatsheet-nextjs-app-router",
+    title: "Cheatsheet App Router",
+    description: "Les fichiers, conventions et options du App Router sur une page.",
+    url: "https://nextjs.org/docs",
+    type: "Cheatsheet",
+  },
+  {
+    slug: "guide-prisma-relations",
+    title: "Guide des relations Prisma",
+    description: "1-1, 1-n, n-n : bien modéliser ses relations.",
+    url: "https://prisma.io/docs",
+    type: "Guide",
+  },
+  {
+    slug: "checklist-lancement-produit",
+    title: "Checklist de lancement produit",
+    description: "SEO, analytics, monitoring, backups : tout vérifier avant le go live.",
+    url: "https://vercel.com/docs",
+    type: "Checklist",
+  },
+  {
+    slug: "glossaire-http",
+    title: "Glossaire des statuts HTTP",
+    description: "2xx, 3xx, 4xx, 5xx : les codes HTTP expliqués simplement.",
+    url: "https://developer.mozilla.org",
+    type: "Référence",
+  },
+  {
+    slug: "patterns-react-hooks",
+    title: "Patterns de hooks React",
+    description: "15 hooks réutilisables avec leurs tests.",
+    url: "https://github.com/wabtechs/react-hook-patterns",
+    type: "Open Source",
+  },
 ];
 
 const DOWNLOADS: {
@@ -541,10 +598,38 @@ const DOWNLOADS: {
   fileSize: string;
   category: string;
 }[] = [
-  { slug: "template-cv-developeur", title: "Template CV développeur", description: "CV moderne en HTML/CSS print-ready, ATS-friendly.", fileUrl: "/downloads/cv-developeur.html", fileSize: "45 Ko", category: "Template" },
-  { slug: "checklist-seo-technique", title: "Checklist SEO technique", description: "Audit SEO complet en 30 points pour tout projet web.", fileUrl: "/downloads/checklist-seo.pdf", fileSize: "120 Ko", category: "Checklist" },
-  { slug: "ebook-react-performance", title: "E-book : React Performance", description: "Optimiser ses apps React : memo, code splitting, transition.", fileUrl: "/downloads/ebook-react-performance.pdf", fileSize: "2,4 Mo", category: "E-book" },
-  { slug: "starter-prisma-pg", title: "Starter Prisma + PostgreSQL", description: "Projet minimal avec Prisma, migrations et seed.", fileUrl: "/downloads/starter-prisma-pg.zip", fileSize: "340 Ko", category: "Starter" },
+  {
+    slug: "template-cv-developeur",
+    title: "Template CV développeur",
+    description: "CV moderne en HTML/CSS print-ready, ATS-friendly.",
+    fileUrl: "/downloads/cv-developeur.html",
+    fileSize: "45 Ko",
+    category: "Template",
+  },
+  {
+    slug: "checklist-seo-technique",
+    title: "Checklist SEO technique",
+    description: "Audit SEO complet en 30 points pour tout projet web.",
+    fileUrl: "/downloads/checklist-seo.pdf",
+    fileSize: "120 Ko",
+    category: "Checklist",
+  },
+  {
+    slug: "ebook-react-performance",
+    title: "E-book : React Performance",
+    description: "Optimiser ses apps React : memo, code splitting, transition.",
+    fileUrl: "/downloads/ebook-react-performance.pdf",
+    fileSize: "2,4 Mo",
+    category: "E-book",
+  },
+  {
+    slug: "starter-prisma-pg",
+    title: "Starter Prisma + PostgreSQL",
+    description: "Projet minimal avec Prisma, migrations et seed.",
+    fileUrl: "/downloads/starter-prisma-pg.zip",
+    fileSize: "340 Ko",
+    category: "Starter",
+  },
 ];
 
 const ROADMAPS: {
@@ -556,12 +641,60 @@ const ROADMAPS: {
   year: number;
   order: number;
 }[] = [
-  { slug: "roadmap-frontend-2026", title: "Développeur Frontend", description: "Le parcours complet : HTML/CSS, JavaScript, React, Next.js.", status: "En cours", quarter: "Q1", year: 2026, order: 1 },
-  { slug: "roadmap-backend-2026", title: "Développeur Backend", description: "Node.js, bases de données, APIs REST et sécurité.", status: "En cours", quarter: "Q1", year: 2026, order: 2 },
-  { slug: "roadmap-devops-2026", title: "DevOps & Cloud", description: "Docker, CI/CD, Vercel, monitoring et observabilité.", status: "Planifié", quarter: "Q2", year: 2026, order: 3 },
-  { slug: "roadmap-data-2026", title: "Data & SQL", description: "PostgreSQL, modélisation, index et requêtes avancées.", status: "En cours", quarter: "Q2", year: 2026, order: 4 },
-  { slug: "roadmap-ia-2026", title: "IA pour développeurs", description: "LLM, agents, embeddings et intégrations d'IA en production.", status: "Planifié", quarter: "Q3", year: 2026, order: 5 },
-  { slug: "roadmap-mobile-2026", title: "Développement Mobile", description: "React Native, PWA et applications multiplateformes.", status: "Planifié", quarter: "Q3", year: 2026, order: 6 },
+  {
+    slug: "roadmap-frontend-2026",
+    title: "Développeur Frontend",
+    description: "Le parcours complet : HTML/CSS, JavaScript, React, Next.js.",
+    status: "En cours",
+    quarter: "Q1",
+    year: 2026,
+    order: 1,
+  },
+  {
+    slug: "roadmap-backend-2026",
+    title: "Développeur Backend",
+    description: "Node.js, bases de données, APIs REST et sécurité.",
+    status: "En cours",
+    quarter: "Q1",
+    year: 2026,
+    order: 2,
+  },
+  {
+    slug: "roadmap-devops-2026",
+    title: "DevOps & Cloud",
+    description: "Docker, CI/CD, Vercel, monitoring et observabilité.",
+    status: "Planifié",
+    quarter: "Q2",
+    year: 2026,
+    order: 3,
+  },
+  {
+    slug: "roadmap-data-2026",
+    title: "Data & SQL",
+    description: "PostgreSQL, modélisation, index et requêtes avancées.",
+    status: "En cours",
+    quarter: "Q2",
+    year: 2026,
+    order: 4,
+  },
+  {
+    slug: "roadmap-ia-2026",
+    title: "IA pour développeurs",
+    description: "LLM, agents, embeddings et intégrations d'IA en production.",
+    status: "Planifié",
+    quarter: "Q3",
+    year: 2026,
+    order: 5,
+  },
+  {
+    slug: "roadmap-mobile-2026",
+    title: "Développement Mobile",
+    description: "React Native, PWA et applications multiplateformes.",
+    status: "Planifié",
+    quarter: "Q3",
+    year: 2026,
+    order: 6,
+  },
 ];
 
 const EVENTS: {
@@ -572,10 +705,38 @@ const EVENTS: {
   type: string;
   daysAhead: number;
 }[] = [
-  { slug: "webinar-nextjs-16-approfondi", title: "Webinar : Next.js 16 approfondi", description: "Server Actions, ISR et patterns avancés en direct.", location: "En ligne", type: "Webinaire", daysAhead: 14 },
-  { slug: "meetup-kinshasa-javascript", title: "Meetup Kinshasa JavaScript", description: "Rencontre de la communauté : talks, démos et networking.", location: "Kinshasa", type: "Meetup", daysAhead: 40 },
-  { slug: "atelier-prisma-schema", title: "Atelier : modéliser avec Prisma", description: "Hands-on de 2h : modèles, relations et migrations.", location: "En ligne", type: "Atelier", daysAhead: 75 },
-  { slug: "conf-talks-react-19", title: "Conférence : l'état de React", description: "Retour sur React 19, RSC et l'écosystème 2026.", location: "En ligne", type: "Conférence", daysAhead: 120 },
+  {
+    slug: "webinar-nextjs-16-approfondi",
+    title: "Webinar : Next.js 16 approfondi",
+    description: "Server Actions, ISR et patterns avancés en direct.",
+    location: "En ligne",
+    type: "Webinaire",
+    daysAhead: 14,
+  },
+  {
+    slug: "meetup-kinshasa-javascript",
+    title: "Meetup Kinshasa JavaScript",
+    description: "Rencontre de la communauté : talks, démos et networking.",
+    location: "Kinshasa",
+    type: "Meetup",
+    daysAhead: 40,
+  },
+  {
+    slug: "atelier-prisma-schema",
+    title: "Atelier : modéliser avec Prisma",
+    description: "Hands-on de 2h : modèles, relations et migrations.",
+    location: "En ligne",
+    type: "Atelier",
+    daysAhead: 75,
+  },
+  {
+    slug: "conf-talks-react-19",
+    title: "Conférence : l'état de React",
+    description: "Retour sur React 19, RSC et l'écosystème 2026.",
+    location: "En ligne",
+    type: "Conférence",
+    daysAhead: 120,
+  },
 ];
 
 const CHANGELOGS: {
@@ -584,11 +745,36 @@ const CHANGELOGS: {
   version: string;
   daysAgo: number;
 }[] = [
-  { slug: "project-os-1-0", title: "Project OS : centre de contrôle admin", version: "1.0.0", daysAgo: 2 },
-  { slug: "academy-cours-nextjs", title: "Academy : cours Next.js 16 de zéro à pro", version: "0.9.0", daysAgo: 12 },
-  { slug: "templates-marketplace", title: "Marketplace de templates", version: "0.8.0", daysAgo: 25 },
-  { slug: "newsletter-upload-couverture", title: "Newsletter & upload de couvertures", version: "0.7.0", daysAgo: 40 },
-  { slug: "fondations-plateforme", title: "Fondations de la plateforme", version: "0.1.0", daysAgo: 60 },
+  {
+    slug: "project-os-1-0",
+    title: "Project OS : centre de contrôle admin",
+    version: "1.0.0",
+    daysAgo: 2,
+  },
+  {
+    slug: "academy-cours-nextjs",
+    title: "Academy : cours Next.js 16 de zéro à pro",
+    version: "0.9.0",
+    daysAgo: 12,
+  },
+  {
+    slug: "templates-marketplace",
+    title: "Marketplace de templates",
+    version: "0.8.0",
+    daysAgo: 25,
+  },
+  {
+    slug: "newsletter-upload-couverture",
+    title: "Newsletter & upload de couvertures",
+    version: "0.7.0",
+    daysAgo: 40,
+  },
+  {
+    slug: "fondations-plateforme",
+    title: "Fondations de la plateforme",
+    version: "0.1.0",
+    daysAgo: 60,
+  },
 ];
 
 const PROJECTS: {
@@ -600,50 +786,114 @@ const PROJECTS: {
   featured: boolean;
   githubUrl: string;
   demoUrl: string | null;
+  language: string;
+  stars: number;
+  forks: number;
 }[] = [
+  {
+    slug: "wabtechs-platform",
+    title: "Wabtechs Platform",
+    description:
+      "La plateforme officielle — blog, docs, podcasts, vidéos, snippets et projets open source. Construite avec Next.js 16, React 19, Prisma et PostgreSQL.",
+    longDescription:
+      "# Wabtechs Platform\n\nLa plateforme centrale de l'écosystème Wabtechs :\n\n- Blog, tutoriels, Academy, templates et Project OS\n- Next.js 16, React 19, Prisma, PostgreSQL, Tailwind\n- Déployée sur Vercel",
+    techStack: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
+    featured: true,
+    githubUrl: "https://github.com/wabtechs/wabtechs-platform",
+    demoUrl: "https://wabtechs-platform.vercel.app",
+    language: "TypeScript",
+    stars: 42,
+    forks: 12,
+  },
   {
     slug: "react-hook-patterns",
     title: "react-hook-patterns",
-    description: "Collection de patterns et hooks React réutilisables pour des projets de production. Includes useDebounce, useLocalStorage, useMediaQuery et plus.",
+    description:
+      "Collection de patterns et hooks React réutilisables pour des projets de production. Includes useDebounce, useLocalStorage, useMediaQuery et plus.",
     longDescription:
       "# react-hook-patterns\n\nDes hooks React testés et documentés pour la production :\n\n- useDebounce, useLocalStorage, useMediaQuery, useToggle\n- Tests Vitest inclus\n- Documentation JSDoc complète",
     techStack: ["React", "Hooks", "TypeScript"],
     featured: false,
     githubUrl: "https://github.com/wabtechs/react-hook-patterns",
     demoUrl: null,
+    language: "TypeScript",
+    stars: 87,
+    forks: 23,
   },
   {
     slug: "prisma-utils",
     title: "prisma-utils",
-    description: "Utilitaires et helpers pour Prisma ORM — migrations avancées, seeders, type safety et optimisation des requêtes.",
+    description:
+      "Utilitaires et helpers pour Prisma ORM — migrations avancées, seeders, type safety et optimisation des requêtes.",
     longDescription:
       "# prisma-utils\n\nBoîte à outils pour tirer le meilleur de Prisma :\n\n- Helpers de pagination et de filtrage\n- Patterns de seed idempotents\n- Modèles et enums typés",
     techStack: ["Prisma", "Database", "TypeScript"],
     featured: false,
     githubUrl: "https://github.com/wabtechs/prisma-utils",
     demoUrl: null,
+    language: "TypeScript",
+    stars: 156,
+    forks: 34,
   },
   {
     slug: "tailwind-presets",
     title: "tailwind-presets",
-    description: "Présets Tailwind CSS prêts à l'emploi pour des interfaces modernes et accessibles. Thème clair/sombre, palette oklch.",
+    description:
+      "Présets Tailwind CSS prêts à l'emploi pour des interfaces modernes et accessibles. Thème clair/sombre, palette oklch.",
     longDescription:
       "# tailwind-presets\n\nDes présets de design system pour Tailwind :\n\n- Thème clair/sombre via variables natives\n- Palette oklch et tokens accessibles\n- Composants shadcn/ui compatibles",
     techStack: ["Tailwind", "CSS", "Design System"],
     featured: false,
     githubUrl: "https://github.com/wabtechs/tailwind-presets",
     demoUrl: null,
+    language: "CSS",
+    stars: 203,
+    forks: 45,
   },
   {
     slug: "next-auth-starter",
     title: "next-auth-starter",
-    description: "Template de démarrage avec NextAuth.js v5, Prisma Adapter et credentials/OAuth providers. Auth complète en 5 minutes.",
+    description:
+      "Template de démarrage avec NextAuth.js v5, Prisma Adapter et credentials/OAuth providers. Auth complète en 5 minutes.",
     longDescription:
       "# next-auth-starter\n\nL'authentification Next.js prête en 5 minutes :\n\n- Auth.js v5, Credentials + OAuth\n- Adapter Prisma, sessions JWT\n- Rôles, middleware et guards d'API",
     techStack: ["Next.js", "Auth", "Prisma"],
-    featured: true,
+    featured: false,
     githubUrl: "https://github.com/wabtechs/next-auth-starter",
     demoUrl: "https://github.com/wabtechs/next-auth-starter",
+    language: "TypeScript",
+    stars: 312,
+    forks: 78,
+  },
+  {
+    slug: "devtools-cli",
+    title: "devtools-cli",
+    description:
+      "CLI pour automatiser les tâches de développement — scaffolding de pages, migrations, déploiement et code generation.",
+    longDescription:
+      "# devtools-cli\n\nUn CLI pour accélérer le développement :\n\n- Scaffolding de pages et composants\n- Migrations et déploiement automatisés\n- Code generation typée",
+    techStack: ["CLI", "Node.js", "Automation"],
+    featured: false,
+    githubUrl: "https://github.com/wabtechs/devtools-cli",
+    demoUrl: null,
+    language: "TypeScript",
+    stars: 64,
+    forks: 11,
+  },
+  {
+    slug: "api-handler-patterns",
+    title: "api-handler-patterns",
+    description:
+      "Patterns et utilitaires pour les API routes Next.js — validation Zod, error handling, rate limiting et logging.",
+    longDescription:
+      "# api-handler-patterns\n\nDes patterns robustes pour les API Next.js :\n\n- Validation Zod des entrées\n- Error handling et logging centralisés\n- Rate limiting réutilisable",
+    techStack: ["Next.js", "API", "TypeScript"],
+    featured: false,
+    githubUrl: "https://github.com/wabtechs/api-handler-patterns",
+    demoUrl: null,
+    language: "TypeScript",
+    stars: 95,
+    forks: 19,
   },
 ];
 
@@ -725,11 +975,35 @@ async function main() {
   }
 
   const commentSpecs: { post: string; author: string; content: string; replyTo?: string }[] = [
-    { post: "vitesse-site-seo-conversions", author: "dev", content: "Excellent article ! Le point sur le INP est très clair, je ne savais pas qu'il remplaçait le FID." },
-    { post: "vitesse-site-seo-conversions", author: "admin", content: "Merci ! On a d'ailleurs migré la plateforme et gagné 40% sur le LCP.", replyTo: "vitesse-site-seo-conversions:dev" },
-    { post: "prisma-ou-drizzle-2026", author: "qa", content: "Le comparatif est honnête. Prisma reste effectivement le meilleur choix pour la productivité." },
-    { post: "composants-serveur-react-guide", author: "reader", content: "Très pratique. La règle serveur par défaut devrait être affichée dans tous les bureaux." },
-    { post: "tailwind-css-v4-ce-qui-change", author: "pm", content: "On planifie la migration du Project OS sur Tailwind v4, ce guide tombe à pic !" },
+    {
+      post: "vitesse-site-seo-conversions",
+      author: "dev",
+      content:
+        "Excellent article ! Le point sur le INP est très clair, je ne savais pas qu'il remplaçait le FID.",
+    },
+    {
+      post: "vitesse-site-seo-conversions",
+      author: "admin",
+      content: "Merci ! On a d'ailleurs migré la plateforme et gagné 40% sur le LCP.",
+      replyTo: "vitesse-site-seo-conversions:dev",
+    },
+    {
+      post: "prisma-ou-drizzle-2026",
+      author: "qa",
+      content:
+        "Le comparatif est honnête. Prisma reste effectivement le meilleur choix pour la productivité.",
+    },
+    {
+      post: "composants-serveur-react-guide",
+      author: "reader",
+      content:
+        "Très pratique. La règle serveur par défaut devrait être affichée dans tous les bureaux.",
+    },
+    {
+      post: "tailwind-css-v4-ce-qui-change",
+      author: "pm",
+      content: "On planifie la migration du Project OS sur Tailwind v4, ce guide tombe à pic !",
+    },
   ];
   const commentIds = new Map<string, string>();
   for (const spec of commentSpecs) {
@@ -746,7 +1020,10 @@ async function main() {
     if (!spec.replyTo) continue;
     const parentId = commentIds.get(spec.replyTo);
     if (!parentId) continue;
-    await prisma.comment.update({ where: { id: commentIds.get(`${spec.post}:${spec.author}`)! }, data: { parentId } });
+    await prisma.comment.update({
+      where: { id: commentIds.get(`${spec.post}:${spec.author}`)! },
+      data: { parentId },
+    });
   }
 
   await prisma.like.createMany({
@@ -784,14 +1061,78 @@ async function main() {
   });
 
   const lessons = [
-    { title: "Les nouveautés de React 19", description: "useOptimistic, useActionState, les changements majeurs.", duration: 18, order: 1, free: true, content: "# Les nouveautés de React 19\n\nReact 19 simplifie le modèle mental : moins de hooks spécialisés, plus d'actions et de transitions.\n\n- useOptimistic pour les mises à jour optimistes\n- useActionState pour les formulaires\n- Composants serveur au premier plan\n\n> **À retenir** : les Actions sont désormais le chemin recommandé pour les mutations." },
-    { title: "useTransition et les transitions", description: "Rendre les changements d'état non bloquants.", duration: 22, order: 2, free: false, content: "# useTransition\n\nLes transitions marquent une mise à jour comme non urgente : l'interface reste réactive pendant le rendu.\n\n```tsx\nconst [isPending, startTransition] = useTransition();\n\nstartTransition(() => setTab(\"analytics\"));\n```\n\n> **À retenir** : idéal pour les filtres, onglets et recherches coûteuses." },
-    { title: "Server Components en pratique", description: "Architecturer une app : la couche serveur épaisse, la couche client mince.", duration: 25, order: 3, free: false, content: "# Server Components en pratique\n\nOrganisez votre arborescence : données et logique côté serveur, interactions dans des composants client feuilles.\n\n- Chaque \`\"use client\"\` coûte du JS\n- Les composants serveur peuvent rendre des composants client\n- Passez des données sérialisables uniquement\n\n> **À retenir** : la performance d'une app React 19 se décide à la frontière serveur/client." },
-    { title: "useOptimistic : des UI instantanées", description: "Réagir immédiatement aux actions utilisateur.", duration: 20, order: 4, free: false, content: "# useOptimistic\n\nAffichez le résultat attendu pendant que la requête part.\n\n```tsx\nconst [optimisticLikes, addOptimistic] = useOptimistic(likes);\n\nasync function handleLike() {\n  addOptimistic(likes + 1);\n  await likePost();\n}\n```\n\n> **À retenir** : le serveur reste la source de vérité ; l'optimisme n'est qu'une couche de perception." },
-    { title: "TypeScript strict pour vos composants", description: "Typage des props, génériques et inférence avancée.", duration: 23, order: 5, free: false, content: "# TypeScript strict\n\nTypage générique, contrôle de variantes et composants polymorphiques :\n\n```tsx\nfunction Tabs<T extends string>({ items }: { items: T[] }) {\n  const [active, setActive] = useState<T>(items[0]!);\n}\n```\n\n> **À retenir** : activer \`noUncheckedIndexedAccess\` révèle des bugs silencieux." },
-    { title: "Performance : memo, code splitting, liste", description: "Les 3 leviers qui comptent réellement.", duration: 26, order: 6, free: false, content: "# Performance React\n\n1. **React.memo** pour les composants chers et stables\n2. **dynamic()** pour découper le code par route\n3. **Virualisation** pour les longues listes\n\nMesurez avec le Profiler de React DevTools avant d'optimiser.\n\n> **À retenir** : n'optimisez jamais avant d'avoir mesuré." },
-    { title: "Server Actions et mutation de données", description: "Écrire en base depuis le client en toute sécurité.", duration: 24, order: 7, free: false, content: "# Server Actions\n\n```tsx\n\"use server\";\n\nexport async function createPost(data: FormData) {\n  const parsed = schema.parse(Object.fromEntries(data));\n  await db.post.create({ data: parsed });\n  revalidatePath(\"/blog\");\n}\n```\n\n> **À retenir** : validez toujours côté serveur, jamais uniquement côté client." },
-    { title: "Projet final : une app full-stack", description: "Assemblez toutes les notions en une app complète.", duration: 60, order: 8, free: false, content: "# Projet final\n\nConstruisez une mini-app de productivité (kanban) avec :\n\n- Auth et rôles\n- Server Actions pour les mutations\n- UI optimiste avec useOptimistic\n- Tests et déploiement\n\n> Félicitations ! Partagez votre projet avec la communauté Wabtechs." },
+    {
+      title: "Les nouveautés de React 19",
+      description: "useOptimistic, useActionState, les changements majeurs.",
+      duration: 18,
+      order: 1,
+      free: true,
+      content:
+        "# Les nouveautés de React 19\n\nReact 19 simplifie le modèle mental : moins de hooks spécialisés, plus d'actions et de transitions.\n\n- useOptimistic pour les mises à jour optimistes\n- useActionState pour les formulaires\n- Composants serveur au premier plan\n\n> **À retenir** : les Actions sont désormais le chemin recommandé pour les mutations.",
+    },
+    {
+      title: "useTransition et les transitions",
+      description: "Rendre les changements d'état non bloquants.",
+      duration: 22,
+      order: 2,
+      free: false,
+      content:
+        '# useTransition\n\nLes transitions marquent une mise à jour comme non urgente : l\'interface reste réactive pendant le rendu.\n\n```tsx\nconst [isPending, startTransition] = useTransition();\n\nstartTransition(() => setTab("analytics"));\n```\n\n> **À retenir** : idéal pour les filtres, onglets et recherches coûteuses.',
+    },
+    {
+      title: "Server Components en pratique",
+      description: "Architecturer une app : la couche serveur épaisse, la couche client mince.",
+      duration: 25,
+      order: 3,
+      free: false,
+      content:
+        '# Server Components en pratique\n\nOrganisez votre arborescence : données et logique côté serveur, interactions dans des composants client feuilles.\n\n- Chaque \`"use client"\` coûte du JS\n- Les composants serveur peuvent rendre des composants client\n- Passez des données sérialisables uniquement\n\n> **À retenir** : la performance d\'une app React 19 se décide à la frontière serveur/client.',
+    },
+    {
+      title: "useOptimistic : des UI instantanées",
+      description: "Réagir immédiatement aux actions utilisateur.",
+      duration: 20,
+      order: 4,
+      free: false,
+      content:
+        "# useOptimistic\n\nAffichez le résultat attendu pendant que la requête part.\n\n```tsx\nconst [optimisticLikes, addOptimistic] = useOptimistic(likes);\n\nasync function handleLike() {\n  addOptimistic(likes + 1);\n  await likePost();\n}\n```\n\n> **À retenir** : le serveur reste la source de vérité ; l'optimisme n'est qu'une couche de perception.",
+    },
+    {
+      title: "TypeScript strict pour vos composants",
+      description: "Typage des props, génériques et inférence avancée.",
+      duration: 23,
+      order: 5,
+      free: false,
+      content:
+        "# TypeScript strict\n\nTypage générique, contrôle de variantes et composants polymorphiques :\n\n```tsx\nfunction Tabs<T extends string>({ items }: { items: T[] }) {\n  const [active, setActive] = useState<T>(items[0]!);\n}\n```\n\n> **À retenir** : activer \`noUncheckedIndexedAccess\` révèle des bugs silencieux.",
+    },
+    {
+      title: "Performance : memo, code splitting, liste",
+      description: "Les 3 leviers qui comptent réellement.",
+      duration: 26,
+      order: 6,
+      free: false,
+      content:
+        "# Performance React\n\n1. **React.memo** pour les composants chers et stables\n2. **dynamic()** pour découper le code par route\n3. **Virualisation** pour les longues listes\n\nMesurez avec le Profiler de React DevTools avant d'optimiser.\n\n> **À retenir** : n'optimisez jamais avant d'avoir mesuré.",
+    },
+    {
+      title: "Server Actions et mutation de données",
+      description: "Écrire en base depuis le client en toute sécurité.",
+      duration: 24,
+      order: 7,
+      free: false,
+      content:
+        '# Server Actions\n\n```tsx\n"use server";\n\nexport async function createPost(data: FormData) {\n  const parsed = schema.parse(Object.fromEntries(data));\n  await db.post.create({ data: parsed });\n  revalidatePath("/blog");\n}\n```\n\n> **À retenir** : validez toujours côté serveur, jamais uniquement côté client.',
+    },
+    {
+      title: "Projet final : une app full-stack",
+      description: "Assemblez toutes les notions en une app complète.",
+      duration: 60,
+      order: 8,
+      free: false,
+      content:
+        "# Projet final\n\nConstruisez une mini-app de productivité (kanban) avec :\n\n- Auth et rôles\n- Server Actions pour les mutations\n- UI optimiste avec useOptimistic\n- Tests et déploiement\n\n> Félicitations ! Partagez votre projet avec la communauté Wabtechs.",
+    },
   ];
   for (const l of lessons) {
     await prisma.lesson.create({ data: { courseId: course.id, ...l } });
@@ -799,7 +1140,13 @@ async function main() {
 
   await prisma.enrollment.createMany({
     data: [
-      { userId: users.admin!, courseId: course.id, progress: 100, completed: true, completedAt: addDays(-2) },
+      {
+        userId: users.admin!,
+        courseId: course.id,
+        progress: 100,
+        completed: true,
+        completedAt: addDays(-2),
+      },
       { userId: users.dev!, courseId: course.id, progress: 62, completed: false },
       { userId: users.qa!, courseId: course.id, progress: 25, completed: false },
     ],
@@ -809,7 +1156,13 @@ async function main() {
   if (nxCourse) {
     await prisma.enrollment.createMany({
       data: [
-        { userId: users.admin!, courseId: nxCourse.id, progress: 100, completed: true, completedAt: addDays(-8) },
+        {
+          userId: users.admin!,
+          courseId: nxCourse.id,
+          progress: 100,
+          completed: true,
+          completedAt: addDays(-8),
+        },
         { userId: users.dev!, courseId: nxCourse.id, progress: 78, completed: false },
       ],
     });
@@ -882,7 +1235,12 @@ async function main() {
   for (const c of CHANGELOGS) {
     const { daysAgo, ...data } = c;
     await prisma.changelog.create({
-      data: { ...data, published: true, date: addDays(-daysAgo), content: `# ${c.title}\n\nDétails de la version ${c.version} publiée sur la plateforme.` },
+      data: {
+        ...data,
+        published: true,
+        date: addDays(-daysAgo),
+        content: `# ${c.title}\n\nDétails de la version ${c.version} publiée sur la plateforme.`,
+      },
     });
   }
   console.log(`✓ ${CHANGELOGS.length} changelogs`);
@@ -907,19 +1265,61 @@ async function main() {
 
   await prisma.contactMessage.createMany({
     data: [
-      { name: "Fatou B.", email: "fatou@example.com", subject: "Demande de partenariat", message: "Bonjour, j'aimerais proposer un partenariat autour de l'Academy.", read: false },
-      { name: "Igor M.", email: "igor@example.com", subject: "Bug sur la page templates", message: "Le filtre par catégorie ne fonctionne pas sur mobile.", read: false },
-      { name: "Nadia T.", email: "nadia@example.com", subject: "Question cours Next.js", message: "Le cours Next.js 16 est-il disponible en version gratuite complète ?", read: true },
+      {
+        name: "Fatou B.",
+        email: "fatou@example.com",
+        subject: "Demande de partenariat",
+        message: "Bonjour, j'aimerais proposer un partenariat autour de l'Academy.",
+        read: false,
+      },
+      {
+        name: "Igor M.",
+        email: "igor@example.com",
+        subject: "Bug sur la page templates",
+        message: "Le filtre par catégorie ne fonctionne pas sur mobile.",
+        read: false,
+      },
+      {
+        name: "Nadia T.",
+        email: "nadia@example.com",
+        subject: "Question cours Next.js",
+        message: "Le cours Next.js 16 est-il disponible en version gratuite complète ?",
+        read: true,
+      },
     ],
   });
   console.log(`✓ ${3} messages de contact`);
 
   await prisma.notification.createMany({
     data: [
-      { userId: users.admin!, type: "RELEASE", title: "Wabtechs Platform v1.2.0 déployée", content: "La nouvelle version est en production sur Vercel.", read: false },
-      { userId: users.admin!, type: "SPRINT", title: "Sprint actif : Taxium", content: "Le sprint 7 de Taxium est en cours, 3 features en revue.", read: false },
-      { userId: users.admin!, type: "BUG", title: "Bug critique sur Archivium", content: "Un bug BLOCKER a été ouvert sur la recherche full-text.", read: true },
-      { userId: users.dev!, type: "TASK", title: "Feature assignée", content: "La feature 'Inscription OAuth' vous a été assignée.", read: false },
+      {
+        userId: users.admin!,
+        type: "RELEASE",
+        title: "Wabtechs Platform v1.2.0 déployée",
+        content: "La nouvelle version est en production sur Vercel.",
+        read: false,
+      },
+      {
+        userId: users.admin!,
+        type: "SPRINT",
+        title: "Sprint actif : Taxium",
+        content: "Le sprint 7 de Taxium est en cours, 3 features en revue.",
+        read: false,
+      },
+      {
+        userId: users.admin!,
+        type: "BUG",
+        title: "Bug critique sur Archivium",
+        content: "Un bug BLOCKER a été ouvert sur la recherche full-text.",
+        read: true,
+      },
+      {
+        userId: users.dev!,
+        type: "TASK",
+        title: "Feature assignée",
+        content: "La feature 'Inscription OAuth' vous a été assignée.",
+        read: false,
+      },
     ],
   });
   console.log(`✓ ${4} notifications`);
@@ -933,14 +1333,24 @@ async function main() {
         entityType: "FEATURE",
         entityId: f.id,
         userId: users[i % 4 === 0 ? "dev" : "qa"],
-        content: ["À traiter avant la fin du sprint.", "À mettre en revue avec l'équipe.", "Dépendance bloquante à lever.", "Testé sur mobile, OK."][i] ?? "",
+        content:
+          [
+            "À traiter avant la fin du sprint.",
+            "À mettre en revue avec l'équipe.",
+            "Dépendance bloquante à lever.",
+            "Testé sur mobile, OK.",
+          ][i] ?? "",
       })),
     });
     await prisma.subtask.createMany({
       data: [
         { featureId: firstFeature.id, title: "Écrire les tests unitaires", done: false },
         { featureId: firstFeature.id, title: "Valider sur les navigateurs", done: true },
-        { featureId: secondFeature?.id ?? firstFeature.id, title: "Mettre à jour la documentation", done: false },
+        {
+          featureId: secondFeature?.id ?? firstFeature.id,
+          title: "Mettre à jour la documentation",
+          done: false,
+        },
       ],
     });
     console.log(`✓ Commentaires et sous-tâches (${features.length} features liées)`);

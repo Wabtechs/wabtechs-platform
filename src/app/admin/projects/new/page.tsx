@@ -23,6 +23,9 @@ export default function NewProjectPage() {
     githubUrl: "",
     demoUrl: "",
     techStack: "",
+    language: "TypeScript",
+    stars: "",
+    forks: "",
     featured: false,
   });
 
@@ -77,50 +80,123 @@ export default function NewProjectPage() {
                   value={form.title}
                   onChange={(e) => {
                     updateForm("title", e.target.value);
-                    if (!form.slug) updateForm("slug", e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+                    if (!form.slug)
+                      updateForm("slug", e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
                   }}
                   required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="slug">Slug</Label>
-                <Input id="slug" value={form.slug} onChange={(e) => updateForm("slug", e.target.value)} required />
+                <Input
+                  id="slug"
+                  value={form.slug}
+                  onChange={(e) => updateForm("slug", e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Description courte</Label>
-                <Textarea id="description" value={form.description} onChange={(e) => updateForm("description", e.target.value)} required />
+                <Textarea
+                  id="description"
+                  value={form.description}
+                  onChange={(e) => updateForm("description", e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="longDescription">Description longue</Label>
-                <Textarea id="longDescription" rows={6} value={form.longDescription} onChange={(e) => updateForm("longDescription", e.target.value)} />
+                <Textarea
+                  id="longDescription"
+                  rows={6}
+                  value={form.longDescription}
+                  onChange={(e) => updateForm("longDescription", e.target.value)}
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="githubUrl">GitHub URL</Label>
-                  <Input id="githubUrl" value={form.githubUrl} onChange={(e) => updateForm("githubUrl", e.target.value)} />
+                  <Input
+                    id="githubUrl"
+                    value={form.githubUrl}
+                    onChange={(e) => updateForm("githubUrl", e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="demoUrl">Demo URL</Label>
-                  <Input id="demoUrl" value={form.demoUrl} onChange={(e) => updateForm("demoUrl", e.target.value)} />
+                  <Input
+                    id="demoUrl"
+                    value={form.demoUrl}
+                    onChange={(e) => updateForm("demoUrl", e.target.value)}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="techStack">Stack technique (séparé par virgules)</Label>
-                <Input id="techStack" value={form.techStack} onChange={(e) => updateForm("techStack", e.target.value)} placeholder="Next.js, TypeScript, Prisma" />
+                <Input
+                  id="techStack"
+                  value={form.techStack}
+                  onChange={(e) => updateForm("techStack", e.target.value)}
+                  placeholder="Next.js, TypeScript, Prisma"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="language">Langage</Label>
+                  <Input
+                    id="language"
+                    value={form.language}
+                    onChange={(e) => updateForm("language", e.target.value)}
+                    placeholder="TypeScript"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stars">Stars GitHub</Label>
+                  <Input
+                    id="stars"
+                    type="number"
+                    min={0}
+                    value={form.stars}
+                    onChange={(e) => updateForm("stars", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="forks">Forks GitHub</Label>
+                  <Input
+                    id="forks"
+                    type="number"
+                    min={0}
+                    value={form.forks}
+                    onChange={(e) => updateForm("forks", e.target.value)}
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="coverImage">Image de couverture</Label>
-                <FileUpload value={form.coverImage} onChange={(url) => updateForm("coverImage", url)} label="l'image de couverture" />
+                <FileUpload
+                  value={form.coverImage}
+                  onChange={(url) => updateForm("coverImage", url)}
+                  label="l'image de couverture"
+                />
               </div>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={form.featured} onChange={(e) => updateForm("featured", e.target.checked)} className="rounded" />
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) => updateForm("featured", e.target.checked)}
+                  className="rounded"
+                />
                 Featured
               </label>
             </CardContent>
           </Card>
 
           <Button type="submit" disabled={loading}>
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             {loading ? "Création..." : "Créer le projet"}
           </Button>
         </form>

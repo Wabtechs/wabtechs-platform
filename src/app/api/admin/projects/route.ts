@@ -15,11 +15,22 @@ export const POST = safeHandler(async (req: Request) => {
   const user = await requireAdmin();
 
   const body = await req.json();
-  const { id, ...data } = body;
+  const { id, ...raw } = body;
+  const data = {
+    ...raw,
+    stars: raw.stars == null || raw.stars === "" ? 0 : Number(raw.stars),
+    forks: raw.forks == null || raw.forks === "" ? 0 : Number(raw.forks),
+  };
 
   if (id) {
     const updated = await db.project.update({ where: { id }, data });
-    await createAuditLog({ action: "UPDATE", entity: "Projet", entityId: updated.id, userId: user.id as string, details: JSON.stringify(data) });
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "Projet",
+      entityId: updated.id,
+      userId: user.id as string,
+      details: JSON.stringify(data),
+    });
     return NextResponse.json(updated);
   }
 
@@ -34,12 +45,20 @@ export const POST = safeHandler(async (req: Request) => {
       demoUrl: data.demoUrl ?? null,
       techStack: data.techStack ?? [],
       featured: data.featured ?? false,
+      language: data.language ?? "TypeScript",
+      stars: data.stars ?? 0,
+      forks: data.forks ?? 0,
       metaTitle: data.metaTitle ?? null,
       metaDescription: data.metaDescription ?? null,
       ogImage: data.ogImage ?? null,
     },
   });
-  await createAuditLog({ action: "CREATE", entity: "Projet", entityId: project.id, userId: user.id as string });
+  await createAuditLog({
+    action: "CREATE",
+    entity: "Projet",
+    entityId: project.id,
+    userId: user.id as string,
+  });
   return NextResponse.json(project, { status: 201 });
 });
 
@@ -48,6 +67,11 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   await db.project.delete({ where: { id } });
-  await createAuditLog({ action: "DELETE", entity: "Projet", entityId: id, userId: user.id as string });
+  await createAuditLog({
+    action: "DELETE",
+    entity: "Projet",
+    entityId: id,
+    userId: user.id as string,
+  });
   return NextResponse.json({ success: true });
 });

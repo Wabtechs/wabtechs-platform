@@ -171,6 +171,10 @@ model Project {
   featured        Boolean  @default(false)
   archived        Boolean  @default(false)
 
+  language String  @default("TypeScript")
+  stars    Int     @default(0)
+  forks    Int     @default(0)
+
   metaTitle       String?
   metaDescription String?
   ogImage         String?

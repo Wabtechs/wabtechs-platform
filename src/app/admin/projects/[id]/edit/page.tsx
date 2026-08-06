@@ -23,6 +23,9 @@ interface ProjectData {
   techStack: string[];
   featured: boolean;
   archived: boolean;
+  language: string;
+  stars: number;
+  forks: number;
   metaTitle: string | null;
   metaDescription: string | null;
   ogImage: string | null;
@@ -42,6 +45,9 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
     githubUrl: "",
     demoUrl: "",
     techStack: "",
+    language: "TypeScript",
+    stars: "",
+    forks: "",
     featured: false,
     archived: false,
     metaTitle: "",
@@ -64,6 +70,9 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
             githubUrl: proj.githubUrl ?? "",
             demoUrl: proj.demoUrl ?? "",
             techStack: proj.techStack.join(", "),
+            language: proj.language,
+            stars: proj.stars == null ? "" : String(proj.stars),
+            forks: proj.forks == null ? "" : String(proj.forks),
             featured: proj.featured,
             archived: proj.archived,
             metaTitle: proj.metaTitle ?? "",
@@ -104,7 +113,7 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   if (fetching) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -119,55 +128,137 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
           </Link>
         </Button>
 
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-foreground">Modifier le projet</h1>
+        <h1 className="dark:text-foreground text-3xl font-bold tracking-tight text-gray-900">
+          Modifier le projet
+        </h1>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-foreground">Informations</CardTitle>
+              <CardTitle className="dark:text-foreground text-gray-900">Informations</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Titre</Label>
-                <Input value={form.title} onChange={(e) => updateForm("title", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" required />
+                <Label className="dark:text-foreground text-gray-900">Titre</Label>
+                <Input
+                  value={form.title}
+                  onChange={(e) => updateForm("title", e.target.value)}
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Slug</Label>
-                <Input value={form.slug} onChange={(e) => updateForm("slug", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" required />
+                <Label className="dark:text-foreground text-gray-900">Slug</Label>
+                <Input
+                  value={form.slug}
+                  onChange={(e) => updateForm("slug", e.target.value)}
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Description courte</Label>
-                <Textarea value={form.description} onChange={(e) => updateForm("description", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" required />
+                <Label className="dark:text-foreground text-gray-900">Description courte</Label>
+                <Textarea
+                  value={form.description}
+                  onChange={(e) => updateForm("description", e.target.value)}
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Description longue</Label>
-                <Textarea rows={6} value={form.longDescription} onChange={(e) => updateForm("longDescription", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="dark:text-foreground text-gray-900">Description longue</Label>
+                <Textarea
+                  rows={6}
+                  value={form.longDescription}
+                  onChange={(e) => updateForm("longDescription", e.target.value)}
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-900 dark:text-foreground">GitHub URL</Label>
-                  <Input value={form.githubUrl} onChange={(e) => updateForm("githubUrl", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                  <Label className="dark:text-foreground text-gray-900">GitHub URL</Label>
+                  <Input
+                    value={form.githubUrl}
+                    onChange={(e) => updateForm("githubUrl", e.target.value)}
+                    className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-900 dark:text-foreground">Demo URL</Label>
-                  <Input value={form.demoUrl} onChange={(e) => updateForm("demoUrl", e.target.value)} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                  <Label className="dark:text-foreground text-gray-900">Demo URL</Label>
+                  <Input
+                    value={form.demoUrl}
+                    onChange={(e) => updateForm("demoUrl", e.target.value)}
+                    className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Stack technique (virgules)</Label>
-                <Input value={form.techStack} onChange={(e) => updateForm("techStack", e.target.value)} placeholder="Next.js, TypeScript, Prisma" className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="dark:text-foreground text-gray-900">
+                  Stack technique (virgules)
+                </Label>
+                <Input
+                  value={form.techStack}
+                  onChange={(e) => updateForm("techStack", e.target.value)}
+                  placeholder="Next.js, TypeScript, Prisma"
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label className="dark:text-foreground text-gray-900">Langage</Label>
+                  <Input
+                    value={form.language}
+                    onChange={(e) => updateForm("language", e.target.value)}
+                    placeholder="TypeScript"
+                    className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="dark:text-foreground text-gray-900">Stars GitHub</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={form.stars}
+                    onChange={(e) => updateForm("stars", e.target.value)}
+                    className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="dark:text-foreground text-gray-900">Forks GitHub</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={form.forks}
+                    onChange={(e) => updateForm("forks", e.target.value)}
+                    className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Image de couverture</Label>
-                <FileUpload value={form.coverImage} onChange={(url) => updateForm("coverImage", url)} label="l'image de couverture" />
+                <Label className="dark:text-foreground text-gray-900">Image de couverture</Label>
+                <FileUpload
+                  value={form.coverImage}
+                  onChange={(url) => updateForm("coverImage", url)}
+                  label="l'image de couverture"
+                />
               </div>
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-foreground">
-                  <input type="checkbox" checked={form.featured} onChange={(e) => updateForm("featured", e.target.checked)} className="rounded" />
+                <label className="dark:text-foreground flex items-center gap-2 text-sm text-gray-900">
+                  <input
+                    type="checkbox"
+                    checked={form.featured}
+                    onChange={(e) => updateForm("featured", e.target.checked)}
+                    className="rounded"
+                  />
                   Featured
                 </label>
-                <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-foreground">
-                  <input type="checkbox" checked={form.archived} onChange={(e) => updateForm("archived", e.target.checked)} className="rounded" />
+                <label className="dark:text-foreground flex items-center gap-2 text-sm text-gray-900">
+                  <input
+                    type="checkbox"
+                    checked={form.archived}
+                    onChange={(e) => updateForm("archived", e.target.checked)}
+                    className="rounded"
+                  />
                   Archivé
                 </label>
               </div>
@@ -176,26 +267,50 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
 
           <Card className="border-border bg-card">
             <CardHeader>
-              <CardTitle className="text-gray-900 dark:text-foreground">SEO</CardTitle>
+              <CardTitle className="dark:text-foreground text-gray-900">SEO</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Meta Title</Label>
-                <Input value={form.metaTitle} onChange={(e) => updateForm("metaTitle", e.target.value)} placeholder="Titre pour les moteurs de recherche" className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="dark:text-foreground text-gray-900">Meta Title</Label>
+                <Input
+                  value={form.metaTitle}
+                  onChange={(e) => updateForm("metaTitle", e.target.value)}
+                  placeholder="Titre pour les moteurs de recherche"
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">Meta Description</Label>
-                <Textarea value={form.metaDescription} onChange={(e) => updateForm("metaDescription", e.target.value)} placeholder="Description pour les moteurs de recherche" rows={3} className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="dark:text-foreground text-gray-900">Meta Description</Label>
+                <Textarea
+                  value={form.metaDescription}
+                  onChange={(e) => updateForm("metaDescription", e.target.value)}
+                  placeholder="Description pour les moteurs de recherche"
+                  rows={3}
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-foreground">OG Image (URL)</Label>
-                <Input value={form.ogImage} onChange={(e) => updateForm("ogImage", e.target.value)} placeholder="Image pour les réseaux sociaux" className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground" />
+                <Label className="dark:text-foreground text-gray-900">OG Image (URL)</Label>
+                <Input
+                  value={form.ogImage}
+                  onChange={(e) => updateForm("ogImage", e.target.value)}
+                  placeholder="Image pour les réseaux sociaux"
+                  className="dark:border-border dark:bg-muted dark:text-foreground border-gray-200 bg-gray-50 text-gray-900"
+                />
               </div>
             </CardContent>
           </Card>
 
-          <Button type="submit" disabled={loading} className="bg-primary text-white hover:bg-[#7323c4]">
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-primary text-white hover:bg-[#7323c4]"
+          >
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             {loading ? "Sauvegarde..." : "Sauvegarder"}
           </Button>
         </form>
