@@ -50,7 +50,7 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 **Score actuel: 0/100 → 40/100 • Effort: 2 jours • Budget: 50€/mois**
 
 - [x] Installer PostHog (self-host ou cloud) — analytics + session recordings
-- [ ] Installer Sentry — error tracking
+- [x] Installer Sentry — error tracking (`@sentry/nextjs`, actif dès qu'un DSN est défini dans l'environnement)
 - [ ] Tableau de bord des KPIs (visiteurs, pages vues, conversions)
 - [ ] Console.log/error tracking supprimé
 
@@ -268,5 +268,5 @@ Projets à long terme, post-rentabilité.
 
 ---
 
-**Dernière mise à jour**: 3 août 2026
+**Dernière mise à jour**: 6 août 2026
 **Prochaine révision**: 31 octobre 2026
