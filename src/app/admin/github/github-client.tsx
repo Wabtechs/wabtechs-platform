@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   Github,
   Loader2,
@@ -99,6 +100,14 @@ export function GithubClient() {
   const [analysis, setAnalysis] = useState<Record<string, Analysis>>({});
   const [expanded, setExpanded] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deploying, setDeploying] = useState(false);
+  const [deployment, setDeployment] = useState<{
+    id: string;
+    url: string;
+    state: string;
+    created: number;
+  } | null>(null);
+  const [deployError, setDeployError] = useState<string | null>(null);
 
   const urlError = searchParams.get("error");
 
@@ -178,6 +187,34 @@ export function GithubClient() {
   const connect = () => {
     // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- OAuth: l'API /api/github/auth répond par une redirection 307 vers GitHub, router.push ne convient pas.
     window.location.href = "/api/github/auth";
+  };
+
+  const deploy = async () => {
+    setDeploying(true);
+    setDeployError(null);
+    try {
+      const res = await fetch("/api/github/deploy", { method: "POST" });
+      const body = (await res.json()) as {
+        error?: string;
+        id?: string;
+        url?: string;
+        state?: string;
+        created?: number;
+      };
+      if (!res.ok) throw new Error(body.error ?? "Déploiement impossible.");
+      if (!body.id || !body.url) throw new Error("Réponse du déploiement inattendue.");
+      setDeployment({
+        id: body.id,
+        url: body.url,
+        state: body.state ?? "QUEUED",
+        created: body.created ?? Date.now(),
+      });
+      toast.success("Déploiement Vercel déclenché");
+    } catch (e) {
+      setDeployError(e instanceof Error ? e.message : "Déploiement impossible.");
+    } finally {
+      setDeploying(false);
+    }
   };
 
   const disconnect = async () => {
@@ -573,6 +610,68 @@ export function GithubClient() {
           </div>
         </motion.div>
       )}
+
+      <motion.div variants={fadeUp}>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-[14px] font-semibold">Déploiement Vercel</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="max-w-xl text-[12px] text-gray-500 dark:text-gray-400">
+                Redéployez la plateforme en production depuis l&apos;admin (équivalent à{" "}
+                <code className="font-mono">vercel --prod</code>), via le deploy hook Vercel.
+              </p>
+              <Button size="sm" onClick={() => void deploy()} disabled={deploying}>
+                {deploying ? (
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Rocket className="mr-2 h-3.5 w-3.5" />
+                )}
+                {deploying ? "Déploiement..." : "Redéployer"}
+              </Button>
+            </div>
+
+            {deployError && (
+              <div className="border-destructive/40 bg-destructive/5 text-destructive flex items-center gap-2 rounded-lg border border-dashed px-3 py-2.5 text-[12px]">
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>
+                  {deployError === "Déploiement Vercel non configuré" ? (
+                    <>
+                      Configurez <code className="font-mono">VERCEL_DEPLOY_HOOK_URL</code> dans
+                      l&apos;environnement (Vercel → Settings → Deploy Hooks) pour activer le
+                      redéploiement 1-click.
+                    </>
+                  ) : (
+                    deployError
+                  )}
+                </span>
+              </div>
+            )}
+
+            {deployment && (
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3.5 py-2.5">
+                <div className="flex items-center gap-2 text-[12px] text-emerald-600 dark:text-emerald-400">
+                  <Rocket className="h-3.5 w-3.5" />
+                  <span className="font-medium">
+                    Déploiement {deployment.state.toLowerCase()} ·{" "}
+                    {new Date(deployment.created).toLocaleString("fr-FR")}
+                  </span>
+                </div>
+                <a
+                  href={`https://${deployment.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary mt-1 inline-flex items-center gap-1 font-mono text-[12px] text-gray-600 dark:text-gray-300"
+                >
+                  {deployment.url}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
     </motion.div>
   );
 }
