@@ -14,6 +14,10 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "_backup-old-site/**",
     "_backup-old-Dashboard/**",
+    // Generated artifacts:
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**",
   ]),
   {
     rules: {

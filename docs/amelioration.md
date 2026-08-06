@@ -19,7 +19,7 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 - [x] Setup Vitest pour tests unitaires (41 tests)
 - [x] Setup Playwright pour tests e2e critiques (7 tests, job CI dédié)
 - [x] Husky + lint-staged (pre-commit hooks)
-- [ ] Code coverage minimal (80%)
+- [x] Code coverage minimal (80%) — seuil appliqué sur `src/lib` via `npm run test:coverage` (97%+ couvert)
 
 ### P0.2 — Branding & Identité
 
