@@ -10,7 +10,7 @@ const subscribeSchema = z.object({
 });
 
 export const POST = safeHandler(async (request: Request) => {
-  rateLimit(`newsletter:${getClientIp(request)}`, { windowMs: 60_000, max: 5 });
+  await rateLimit(`newsletter:${getClientIp(request)}`, { windowMs: 60_000, max: 5 });
 
   const body = await request.json();
   const parsed = subscribeSchema.safeParse(body);
@@ -29,7 +29,10 @@ export const POST = safeHandler(async (request: Request) => {
     if (existing.active) {
       return NextResponse.json({ message: "Vous êtes déjà inscrit." }, { status: 200 });
     }
-    return NextResponse.json({ message: "Un email de confirmation vous a déjà été envoyé." }, { status: 200 });
+    return NextResponse.json(
+      { message: "Un email de confirmation vous a déjà été envoyé." },
+      { status: 200 },
+    );
   }
 
   const token = crypto.randomUUID();

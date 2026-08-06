@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { isAppError } from "@/lib/errors";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  rateLimit(`download:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
 
   try {
+    await rateLimit(`download:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
+
     const template = await db.template.findUnique({ where: { slug } });
     if (!template) {
       return NextResponse.json({ error: "Template introuvable" }, { status: 404 });
@@ -23,7 +22,13 @@ export async function POST(
     return NextResponse.json({
       url: template.downloadUrl ?? template.repoUrl ?? null,
     });
-  } catch {
+  } catch (error) {
+    if (isAppError(error)) {
+      return NextResponse.json(
+        { error: error.message, code: error.code },
+        { status: error.status, headers: error.headers },
+      );
+    }
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }

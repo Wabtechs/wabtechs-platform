@@ -8,7 +8,7 @@ import { sanitizeFilename, validateUpload } from "@/lib/upload";
 
 export const POST = safeHandler(async (req: Request) => {
   await requireAdmin();
-  rateLimit(`upload:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
+  await rateLimit(`upload:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
 
   const formData = await req.formData();
   const file = formData.get("file") as File | null;

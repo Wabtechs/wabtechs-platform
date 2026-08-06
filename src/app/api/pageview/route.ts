@@ -4,7 +4,7 @@ import { safeHandler } from "@/lib/safe-handler";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const POST = safeHandler(async (request: Request) => {
-  rateLimit(`pageview:${getClientIp(request)}`, { windowMs: 60_000, max: 60 });
+  await rateLimit(`pageview:${getClientIp(request)}`, { windowMs: 60_000, max: 60 });
 
   const { path } = (await request.json()) as { path?: unknown };
   if (typeof path !== "string" || !path.startsWith("/") || path.length > 200) {
