@@ -117,6 +117,15 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Page /sponsors sur le site
 - [x] Avantages par tier (Discord privé, consulting, mentions)
 
+### P1.5 — GitHub Intelligence
+
+**Effort: 1 semaine • Budget: 0€**
+
+- [x] Connexion OAuth GitHub (comme Vercel) — `/admin/github` (OAuth App, `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`)
+- [x] Dashboard d'analyse des dépôts: langages, commits (90j), étoiles, forks, issues, PR, contributeurs, releases
+- [ ] Éditeur de code intégré (Monaco) pour naviguer les fichiers des dépôts
+- [ ] Déploiement 1-click depuis GitHub (lien avec Vercel)
+
 ---
 
 ## Priorité 2 (P2) — Croissance

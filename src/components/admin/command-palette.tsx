@@ -16,6 +16,7 @@ import {
   ScrollText,
   Plus,
   Globe,
+  Github,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -48,6 +49,7 @@ const PAGES: CommandItem[] = [
   { label: "Messages", href: "/admin/messages", icon: MessageSquare, shortcut: "G M" },
   { label: "Paramètres", href: "/admin/settings", icon: Settings, shortcut: "G S" },
   { label: "Journal d'audit", href: "/admin/audit", icon: ScrollText, shortcut: "G L" },
+  { label: "GitHub", href: "/admin/github", icon: Github, shortcut: "G H" },
 ];
 
 const ACTIONS: CommandItem[] = [
@@ -58,8 +60,7 @@ const ACTIONS: CommandItem[] = [
 
 export function CommandPalette() {
   const router = useRouter();
-  const { isCommandPaletteOpen, toggleCommandPalette, closeCommandPalette } =
-    useUIStore();
+  const { isCommandPaletteOpen, toggleCommandPalette, closeCommandPalette } = useUIStore();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -85,29 +86,19 @@ export function CommandPalette() {
         <CommandEmpty>Aucun résultat trouvé.</CommandEmpty>
         <CommandGroup heading="Pages">
           {PAGES.map((item) => (
-            <CommandItem
-              key={item.href}
-              onSelect={() => runCommand(item.href)}
-            >
+            <CommandItem key={item.href} onSelect={() => runCommand(item.href)}>
               <item.icon className="mr-2 h-4 w-4" />
               <span>{item.label}</span>
-              {item.shortcut && (
-                <CommandShortcut>{item.shortcut}</CommandShortcut>
-              )}
+              {item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}
             </CommandItem>
           ))}
         </CommandGroup>
         <CommandGroup heading="Actions">
           {ACTIONS.map((item) => (
-            <CommandItem
-              key={item.href}
-              onSelect={() => runCommand(item.href)}
-            >
+            <CommandItem key={item.href} onSelect={() => runCommand(item.href)}>
               <item.icon className="mr-2 h-4 w-4" />
               <span>{item.label}</span>
-              {item.shortcut && (
-                <CommandShortcut>{item.shortcut}</CommandShortcut>
-              )}
+              {item.shortcut && <CommandShortcut>{item.shortcut}</CommandShortcut>}
             </CommandItem>
           ))}
         </CommandGroup>

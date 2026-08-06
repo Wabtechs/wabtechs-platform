@@ -49,6 +49,7 @@ import {
   ScrollText,
   Smartphone,
   ChevronDown,
+  Github,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -171,6 +172,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Paramètres", href: "/admin/settings", icon: Settings },
       { label: "Journal d'audit", href: "/admin/audit", icon: ScrollText },
+      { label: "GitHub", href: "/admin/github", icon: Github },
     ],
   },
   {

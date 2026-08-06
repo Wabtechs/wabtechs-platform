@@ -36,8 +36,27 @@ model User {
   notifications      Notification[]
   mobileAuditLogs    MobileAuditLog[]
   errorLogs          ErrorLog[]
+  githubConnection   GithubConnection?
 
   @@map("users")
+}
+
+model GithubConnection {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  githubId    Int
+  login       String
+  name        String?
+  avatarUrl   String?
+  accessToken String
+  tokenType   String    @default("bearer")
+  scope       String?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("github_connections")
 }
 
 enum Role {
