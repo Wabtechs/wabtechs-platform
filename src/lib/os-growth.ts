@@ -4,6 +4,8 @@ interface Snapshot {
   value: number;
 }
 
+export const METRIC_SNAPSHOT_LIMIT = 90;
+
 export type GrowthPoint = {
   label: string;
   stars: number;
@@ -17,7 +19,9 @@ export function buildGrowthSeries(snapshots: Snapshot[]): GrowthPoint[] {
   for (const s of snapshots) {
     const key = new Date(s.date).toISOString().slice(0, 10);
     const entry = byDate.get(key) ?? {
-      label: new Intl.DateTimeFormat("fr-FR", { month: "short", day: "numeric" }).format(new Date(s.date)),
+      label: new Intl.DateTimeFormat("fr-FR", { month: "short", day: "numeric" }).format(
+        new Date(s.date),
+      ),
       stars: 0,
       users: 0,
       mrr: 0,

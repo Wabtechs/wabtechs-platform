@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { METRIC_SNAPSHOT_LIMIT } from "@/lib/os-growth";
 import { safeHandler } from "@/lib/safe-handler";
 import { requireAdmin } from "@/lib/auth-guard";
 
@@ -44,7 +45,7 @@ export const GET = safeHandler(async () => {
       db.bug.groupBy({ by: ["severity"], _count: { _all: true } }),
       db.sprint.groupBy({ by: ["status"], _count: { _all: true } }),
       db.objective.groupBy({ by: ["status"], _count: { _all: true } }),
-      db.metricSnapshot.findMany({ orderBy: { date: "asc" } }),
+      db.metricSnapshot.findMany({ orderBy: { date: "asc" }, take: -METRIC_SNAPSHOT_LIMIT }),
     ]);
 
   const featureCounts: Record<string, number> = {};
