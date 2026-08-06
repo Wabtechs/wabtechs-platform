@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Github, Twitter, Youtube, Linkedin, MapPin, Mail, Phone } from "lucide-react";
 import { SOCIAL_LINKS } from "@/lib/constants";
+import { SITE_CONFIG } from "@/lib/utils";
 import { BgLines } from "@/components/shared/bg-lines";
 import { NewsletterForm } from "@/components/shared/newsletter-form";
 
@@ -27,8 +28,15 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
           <div>
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/images/logos/logo.png" alt="Wabtechs" width={60} height={60} className="h-[60px] w-auto" />
+              <Image
+                src="/images/logos/logo.png"
+                alt="Wabtechs"
+                width={60}
+                height={60}
+                className="h-[60px] w-auto"
+              />
             </Link>
+            <p className="text-muted-foreground mt-3 text-sm">{SITE_CONFIG.tagline}</p>
           </div>
 
           <div>
@@ -36,7 +44,10 @@ export function Footer() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-muted-foreground transition-colors hover:text-white">
+                  <Link
+                    href={link.href}
+                    className="text-muted-foreground text-sm transition-colors hover:text-white"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -50,17 +61,21 @@ export function Footer() {
           <div>
             <h6 className="mb-7 text-sm font-semibold text-white">Adresse</h6>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+              <li className="text-muted-foreground flex items-start gap-3 text-sm">
                 <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" />
                 n° 27 bis Katakombe 2 Ngalima Kinshasa RDC
               </li>
-              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+              <li className="text-muted-foreground flex items-center gap-3 text-sm">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <a href="mailto:contact@wabtechs.com" className="hover:text-white">contact@wabtechs.com</a>
+                <a href="mailto:contact@wabtechs.com" className="hover:text-white">
+                  contact@wabtechs.com
+                </a>
               </li>
-              <li className="flex items-center gap-3 text-sm text-muted-foreground">
+              <li className="text-muted-foreground flex items-center gap-3 text-sm">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <a href="tel:+243850060060" className="hover:text-white">+243 850 060 060</a>
+                <a href="tel:+243850060060" className="hover:text-white">
+                  +243 850 060 060
+                </a>
               </li>
             </ul>
           </div>
@@ -70,7 +85,11 @@ export function Footer() {
       <div className="border-t border-white/10 py-5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-sm text-white">
-            Copyright ©{new Date().getFullYear()}, <Link href="/" className="text-primary">Wabtechs Company</Link> All Rights Reserved
+            Copyright ©{new Date().getFullYear()},{" "}
+            <Link href="/" className="text-primary">
+              Wabtechs Company
+            </Link>{" "}
+            All Rights Reserved
           </p>
           <div className="flex items-center gap-5">
             {SOCIAL_LINKS.map((social) => {

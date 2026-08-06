@@ -28,7 +28,7 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 - [x] Décider du nom définitif: `Wabtechs` (tout en minuscules)
 - [x] Créer le logo (SVG): symbole + logotype + favicon (placeholder `assets/logo.svg`)
 - [x] Définir la palette exacte (primary, secondary, accents, neutres) — voir `docs/branding.md`
-- [ ] Tagline: "Build. Ship. Scale."
+- [x] Tagline: "Build. Ship. Scale."
 - [x] Appliquer le favicon sur toutes les pages (`/icon.png`)
 - [x] Créer un `BRANDING.md` avec les règles (`docs/branding.md`)
 
@@ -58,12 +58,12 @@ Ces chantiers sont le prérequis pour tout le reste. Sans eux, rien ne tient.
 
 **Score actuel: 50/100 • Effort: 5 jours • Sans budget**
 
-- [ ] Hero section: valeur proposition claire en 3 secondes
-- [ ] CTA principal visible sans scroll (primary + secondary)
-- [ ] Social proof: stars GitHub, témoignages, chiffres clés
-- [ ] Section "Pourquoi Wabtechs ?" (3 arguments max)
-- [ ] Newsletter CTA en bas de chaque section clé
-- [ ] Footer avec liens rapides
+- [x] Hero section: valeur proposition claire en 3 secondes
+- [x] CTA principal visible sans scroll (primary + secondary)
+- [x] Social proof: stars GitHub, témoignages, chiffres clés
+- [x] Section "Pourquoi Wabtechs ?" (3 arguments max)
+- [x] Newsletter CTA en bas de chaque section clé
+- [x] Footer avec liens rapides
 
 ---
 
