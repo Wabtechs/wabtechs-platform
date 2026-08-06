@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import {
-  Search,
-  Plug,
-  PlugZap,
-  Filter,
-  ArrowUpDown,
-  Blocks,
-} from "lucide-react";
+import { Search, Plug, PlugZap, Filter, ArrowUpDown, Blocks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -25,18 +19,114 @@ interface App {
 }
 
 const INITIAL_APPS: App[] = [
-  { id: "slack", name: "Slack", description: "Messagerie d'équipe et canaux de communication", icon: "💬", category: "Communication", connected: true, color: "#E01E5A" },
-  { id: "notion", name: "Notion", description: "Wiki, documents et gestion de projet", icon: "📝", category: "Productivité", connected: true, color: "#000000" },
-  { id: "github", name: "GitHub", description: "Dépôt de code source et collaboration", icon: "🐙", category: "Développement", connected: true, color: "#6e40c9" },
-  { id: "discord", name: "Discord", description: "Communautés et voice chat", icon: "🎮", category: "Communication", connected: false, color: "#5865F2" },
-  { id: "figma", name: "Figma", description: "Design d'interface et prototypes", icon: "🎨", category: "Design", connected: false, color: "#F24E1E" },
-  { id: "docker", name: "Docker", description: "Conteneurs et déploiement d'applications", icon: "🐳", category: "Développement", connected: true, color: "#2496ED" },
-  { id: "gmail", name: "Gmail", description: "Messagerie email Google Workspace", icon: "✉️", category: "Communication", connected: false, color: "#EA4335" },
-  { id: "gitlab", name: "GitLab", description: "DevOps et pipeline CI/CD", icon: "🦊", category: "Développement", connected: false, color: "#FC6D26" },
-  { id: "medium", name: "Medium", description: "Publication d'articles et blogging", icon: "📰", category: "Contenu", connected: false, color: "#00AB6C" },
-  { id: "stripe", name: "Stripe", description: "Paiements en ligne et facturation", icon: "💳", category: "Finance", connected: true, color: "#635BFF" },
-  { id: "telegram", name: "Telegram", description: "Messagerie instantanée sécurisée", icon: "📨", category: "Communication", connected: false, color: "#0088CC" },
-  { id: "whatsapp", name: "WhatsApp", description: "Messagerie et appels WhatsApp Business", icon: "📱", category: "Communication", connected: false, color: "#25D366" },
+  {
+    id: "slack",
+    name: "Slack",
+    description: "Messagerie d'équipe et canaux de communication",
+    icon: "💬",
+    category: "Communication",
+    connected: true,
+    color: "#E01E5A",
+  },
+  {
+    id: "notion",
+    name: "Notion",
+    description: "Wiki, documents et gestion de projet",
+    icon: "📝",
+    category: "Productivité",
+    connected: true,
+    color: "#000000",
+  },
+  {
+    id: "github",
+    name: "GitHub",
+    description: "Dépôt de code source et collaboration",
+    icon: "🐙",
+    category: "Développement",
+    connected: true,
+    color: "#6e40c9",
+  },
+  {
+    id: "discord",
+    name: "Discord",
+    description: "Communautés et voice chat",
+    icon: "🎮",
+    category: "Communication",
+    connected: false,
+    color: "#5865F2",
+  },
+  {
+    id: "figma",
+    name: "Figma",
+    description: "Design d'interface et prototypes",
+    icon: "🎨",
+    category: "Design",
+    connected: false,
+    color: "#F24E1E",
+  },
+  {
+    id: "docker",
+    name: "Docker",
+    description: "Conteneurs et déploiement d'applications",
+    icon: "🐳",
+    category: "Développement",
+    connected: true,
+    color: "#2496ED",
+  },
+  {
+    id: "gmail",
+    name: "Gmail",
+    description: "Messagerie email Google Workspace",
+    icon: "✉️",
+    category: "Communication",
+    connected: false,
+    color: "#EA4335",
+  },
+  {
+    id: "gitlab",
+    name: "GitLab",
+    description: "DevOps et pipeline CI/CD",
+    icon: "🦊",
+    category: "Développement",
+    connected: false,
+    color: "#FC6D26",
+  },
+  {
+    id: "medium",
+    name: "Medium",
+    description: "Publication d'articles et blogging",
+    icon: "📰",
+    category: "Contenu",
+    connected: false,
+    color: "#00AB6C",
+  },
+  {
+    id: "stripe",
+    name: "Stripe",
+    description: "Paiements en ligne et facturation",
+    icon: "💳",
+    category: "Finance",
+    connected: true,
+    color: "#635BFF",
+  },
+  {
+    id: "telegram",
+    name: "Telegram",
+    description: "Messagerie instantanée sécurisée",
+    icon: "📨",
+    category: "Communication",
+    connected: false,
+    color: "#0088CC",
+  },
+  {
+    id: "whatsapp",
+    name: "WhatsApp",
+    description: "Messagerie et appels WhatsApp Business",
+    icon: "📱",
+    category: "Communication",
+    connected: false,
+    color: "#25D366",
+  },
 ];
 
 type FilterStatus = "all" | "connected" | "disconnected";
@@ -49,14 +139,36 @@ const stagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] as const },
+  },
 };
 
 export function AppsClient() {
+  const router = useRouter();
   const [apps, setApps] = useState(INITIAL_APPS);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [sortBy, setSortBy] = useState<SortBy>("name");
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/github/connection")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { connected: boolean }) => {
+        if (!cancelled) {
+          setApps((prev) =>
+            prev.map((a) => (a.id === "github" ? { ...a, connected: Boolean(data.connected) } : a)),
+          );
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     let result = apps;
@@ -82,11 +194,11 @@ export function AppsClient() {
         {/* Header */}
         <motion.div variants={fadeUp} className="mb-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Blocks className="h-5 w-5 text-primary" />
+            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl">
+              <Blocks className="text-primary h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+              <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
                 Applications
               </h1>
               <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -97,24 +209,29 @@ export function AppsClient() {
         </motion.div>
 
         {/* Toolbar */}
-        <motion.div variants={fadeUp} className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <motion.div
+          variants={fadeUp}
+          className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Rechercher une app..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-8 rounded-lg border border-border bg-card pl-8 pr-3 text-[13px] text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary/20"
+                className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 h-8 rounded-lg border pr-3 pl-8 text-[13px] transition-colors outline-none focus:ring-1"
               />
             </div>
-            <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-0.5">
-              {([
-                ["all", "Tous"],
-                ["connected", "Connectés"],
-                ["disconnected", "Déconnectés"],
-              ] as const).map(([value, label]) => (
+            <div className="border-border bg-card flex items-center gap-1 rounded-lg border p-0.5">
+              {(
+                [
+                  ["all", "Tous"],
+                  ["connected", "Connectés"],
+                  ["disconnected", "Déconnectés"],
+                ] as const
+              ).map(([value, label]) => (
                 <button
                   key={value}
                   onClick={() => setFilter(value)}
@@ -122,7 +239,7 @@ export function AppsClient() {
                     "rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors",
                     filter === value
                       ? "bg-primary text-white shadow-sm"
-                      : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-foreground"
+                      : "dark:hover:text-foreground text-gray-500 hover:text-gray-900 dark:text-gray-400",
                   )}
                 >
                   {label}
@@ -144,10 +261,15 @@ export function AppsClient() {
         </motion.div>
 
         {/* Grid */}
-        <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
           {filtered.map((app) => (
             <motion.div key={app.id} variants={fadeUp} layout>
-              <Card className="group relative overflow-hidden border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+              <Card className="group border-border bg-card relative overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -158,7 +280,7 @@ export function AppsClient() {
                         {app.icon}
                       </div>
                       <div>
-                        <h3 className="text-[13px] font-semibold text-gray-900 dark:text-foreground">
+                        <h3 className="dark:text-foreground text-[13px] font-semibold text-gray-900">
                           {app.name}
                         </h3>
                         <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500">
@@ -190,20 +312,22 @@ export function AppsClient() {
                       className={cn(
                         "h-7 text-[11px] font-medium",
                         app.connected
-                          ? "border-gray-200/80 text-gray-600 hover:border-red-300 hover:text-red-600 dark:border-border dark:text-gray-400 dark:hover:border-red-500/50 dark:hover:text-red-400"
-                          : "bg-primary text-white shadow-sm shadow-primary/20 hover:bg-primary/90"
+                          ? "dark:border-border border-gray-200/80 text-gray-600 hover:border-red-300 hover:text-red-600 dark:text-gray-400 dark:hover:border-red-500/50 dark:hover:text-red-400"
+                          : "bg-primary shadow-primary/20 hover:bg-primary/90 text-white shadow-sm",
                       )}
-                      onClick={() => toggleApp(app.id)}
+                      onClick={() =>
+                        app.id === "github" ? router.push("/admin/github") : toggleApp(app.id)
+                      }
                     >
                       {app.connected ? (
                         <>
                           <PlugZap className="h-3 w-3" />
-                          Déconnecter
+                          {app.id === "github" ? "Gérer" : "Déconnecter"}
                         </>
                       ) : (
                         <>
                           <Plug className="h-3 w-3" />
-                          Connecter
+                          {app.id === "github" ? "Configurer" : "Connecter"}
                         </>
                       )}
                     </Button>
@@ -217,7 +341,9 @@ export function AppsClient() {
         {filtered.length === 0 && (
           <motion.div variants={fadeUp} className="flex flex-col items-center justify-center py-16">
             <Filter className="mb-3 h-8 w-8 text-gray-300 dark:text-gray-600" />
-            <p className="text-[13px] text-gray-500 dark:text-gray-400">Aucune application trouvée</p>
+            <p className="text-[13px] text-gray-500 dark:text-gray-400">
+              Aucune application trouvée
+            </p>
           </motion.div>
         )}
       </motion.div>

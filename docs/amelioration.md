@@ -124,7 +124,7 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Connexion OAuth GitHub (comme Vercel) — `/admin/github` (OAuth App, `GITHUB_CLIENT_ID`/`GITHUB_CLIENT_SECRET`)
 - [x] Dashboard d'analyse des dépôts: langages, commits (90j), étoiles, forks, issues, PR, contributeurs, releases
 - [x] Éditeur de code intégré (Monaco) pour naviguer les fichiers des dépôts
-- [ ] Déploiement 1-click depuis GitHub (lien avec Vercel)
+- [x] Déploiement 1-click depuis GitHub (lien avec Vercel) — deploy hook `VERCEL_DEPLOY_HOOK_URL` sur `/admin/github`
 
 ---
 
