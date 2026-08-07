@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
+import { cacheGet, cacheSet } from "@/lib/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,9 @@ function statusProgress(status: string): number {
 }
 
 export async function GET() {
+  const cached = await cacheGet<Record<string, unknown>>("stats");
+  if (cached) return NextResponse.json(cached);
+
   const [
     featureGroups,
     bugSevGroups,
@@ -66,7 +70,7 @@ export async function GET() {
         )
       : 0;
 
-  return NextResponse.json({
+  const result = {
     projectProgress,
     featureTotal,
     featureDone,
@@ -80,5 +84,8 @@ export async function GET() {
     moduleDone,
     roadmapCount,
     featureCounts,
-  });
+  };
+
+  await cacheSet("stats", result, 8);
+  return NextResponse.json(result);
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { cacheGet, cacheSet } from "@/lib/cache";
+import { incrementCounter } from "@/lib/metrics";
 
 export const dynamic = "force-dynamic";
 
@@ -23,8 +25,14 @@ function statusProgress(status: string): number {
 }
 
 export async function GET(req: Request) {
+  incrementCounter("/api/roadmap");
+
   const url = new URL(req.url);
   const projectSlug = url.searchParams.get("project");
+
+  const cacheKey = `aggregate:${projectSlug ?? "all"}`;
+  const cached = await cacheGet<unknown>(cacheKey);
+  if (cached) return NextResponse.json(cached);
 
   const projectWhere: Prisma.OsProjectWhereInput = projectSlug
     ? { OR: [{ slug: projectSlug }, { id: projectSlug }] }
@@ -192,7 +200,7 @@ export async function GET(req: Request) {
 
   const stats = computeStats(featuresWithProgress, bugs, modules);
 
-  return NextResponse.json({
+  const payload = {
     projects,
     stats,
     modules: modulesOut,
@@ -203,7 +211,10 @@ export async function GET(req: Request) {
       ...a,
       userName: a.user?.name ?? null,
     })),
-  });
+  };
+
+  await cacheSet(cacheKey, payload, 15);
+  return NextResponse.json(payload);
 }
 
 function emptyStats() {

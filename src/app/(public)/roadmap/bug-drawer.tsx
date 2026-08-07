@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -24,8 +24,8 @@ import { OsPriorityBadge, OsStatusBadge, OsSeverityBadge } from "@/components/ad
 import { OS_STATUS_META } from "@/lib/os-labels";
 import { fmtDate } from "@/lib/os-utils";
 import { cn } from "@/lib/utils";
-import { Bug, Calendar, User, Zap, Target, Clock, Save } from "lucide-react";
-import type { OsBug } from "./types";
+import { Bug, Calendar, User, Zap, Target, Clock, Save, Copy, Loader2 } from "lucide-react";
+import type { OsBug, BugDuplicate } from "./types";
 
 const BUG_STATUSES = ["NEW", "TRIAGED", "IN_PROGRESS", "FIXED", "VERIFIED", "CLOSED", "WONTFIX"];
 const SEVERITIES = ["TRIVIAL", "MINOR", "MAJOR", "CRITICAL", "BLOCKER"];
@@ -40,6 +40,17 @@ export function BugDrawer({
   onOpenChange: (open: boolean) => void;
 }) {
   const queryClient = useQueryClient();
+
+  const duplicatesQuery = useQuery({
+    queryKey: ["roadmap-duplicates", bug.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/roadmap/bugs/duplicates?bugId=${bug.id}`);
+      if (!res.ok) throw new Error("duplicates");
+      return res.json() as Promise<{ duplicates: BugDuplicate[] }>;
+    },
+    enabled: open,
+    staleTime: 60_000,
+  });
 
   const updateMutation = useMutation({
     mutationFn: async (data: Record<string, unknown>) => {
@@ -122,6 +133,47 @@ export function BugDrawer({
                   {bug.impact}%
                 </span>
               </div>
+            </div>
+
+            {/* Doublons potentiels (IA) */}
+            <div>
+              <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-[11px] font-medium">
+                <Copy className="h-3.5 w-3.5" /> Doublons potentiels
+                {duplicatesQuery.isLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+              </p>
+              {duplicatesQuery.isSuccess &&
+                (duplicatesQuery.data.duplicates.length === 0 ? (
+                  <p className="text-[11px] text-gray-400">Aucun doublon détecté.</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {duplicatesQuery.data.duplicates.map((d) => (
+                      <div
+                        key={d.bug.id}
+                        className="dark:border-border flex items-center justify-between gap-2 rounded-md border border-gray-100 p-2"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-[12px] break-all">{d.bug.title}</p>
+                          <div className="mt-0.5 flex items-center gap-1.5">
+                            <OsSeverityBadge severity={d.bug.severity} />
+                            <span className="text-[10px] text-gray-400">
+                              {d.sharedTokens.slice(0, 4).join(", ")}
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          className={cn(
+                            "shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold",
+                            d.similarity >= 0.8
+                              ? "bg-rose-500/10 text-rose-500"
+                              : "bg-amber-500/10 text-amber-500",
+                          )}
+                        >
+                          {Math.round(d.similarity * 100)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
             </div>
 
             {/* Champs éditables */}

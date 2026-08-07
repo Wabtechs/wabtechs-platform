@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { OsPriorityBadge, OsStatusBadge } from "@/components/admin/os/os-badge";
@@ -22,10 +23,14 @@ export function getColumnStatus(col: (typeof KANBAN_COLUMNS)[number]["key"]): st
 export function RoadmapKanban({
   features,
   onViewFeature,
+  onMoveFeature,
 }: {
   features: OsFeature[];
   onViewFeature: (f: OsFeature) => void;
+  onMoveFeature: (featureId: string, status: string) => void;
 }) {
+  const [dragOverCol, setDragOverCol] = useState<string | null>(null);
+
   return (
     <div className="overflow-x-auto">
       <div className="flex min-w-[780px] gap-4 pb-4">
@@ -33,6 +38,8 @@ export function RoadmapKanban({
           const statuses = getColumnStatus(col.key);
           const items = features.filter((f) => statuses.includes(f.status));
           const points = items.reduce((a, f) => a + f.points, 0);
+          const isDragOver = dragOverCol === col.key;
+
           return (
             <div key={col.key} className="flex min-w-[150px] flex-1 flex-col">
               <div
@@ -45,7 +52,29 @@ export function RoadmapKanban({
                 </Badge>
               </div>
 
-              <div className="flex-1 space-y-2 rounded-lg border-2 border-dashed border-transparent bg-gray-50/60 p-2 dark:bg-white/[0.02]">
+              <div
+                className={`flex-1 space-y-2 rounded-lg border-2 p-2 transition-colors ${
+                  isDragOver
+                    ? "border-primary bg-primary/5 border-dashed"
+                    : "border-dashed border-transparent bg-gray-50/60 dark:bg-white/[0.02]"
+                }`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = "move";
+                  if (dragOverCol !== col.key) setDragOverCol(col.key);
+                }}
+                onDragLeave={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setDragOverCol((c) => (c === col.key ? null : c));
+                  }
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOverCol(null);
+                  const featureId = e.dataTransfer.getData("text/plain");
+                  if (featureId) onMoveFeature(featureId, statuses[0] ?? "BACKLOG");
+                }}
+              >
                 {items.length === 0 ? (
                   <div className="py-8 text-center">
                     <p className="text-muted-foreground text-[11px]">Aucune feature</p>

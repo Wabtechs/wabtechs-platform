@@ -126,6 +126,39 @@ export interface OsActivity {
   avatar: string | null;
 }
 
+export interface OsHistoryEntry {
+  id: string;
+  action: string;
+  entity: string;
+  entityId: string | null;
+  details: string | null;
+  createdAt: string;
+  userId: string | null;
+  userName: string | null;
+  avatar: string | null;
+}
+
+export interface OsHistoryPage {
+  items: OsHistoryEntry[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface BugDuplicate {
+  bug: {
+    id: string;
+    title: string;
+    severity: string;
+    status: string;
+    projectId: string;
+    project: { slug: string; name: string; color: string };
+  };
+  similarity: number;
+  sharedTokens: string[];
+}
+
 export interface RoadmapStats {
   projectProgress: number;
   featureTotal: number;
@@ -142,7 +175,7 @@ export interface RoadmapStats {
   featureCounts: Record<string, number>;
 }
 
-export type ViewMode = "kanban" | "modules" | "timeline" | "bugs";
+export type ViewMode = "kanban" | "modules" | "timeline" | "bugs" | "history";
 export type FilterStatus =
   | "all"
   | "BACKLOG"
