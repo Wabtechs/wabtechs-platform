@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_WIDTH = "16rem";
@@ -91,22 +92,24 @@ function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={contextValue}>
-      <div
-        style={
-          {
-            "--sidebar-width": SIDEBAR_WIDTH,
-            "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-            ...style,
-          } as React.CSSProperties
-        }
-        className={cn(
-          "group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar flex min-h-svh w-full",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </div>
+      <TooltipProvider delayDuration={0}>
+        <div
+          style={
+            {
+              "--sidebar-width": SIDEBAR_WIDTH,
+              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+              ...style,
+            } as React.CSSProperties
+          }
+          className={cn(
+            "group/sidebar-wrapper has-[[data-variant=inset]]:bg-sidebar flex min-h-svh w-full",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </div>
+      </TooltipProvider>
     </SidebarContext.Provider>
   );
 }
@@ -295,29 +298,65 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 }
 
 function SidebarMenuButton({
+  asChild = false,
   isActive = false,
+  variant = "default",
+  size = "md",
+  tooltip,
   className,
   children,
   ...props
 }: React.ComponentProps<"button"> & {
+  asChild?: boolean;
   isActive?: boolean;
-  tooltip?: string;
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+  variant?: "default" | "outline";
+  size?: "default" | "sm" | "lg" | "md";
 }) {
-  return (
-    <button
+  const { isMobile, state } = useSidebar();
+  const Comp = asChild ? Slot : "button";
+
+  const button = (
+    <Comp
       data-sidebar="menu-button"
+      data-size={size}
       data-active={isActive}
       className={cn(
-        "peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm transition-[width,height,padding] outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+        "peer/menu-button ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground flex w-full items-center gap-2 overflow-hidden rounded-md text-left text-sm outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
         "group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:group-data-[collapsible=icon]:hidden",
+        size === "default" && "h-8 p-2",
+        size === "sm" && "h-7 rounded-md px-2",
+        size === "lg" && "h-12 p-2",
+        size === "md" && "h-8 p-2",
+        variant === "default" && "w-full",
+        variant === "outline" && "border-input border bg-transparent shadow-sm",
         isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
         className,
       )}
       {...props}
     >
       {children}
-    </button>
+    </Comp>
   );
+
+  if (!tooltip) return button;
+
+  if (state === "collapsed" && !isMobile) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{button}</TooltipTrigger>
+        <TooltipContent
+          side="right"
+          align="center"
+          {...(typeof tooltip === "string" ? {} : tooltip)}
+        >
+          {typeof tooltip === "string" ? tooltip : tooltip.children}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return button;
 }
 
 function SidebarMenuBadge({ className, ...props }: React.ComponentProps<"div">) {

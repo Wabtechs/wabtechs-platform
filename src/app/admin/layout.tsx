@@ -16,7 +16,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   return (
     <SidebarProvider>
       <NavigationProgress />
-      <AppSidebar />
+      <AppSidebar
+        user={{
+          name: session.user.name,
+          email: session.user.email,
+          role: (session.user as { role?: string } | undefined)?.role,
+        }}
+      />
       <SidebarInset className="bg-muted/50 dark:bg-background">
         <AdminHeader />
         <div className="flex-1 overflow-auto p-4 md:p-6 lg:p-8">{children}</div>
