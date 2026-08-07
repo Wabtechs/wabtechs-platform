@@ -96,7 +96,7 @@
     "lint-staged": "^17.3.0",
     "playwright": "^1.62.0",
     "prettier": "^3.4",
-    "prettier-plugin-tailwindcss": "^0.6",
+    "prettier-plugin-tailwindcss": "^0.8",
     "prisma": "^6",
     "tailwindcss": "^4",
     "typescript": "^5.7",
