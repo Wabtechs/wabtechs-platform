@@ -79,7 +79,7 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Interface admin pour gérer cours et leçons
 - [x] Lecteur vidéo avec progression
 - [x] Page publique des cours /academy
-- [x] Paiement Stripe pour l'accès (checkout + webhook idempotent) — config requise: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, webhook Stripe sur `/api/academy/webhook` (événement `checkout.session.completed`)
+- [x] Paiement Stripe pour l'accès (checkout + webhook idempotent) — config requise: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, webhook Stripe sur `/api/webhooks/stripe` (événement `checkout.session.completed`)
 - [ ] Premier cours: "Next.js 16 — De zéro à pro" (10h de contenu)
 - [x] Certificat de complétion (PDF généré) — génération PDF (pdf-lib) + récupération HTTPS
 
@@ -89,7 +89,7 @@ Ces chantiers génèrent les premiers revenus.
 
 - [x] Créer le modèle `Template` dans Prisma
 - [x] Page de marketplace /templates
-- [ ] Système de téléchargement après paiement
+- [x] Système de téléchargement après paiement (Stripe checkout + webhook idempotent — même config que l'Academy)
 - [x] 5 templates de démarrage:
   - [x] Admin Dashboard (dérivé du code existant)
   - [x] Landing Page SaaS

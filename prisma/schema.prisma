@@ -40,6 +40,7 @@ model User {
   lessonProgress     LessonProgress[]
   certificates       Certificate[]
   purchases          Purchase[]
+  templatePurchases  TemplatePurchase[]
 
   @@map("users")
 }
@@ -614,6 +615,7 @@ model Template {
   longDescription String?
   image           String?
   price           Decimal  @default(0)
+  stripePriceId   String?  @map("stripe_price_id")
   category        String   @default("starter")
   stack           String?
   demoUrl         String?
@@ -626,7 +628,25 @@ model Template {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  purchases TemplatePurchase[]
+
   @@map("templates")
+}
+
+model TemplatePurchase {
+  id              String    @id @default(cuid())
+  userId          String
+  templateId      String
+  stripeSessionId String    @unique @map("stripe_session_id")
+  amount          Decimal   @default(0)
+  createdAt       DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([templateId])
+  @@map("template_purchases")
 }
 
 // ============================================================

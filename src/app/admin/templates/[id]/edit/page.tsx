@@ -21,6 +21,7 @@ interface TemplateData {
   longDescription: string | null;
   image: string | null;
   price: { toString(): string } | number;
+  stripePriceId: string | null;
   category: string;
   stack: string | null;
   demoUrl: string | null;
@@ -43,6 +44,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
     longDescription: "",
     image: "",
     price: "0",
+    stripePriceId: "",
     category: "starter",
     stack: "",
     demoUrl: "",
@@ -66,6 +68,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
             longDescription: template.longDescription ?? "",
             image: template.image ?? "",
             price: String(template.price),
+            stripePriceId: template.stripePriceId ?? "",
             category: template.category,
             stack: template.stack ?? "",
             demoUrl: template.demoUrl ?? "",
@@ -91,7 +94,12 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
       const res = await fetch("/api/admin/templates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...form, price: parseFloat(form.price) || 0 }),
+        body: JSON.stringify({
+          id,
+          ...form,
+          price: parseFloat(form.price) || 0,
+          stripePriceId: form.stripePriceId?.trim() || null,
+        }),
       });
       if (res.ok) router.push("/admin/templates");
     } finally {
@@ -100,7 +108,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
   }
 
   if (fetching) {
-    return <p className="py-10 text-center text-sm text-muted-foreground">Chargement...</p>;
+    return <p className="text-muted-foreground py-10 text-center text-sm">Chargement...</p>;
   }
 
   return (
@@ -123,29 +131,60 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nom</Label>
-                <Input id="name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} required />
+                <Input
+                  id="name"
+                  value={form.name}
+                  onChange={(e) => updateForm("name", e.target.value)}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="slug">Slug</Label>
-                <Input id="slug" value={form.slug} onChange={(e) => updateForm("slug", e.target.value)} required />
+                <Input
+                  id="slug"
+                  value={form.slug}
+                  onChange={(e) => updateForm("slug", e.target.value)}
+                  required
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">Description courte</Label>
-              <Input id="description" value={form.description} onChange={(e) => updateForm("description", e.target.value)} required />
+              <Input
+                id="description"
+                value={form.description}
+                onChange={(e) => updateForm("description", e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="longDescription">Description longue (Markdown)</Label>
-              <Textarea id="longDescription" rows={5} value={form.longDescription} onChange={(e) => updateForm("longDescription", e.target.value)} />
+              <Textarea
+                id="longDescription"
+                rows={5}
+                value={form.longDescription}
+                onChange={(e) => updateForm("longDescription", e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label>Capture d&apos;écran</Label>
-              <FileUpload value={form.image} onChange={(url) => updateForm("image", url)} label="la capture du template" />
+              <FileUpload
+                value={form.image}
+                onChange={(url) => updateForm("image", url)}
+                label="la capture du template"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Prix (€)</Label>
-                <Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={(e) => updateForm("price", e.target.value)} />
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.price}
+                  onChange={(e) => updateForm("price", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Catégorie</Label>
@@ -153,7 +192,7 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
                   id="category"
                   value={form.category}
                   onChange={(e) => updateForm("category", e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
+                  className="dark:border-border dark:bg-muted dark:text-foreground flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c} className="capitalize">
@@ -164,36 +203,80 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
               </div>
             </div>
             <div className="space-y-2">
+              <Label htmlFor="stripePriceId">Stripe Price ID (optionnel)</Label>
+              <Input
+                id="stripePriceId"
+                value={form.stripePriceId}
+                onChange={(e) => updateForm("stripePriceId", e.target.value)}
+                placeholder="price_xxxxxxxxxxxx"
+              />
+              <p className="text-muted-foreground text-[12px]">
+                Si renseigné, le checkout Stripe utilisera ce prix (recommandé). Sinon, le prix (€)
+                est envoyé directement à Stripe.
+              </p>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="stack">Stack technique</Label>
-              <Input id="stack" value={form.stack} onChange={(e) => updateForm("stack", e.target.value)} placeholder="Next.js, Tailwind, Prisma" />
+              <Input
+                id="stack"
+                value={form.stack}
+                onChange={(e) => updateForm("stack", e.target.value)}
+                placeholder="Next.js, Tailwind, Prisma"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="demoUrl">URL de démo</Label>
-                <Input id="demoUrl" value={form.demoUrl} onChange={(e) => updateForm("demoUrl", e.target.value)} />
+                <Input
+                  id="demoUrl"
+                  value={form.demoUrl}
+                  onChange={(e) => updateForm("demoUrl", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="repoUrl">URL du dépôt GitHub</Label>
-                <Input id="repoUrl" value={form.repoUrl} onChange={(e) => updateForm("repoUrl", e.target.value)} />
+                <Input
+                  id="repoUrl"
+                  value={form.repoUrl}
+                  onChange={(e) => updateForm("repoUrl", e.target.value)}
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="downloadUrl">URL de téléchargement</Label>
-                <Input id="downloadUrl" value={form.downloadUrl} onChange={(e) => updateForm("downloadUrl", e.target.value)} />
+                <Input
+                  id="downloadUrl"
+                  value={form.downloadUrl}
+                  onChange={(e) => updateForm("downloadUrl", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="version">Version</Label>
-                <Input id="version" value={form.version} onChange={(e) => updateForm("version", e.target.value)} />
+                <Input
+                  id="version"
+                  value={form.version}
+                  onChange={(e) => updateForm("version", e.target.value)}
+                />
               </div>
             </div>
             <div className="flex gap-6">
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={form.published} onChange={(e) => updateForm("published", e.target.checked)} className="rounded" />
+                <input
+                  type="checkbox"
+                  checked={form.published}
+                  onChange={(e) => updateForm("published", e.target.checked)}
+                  className="rounded"
+                />
                 Publié
               </label>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={form.featured} onChange={(e) => updateForm("featured", e.target.checked)} className="rounded" />
+                <input
+                  type="checkbox"
+                  checked={form.featured}
+                  onChange={(e) => updateForm("featured", e.target.checked)}
+                  className="rounded"
+                />
                 Mis en avant
               </label>
             </div>
@@ -201,7 +284,11 @@ export default function EditTemplatePage({ params }: { params: Promise<{ id: str
         </Card>
 
         <Button type="submit" disabled={loading}>
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {loading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="mr-2 h-4 w-4" />
+          )}
           {loading ? "Enregistrement..." : "Enregistrer"}
         </Button>
       </form>

@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/prisma";
+import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { DownloadButton } from "@/components/templates/download-button";
-import { Download, Github, Star, ExternalLink, Check, ArrowLeft } from "lucide-react";
+import { Download, Github, Star, ExternalLink, Check, ArrowLeft, AlertCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +35,27 @@ const FEATURES = [
   "Mises à jour incluses",
 ];
 
-export default async function TemplatePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function TemplatePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ purchase?: string }>;
+}) {
   const { slug } = await params;
+  const { purchase } = await searchParams;
+  const session = await auth();
   const template = await db.template.findUnique({ where: { slug } });
   if (!template) notFound();
 
   const free = Number(template.price) === 0;
+
+  const owned = session?.user
+    ? await db.templatePurchase.findFirst({
+        where: { userId: session.user.id as string, templateId: template.id },
+        select: { id: true },
+      })
+    : null;
 
   return (
     <div className="pt-24 pb-16">
@@ -50,6 +66,19 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
             Retour aux templates
           </Link>
         </Button>
+
+        {purchase === "success" && (
+          <div className="mx-auto mb-6 flex max-w-xl items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400">
+            <Check className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>Paiement confirmé ! Vous pouvez maintenant télécharger ce template.</span>
+          </div>
+        )}
+        {purchase === "cancel" && (
+          <div className="mx-auto mb-6 flex max-w-xl items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-400">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>Paiement annulé. Vous pouvez réessayer quand vous voulez.</span>
+          </div>
+        )}
 
         <PageHeader
           badge={`v${template.version}`}
@@ -90,6 +119,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
             downloadUrl={template.downloadUrl}
             repoUrl={template.repoUrl}
             free={free}
+            owned={!!owned}
             price={Number(template.price)}
           />
           {template.demoUrl && (
@@ -144,7 +174,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
               <p className="text-muted-foreground mt-1 text-sm">
                 {free
                   ? "Une seule licence par projet. Attribution appréciée."
-                  : "Paiement unique, licence commerciale incluse. Paiement bientôt disponible."}
+                  : "Paiement unique, licence commerciale incluse."}
               </p>
               <div className="mt-6 flex justify-center">
                 <DownloadButton
@@ -152,6 +182,7 @@ export default async function TemplatePage({ params }: { params: Promise<{ slug:
                   downloadUrl={template.downloadUrl}
                   repoUrl={template.repoUrl}
                   free={free}
+                  owned={!!owned}
                   price={Number(template.price)}
                 />
               </div>

@@ -33,6 +33,7 @@ export const POST = safeHandler(async (req: Request) => {
         longDescription: data.longDescription ?? null,
         image: data.image ?? null,
         price: data.price ?? 0,
+        stripePriceId: data.stripePriceId ?? null,
         category: data.category ?? "starter",
         stack: data.stack ?? null,
         demoUrl: data.demoUrl ?? null,
@@ -43,7 +44,12 @@ export const POST = safeHandler(async (req: Request) => {
         featured: data.featured ?? false,
       },
     });
-    await createAuditLog({ action: "UPDATE", entity: "Template", entityId: updated.id, userId: user.id as string });
+    await createAuditLog({
+      action: "UPDATE",
+      entity: "Template",
+      entityId: updated.id,
+      userId: user.id as string,
+    });
     return NextResponse.json(updated);
   }
 
@@ -55,6 +61,7 @@ export const POST = safeHandler(async (req: Request) => {
       longDescription: data.longDescription ?? null,
       image: data.image ?? null,
       price: data.price ?? 0,
+      stripePriceId: data.stripePriceId ?? null,
       category: data.category ?? "starter",
       stack: data.stack ?? null,
       demoUrl: data.demoUrl ?? null,
@@ -65,7 +72,12 @@ export const POST = safeHandler(async (req: Request) => {
       featured: data.featured ?? false,
     },
   });
-  await createAuditLog({ action: "CREATE", entity: "Template", entityId: template.id, userId: user.id as string });
+  await createAuditLog({
+    action: "CREATE",
+    entity: "Template",
+    entityId: template.id,
+    userId: user.id as string,
+  });
   return NextResponse.json(template, { status: 201 });
 });
 
@@ -74,6 +86,11 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   await db.template.delete({ where: { id } });
-  await createAuditLog({ action: "DELETE", entity: "Template", entityId: id, userId: user.id as string });
+  await createAuditLog({
+    action: "DELETE",
+    entity: "Template",
+    entityId: id,
+    userId: user.id as string,
+  });
   return NextResponse.json({ success: true });
 });
