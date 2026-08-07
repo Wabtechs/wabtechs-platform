@@ -79,7 +79,7 @@ Ces chantiers génèrent les premiers revenus.
 - [x] Interface admin pour gérer cours et leçons
 - [x] Lecteur vidéo avec progression
 - [x] Page publique des cours /academy
-- [ ] Paiement Stripe pour l'accès
+- [x] Paiement Stripe pour l'accès (checkout + webhook idempotent) — config requise: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, webhook Stripe sur `/api/academy/webhook` (événement `checkout.session.completed`)
 - [ ] Premier cours: "Next.js 16 — De zéro à pro" (10h de contenu)
 - [x] Certificat de complétion (PDF généré) — génération PDF (pdf-lib) + récupération HTTPS
 
