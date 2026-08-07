@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { safeHandler } from "@/lib/safe-handler";
 import { rateLimit } from "@/lib/rate-limit";
-import { getStripe } from "@/lib/stripe";
+import { findOpenCheckoutUrl, getStripe } from "@/lib/stripe";
 
 export const POST = safeHandler(async (req: Request) => {
   const session = await auth();
@@ -50,6 +50,11 @@ export const POST = safeHandler(async (req: Request) => {
   const origin = new URL(req.url).origin;
   const successUrl = `${origin}/academy/${course.slug}?payment=success`;
   const cancelUrl = `${origin}/academy/${course.slug}?payment=cancel`;
+
+  const openUrl = await findOpenCheckoutUrl(stripe, userId, "courseId", course.id);
+  if (openUrl) {
+    return NextResponse.json({ url: openUrl });
+  }
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",

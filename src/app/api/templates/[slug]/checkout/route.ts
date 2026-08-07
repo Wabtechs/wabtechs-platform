@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { isAppError } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
-import { getStripe } from "@/lib/stripe";
+import { findOpenCheckoutUrl, getStripe } from "@/lib/stripe";
 
 export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
@@ -54,6 +54,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
     const origin = new URL(req.url).origin;
     const successUrl = `${origin}/templates/${template.slug}?purchase=success`;
     const cancelUrl = `${origin}/templates/${template.slug}?purchase=cancel`;
+
+    const openUrl = await findOpenCheckoutUrl(stripe, userId, "templateId", template.id);
+    if (openUrl) {
+      return NextResponse.json({ url: openUrl });
+    }
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
