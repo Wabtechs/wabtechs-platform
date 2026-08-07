@@ -2,9 +2,20 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 import { requireAdmin } from "@/lib/auth-guard";
 import { getAuthorizeUrl, getGitHubOAuthConfig } from "@/lib/github";
+import { isAppError } from "@/lib/errors";
 
 export async function GET(req: NextRequest) {
-  await requireAdmin();
+  try {
+    await requireAdmin();
+  } catch (error) {
+    if (isAppError(error) && error.status === 401) {
+      const callbackUrl = encodeURIComponent("/admin/github");
+      return NextResponse.redirect(
+        new URL(`/login?callbackUrl=${callbackUrl}`, req.nextUrl.origin),
+      );
+    }
+    throw error;
+  }
 
   const config = getGitHubOAuthConfig();
   if (!config) {

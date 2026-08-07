@@ -1,12 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
+import { isAppError } from "@/lib/errors";
 import { exchangeCodeForToken, githubFetch, type GitHubUser } from "@/lib/github";
 
 export async function GET(req: NextRequest) {
-  const user = await requireAdmin();
-
   const origin = req.nextUrl.origin;
+  let user;
+  try {
+    user = await requireAdmin();
+  } catch (error) {
+    if (isAppError(error) && error.status === 401) {
+      return NextResponse.redirect(new URL("/admin/github?error=session", origin));
+    }
+    throw error;
+  }
+
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
   const expectedState = req.cookies.get("github_oauth_state")?.value;
