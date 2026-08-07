@@ -1,5 +1,6 @@
 export const NAV_LINKS = [
   { href: "/", label: "Accueil" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/blog", label: "Blog" },
   { href: "/docs", label: "Documentation" },
   { href: "/projects", label: "Projets" },
@@ -25,6 +26,7 @@ export const FOOTER_LINKS = {
     { href: "/snippets", label: "Snippets" },
     { href: "/resources", label: "Ressources" },
     { href: "/downloads", label: "Téléchargements" },
+    { href: "/roadmap", label: "Roadmap Projet" },
     { href: "/roadmaps", label: "Roadmaps" },
     { href: "/events", label: "Événements" },
     { href: "/open-source", label: "Open Source" },
