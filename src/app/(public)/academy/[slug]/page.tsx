@@ -8,7 +8,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { EnrollButton } from "@/components/academy/enroll-button";
 import { auth } from "@/auth";
-import { Clock, Users, PlayCircle, CheckCircle2, Lock, ArrowLeft, Award } from "lucide-react";
+import {
+  Clock,
+  Users,
+  PlayCircle,
+  CheckCircle2,
+  Lock,
+  ArrowLeft,
+  Award,
+  AlertCircle,
+} from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +35,15 @@ export async function generateMetadata({
   };
 }
 
-export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CoursePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ payment?: string }>;
+}) {
   const { slug } = await params;
+  const { payment } = await searchParams;
   const session = await auth();
 
   const course = await db.course.findUnique({
@@ -94,6 +110,21 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
         </div>
 
         <div className="mt-8 flex justify-center">
+          {payment === "success" && (
+            <div className="mb-4 flex w-full max-w-md items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>Paiement confirmé ! Votre accès au cours a été activé.</span>
+            </div>
+          )}
+          {payment === "cancel" && (
+            <div className="mb-4 flex w-full max-w-md items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-600 dark:text-amber-400">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>Paiement annulé. Vous pouvez réessayer quand vous voulez.</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-center">
           {isEnrolled ? (
             <div className="flex flex-col items-center gap-4">
               <div className="w-full max-w-sm">
@@ -126,7 +157,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
               </div>
             </div>
           ) : (
-            <EnrollButton courseId={course.id} />
+            <EnrollButton courseId={course.id} price={Number(course.price)} />
           )}
         </div>
 

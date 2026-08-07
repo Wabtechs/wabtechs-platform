@@ -39,6 +39,7 @@ model User {
   githubConnection   GithubConnection?
   lessonProgress     LessonProgress[]
   certificates       Certificate[]
+  purchases          Purchase[]
 
   @@map("users")
 }
@@ -505,6 +506,7 @@ model Course {
   description String
   coverImage  String?
   price       Decimal  @default(0)
+  stripePriceId String? @map("stripe_price_id")
   level       String   @default("beginner")
   duration    String?
   published   Boolean  @default(false)
@@ -515,6 +517,7 @@ model Course {
   lessons     Lesson[]
   enrollments Enrollment[]
   certificates Certificate[]
+  purchases   Purchase[]
 
   @@map("courses")
 }
@@ -584,6 +587,23 @@ model Certificate {
   @@unique([userId, courseId])
   @@index([userId])
   @@map("certificates")
+}
+
+model Purchase {
+  id              String    @id @default(cuid())
+  userId          String
+  courseId        String
+  stripeSessionId String    @unique @map("stripe_session_id")
+  amount          Decimal   @default(0)
+  status          String    @default("completed")
+  createdAt       DateTime  @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([courseId])
+  @@map("purchases")
 }
 
 model Template {

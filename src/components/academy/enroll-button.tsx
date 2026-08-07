@@ -4,13 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, Lock } from "lucide-react";
+import { Loader2, Check, Lock, CreditCard } from "lucide-react";
 
-export function EnrollButton({ courseId }: { courseId: string }) {
+export function EnrollButton({ courseId, price }: { courseId: string; price: number }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  const paid = price > 0;
 
   if (status === "loading") {
     return (
@@ -39,21 +41,35 @@ export function EnrollButton({ courseId }: { courseId: string }) {
     );
   }
 
-  async function handleEnroll() {
+  async function handleAction() {
     setLoading(true);
     try {
-      const res = await fetch("/api/academy/enroll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId }),
-      });
-      if (res.ok) {
-        setDone(true);
-        router.refresh();
-      } else {
+      if (paid) {
+        const res = await fetch("/api/academy/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseId }),
+        });
         const data = await res.json();
-        if (data?.error === "Déjà inscrit") setDone(true);
-        else alert(data?.error ?? "Une erreur est survenue");
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        alert(data?.error ?? "Une erreur est survenue");
+      } else {
+        const res = await fetch("/api/academy/enroll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseId }),
+        });
+        if (res.ok) {
+          setDone(true);
+          router.refresh();
+        } else {
+          const data = await res.json();
+          if (data?.error === "Déjà inscrit") setDone(true);
+          else alert(data?.error ?? "Une erreur est survenue");
+        }
       }
     } finally {
       setLoading(false);
@@ -61,9 +77,19 @@ export function EnrollButton({ courseId }: { courseId: string }) {
   }
 
   return (
-    <Button size="lg" onClick={handleEnroll} disabled={loading} className="w-full sm:w-auto">
-      {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      {loading ? "Inscription..." : "S'inscrire au cours"}
+    <Button size="lg" onClick={handleAction} disabled={loading} className="w-full sm:w-auto">
+      {loading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : paid ? (
+        <CreditCard className="mr-2 h-4 w-4" />
+      ) : null}
+      {loading
+        ? paid
+          ? "Redirection vers le paiement..."
+          : "Inscription..."
+        : paid
+          ? `Acheter le cours — ${price}€`
+          : "S'inscrire au cours"}
     </Button>
   );
 }
