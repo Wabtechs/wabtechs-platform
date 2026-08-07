@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 import { requireAdmin } from "@/lib/auth-guard";
 import { getAuthorizeUrl, getGitHubOAuthConfig } from "@/lib/github";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   await requireAdmin();
 
   const config = getGitHubOAuthConfig();
@@ -17,8 +17,9 @@ export async function GET() {
     );
   }
 
+  const origin = req.nextUrl.origin;
   const state = randomUUID();
-  const res = NextResponse.redirect(getAuthorizeUrl(state));
+  const res = NextResponse.redirect(getAuthorizeUrl(state, origin));
   res.cookies.set("github_oauth_state", state, {
     httpOnly: true,
     sameSite: "lax",

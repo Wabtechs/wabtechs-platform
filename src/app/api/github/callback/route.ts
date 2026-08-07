@@ -3,17 +3,16 @@ import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
 import { exchangeCodeForToken, githubFetch, type GitHubUser } from "@/lib/github";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-
 export async function GET(req: NextRequest) {
   const user = await requireAdmin();
 
+  const origin = req.nextUrl.origin;
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
   const expectedState = req.cookies.get("github_oauth_state")?.value;
 
   if (!code || !state || state !== expectedState) {
-    return NextResponse.redirect(new URL("/admin/github?error=state", baseUrl));
+    return NextResponse.redirect(new URL("/admin/github?error=state", origin));
   }
 
   try {
@@ -41,10 +40,10 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch {
-    return NextResponse.redirect(new URL("/admin/github?error=github", baseUrl));
+    return NextResponse.redirect(new URL("/admin/github?error=github", origin));
   }
 
-  const res = NextResponse.redirect(new URL("/admin/github?connected=1", baseUrl));
+  const res = NextResponse.redirect(new URL("/admin/github?connected=1", origin));
   res.cookies.delete("github_oauth_state");
   return res;
 }

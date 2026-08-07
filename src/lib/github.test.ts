@@ -4,6 +4,7 @@ import {
   exchangeCodeForToken,
   getAuthorizeUrl,
   getGitHubOAuthConfig,
+  getRedirectBase,
   githubFetch,
   githubPaginate,
 } from "@/lib/github";
@@ -14,7 +15,7 @@ afterEach(() => {
 });
 
 describe("getGitHubOAuthConfig", () => {
-  it("retourne la config avec clientId, secret et redirectUri", () => {
+  it("retourne la config avec clientId et secret", () => {
     vi.stubEnv("GITHUB_CLIENT_ID", "client-123");
     vi.stubEnv("GITHUB_CLIENT_SECRET", "secret-456");
 
@@ -23,13 +24,39 @@ describe("getGitHubOAuthConfig", () => {
     expect(config).not.toBeNull();
     expect(config?.clientId).toBe("client-123");
     expect(config?.clientSecret).toBe("secret-456");
-    expect(config?.redirectUri).toContain("/api/github/callback");
+    expect(config).not.toHaveProperty("redirectUri");
   });
 
   it("retourne null sans credentials", () => {
     vi.stubEnv("GITHUB_CLIENT_ID", "");
     vi.stubEnv("GITHUB_CLIENT_SECRET", "");
     expect(getGitHubOAuthConfig()).toBeNull();
+  });
+});
+
+describe("getRedirectBase", () => {
+  it("utilise l'origin fourni en priorité", () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_URL", "https://other.example.com");
+    expect(getRedirectBase("https://wabtechs-platform.vercel.app")).toBe(
+      "https://wabtechs-platform.vercel.app",
+    );
+  });
+
+  it("utilise NEXT_PUBLIC_BASE_URL par défaut", () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_URL", "https://example.com");
+    expect(getRedirectBase()).toBe("https://example.com");
+  });
+
+  it("utilise VERCEL_URL quand NEXT_PUBLIC_BASE_URL est absent", () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_URL", "");
+    vi.stubEnv("VERCEL_URL", "wabtechs-platform.vercel.app");
+    expect(getRedirectBase()).toBe("https://wabtechs-platform.vercel.app");
+  });
+
+  it("retombe sur localhost en environnement local", () => {
+    vi.stubEnv("NEXT_PUBLIC_BASE_URL", "");
+    vi.stubEnv("VERCEL_URL", "");
+    expect(getRedirectBase()).toBe("http://localhost:3000");
   });
 });
 
@@ -44,6 +71,18 @@ describe("getAuthorizeUrl", () => {
     expect(url).toContain("client_id=client-123");
     expect(url).toContain("state=state-abc");
     expect(url).toContain("scope=repo%2Cread%3Auser%2Cuser%3Aemail");
+  });
+
+  it("utilise l'origin fourni pour le redirect_uri (évite le localhost en prod)", () => {
+    vi.stubEnv("GITHUB_CLIENT_ID", "client-123");
+    vi.stubEnv("GITHUB_CLIENT_SECRET", "secret-456");
+
+    const url = getAuthorizeUrl("state-abc", "https://wabtechs-platform.vercel.app");
+
+    expect(url).toContain(
+      "redirect_uri=" +
+        encodeURIComponent("https://wabtechs-platform.vercel.app/api/github/callback"),
+    );
   });
 
   it("lève une erreur sans config", () => {

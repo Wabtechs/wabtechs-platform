@@ -44,12 +44,14 @@ export function getGitHubOAuthConfig() {
   const clientId = process.env.GITHUB_CLIENT_ID;
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
   if (!clientId || !clientSecret) return null;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-  return {
-    clientId,
-    clientSecret,
-    redirectUri: `${baseUrl}/api/github/callback`,
-  };
+  return { clientId, clientSecret };
+}
+
+export function getRedirectBase(origin?: string): string {
+  if (origin) return origin;
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3000";
 }
 
 async function request(token: string, path: string, init?: RequestInit): Promise<Response> {
@@ -133,15 +135,17 @@ export async function exchangeCodeForToken(code: string): Promise<GitHubTokenRes
   return data;
 }
 
-export function getAuthorizeUrl(state: string): string {
+export function getAuthorizeUrl(state: string, origin?: string): string {
   const config = getGitHubOAuthConfig();
   if (!config) {
     throw new AppError("GitHub OAuth non configuré", 503, ErrorCode.INTERNAL);
   }
 
+  const redirectUri = `${getRedirectBase(origin)}/api/github/callback`;
+
   const params = new URLSearchParams({
     client_id: config.clientId,
-    redirect_uri: config.redirectUri,
+    redirect_uri: redirectUri,
     scope: "repo,read:user,user:email",
     state,
   });
