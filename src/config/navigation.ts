@@ -127,6 +127,7 @@ export const MODULES: PlatformModule[] = [
           { id: "os-sprints", title: "Sprints", href: "/admin/os/sprints", icon: CalendarCheck },
           { id: "os-objectives", title: "Objectifs", href: "/admin/os/objectives", icon: Target },
           { id: "os-modules", title: "Modules", href: "/admin/os/modules", icon: Blocks },
+          { id: "os-github", title: "GitHub", href: "/admin/os/github", icon: Github },
         ],
       },
       {
