@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { safeHandler } from "@/lib/safe-handler";
 
-export const revalidate = 30;
+export const dynamic = "force-dynamic";
 
 export const GET = safeHandler(async (req: Request) => {
   const url = new URL(req.url);
