@@ -4,11 +4,15 @@ import { db } from "@/lib/prisma";
 import { safeHandler } from "@/lib/safe-handler";
 import { rateLimit } from "@/lib/rate-limit";
 import { findOpenCheckoutUrl, getStripe } from "@/lib/stripe";
+import { Messages } from "@/lib/messages";
 
 export const POST = safeHandler(async (req: Request) => {
   const session = await auth();
   if (!session?.user) {
-    return NextResponse.json({ error: "Connectez-vous pour acheter ce cours" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: Messages.errors.unauthorized, code: "UNAUTHORIZED" },
+      { status: 401 },
+    );
   }
 
   const userId = session.user.id as string;
@@ -17,25 +21,39 @@ export const POST = safeHandler(async (req: Request) => {
   const stripe = getStripe();
   if (!stripe) {
     return NextResponse.json(
-      { error: "Paiement temporairement indisponible. Réessayez plus tard." },
+      {
+        success: false,
+        error: "Le paiement est temporairement indisponible. Réessayez plus tard.",
+        code: "PAYMENT_UNAVAILABLE",
+      },
       { status: 503 },
     );
   }
 
   const { courseId } = await req.json();
   if (!courseId) {
-    return NextResponse.json({ error: "Cours invalide" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Cours invalide.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const course = await db.course.findUnique({ where: { id: courseId } });
   if (!course || !course.published) {
-    return NextResponse.json({ error: "Cours introuvable" }, { status: 404 });
+    return NextResponse.json(
+      { success: false, error: "Cours introuvable ou supprimé.", code: "NOT_FOUND" },
+      { status: 404 },
+    );
   }
 
   const price = Number(course.price);
   if (price <= 0) {
     return NextResponse.json(
-      { error: "Ce cours est gratuit, utilisez le bouton d'inscription" },
+      {
+        success: false,
+        error: "Ce cours est gratuit, utilisez le bouton d’inscription.",
+        code: "BAD_REQUEST",
+      },
       { status: 400 },
     );
   }
@@ -44,7 +62,10 @@ export const POST = safeHandler(async (req: Request) => {
     where: { userId_courseId: { userId, courseId } },
   });
   if (existing) {
-    return NextResponse.json({ error: "Déjà inscrit" }, { status: 409 });
+    return NextResponse.json(
+      { error: "Déjà inscrit", code: "CONFLICT", success: false },
+      { status: 409 },
+    );
   }
 
   const origin = new URL(req.url).origin;
@@ -78,7 +99,11 @@ export const POST = safeHandler(async (req: Request) => {
 
   if (!checkoutSession.url) {
     return NextResponse.json(
-      { error: "Impossible de créer la session de paiement" },
+      {
+        success: false,
+        error: "Impossible de créer la session de paiement. Veuillez réessayer.",
+        code: "INTERNAL",
+      },
       { status: 500 },
     );
   }

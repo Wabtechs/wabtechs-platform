@@ -3,11 +3,15 @@ import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
 import { safeHandler } from "@/lib/safe-handler";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { Messages } from "@/lib/messages";
 
 export const POST = safeHandler(async (req: Request) => {
   const session = await auth();
   if (!session?.user) {
-    return NextResponse.json({ error: "Connectez-vous pour vous inscrire" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: Messages.errors.unauthorized, code: "UNAUTHORIZED" },
+      { status: 401 },
+    );
   }
 
   const key = (session.user.id as string) ?? getClientIp(req);
@@ -15,19 +19,28 @@ export const POST = safeHandler(async (req: Request) => {
 
   const { courseId } = await req.json();
   if (!courseId) {
-    return NextResponse.json({ error: "Cours invalide" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Cours invalide.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const course = await db.course.findUnique({ where: { id: courseId } });
   if (!course) {
-    return NextResponse.json({ error: "Cours introuvable" }, { status: 404 });
+    return NextResponse.json(
+      { success: false, error: "Cours introuvable ou supprimé.", code: "NOT_FOUND" },
+      { status: 404 },
+    );
   }
 
   const existing = await db.enrollment.findUnique({
     where: { userId_courseId: { userId: session.user.id as string, courseId } },
   });
   if (existing) {
-    return NextResponse.json({ error: "Déjà inscrit" }, { status: 409 });
+    return NextResponse.json(
+      { error: "Déjà inscrit", code: "CONFLICT", success: false },
+      { status: 409 },
+    );
   }
 
   const enrollment = await db.enrollment.create({

@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { AppError, ErrorCode, isAppError } from "@/lib/errors";
+import { AppError, ErrorCode } from "@/lib/errors";
+import { safeHandler } from "@/lib/safe-handler";
+import { Messages } from "@/lib/messages";
 
-export async function POST(_req: Request, { params }: { params: Promise<{ lessonId: string }> }) {
-  try {
+export const POST = safeHandler(
+  async (_req: Request, { params }: { params: Promise<{ lessonId: string }> }) => {
     const session = await auth();
     if (!session?.user) {
-      throw new AppError("Authentification requise", 401, ErrorCode.UNAUTHORIZED);
+      throw new AppError(Messages.errors.unauthorized, 401, ErrorCode.UNAUTHORIZED);
     }
     const { lessonId } = await params;
 
     const lesson = await db.lesson.findUnique({ where: { id: lessonId } });
     if (!lesson) {
-      throw new AppError("Leçon introuvable", 404, ErrorCode.NOT_FOUND);
+      throw new AppError("Leçon introuvable ou supprimée", 404, ErrorCode.NOT_FOUND);
     }
 
     const enrollment = await db.enrollment.findUnique({
@@ -22,7 +24,11 @@ export async function POST(_req: Request, { params }: { params: Promise<{ lesson
       },
     });
     if (!enrollment) {
-      throw new AppError("Inscription au cours requise", 403, ErrorCode.FORBIDDEN);
+      throw new AppError(
+        "Vous devez être inscrit à ce cours pour continuer.",
+        403,
+        ErrorCode.FORBIDDEN,
+      );
     }
 
     await db.lessonProgress.upsert({
@@ -56,13 +62,5 @@ export async function POST(_req: Request, { params }: { params: Promise<{ lesson
     });
 
     return NextResponse.json({ progress, completed });
-  } catch (error) {
-    if (isAppError(error)) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: error.status, headers: error.headers },
-      );
-    }
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  },
+);
