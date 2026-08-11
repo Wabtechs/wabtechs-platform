@@ -1,4 +1,5 @@
 import { AppError, ErrorCode } from "@/lib/errors";
+import { isTechnicalError } from "@/lib/messages";
 
 const GITHUB_API = "https://api.github.com";
 const GITHUB_AUTH = "https://github.com/login/oauth";
@@ -68,15 +69,23 @@ async function request(token: string, path: string, init?: RequestInit): Promise
 
   if (!res.ok) {
     if (res.status === 404) {
-      throw new AppError("Ressource GitHub introuvable", 404, ErrorCode.NOT_FOUND);
+      throw new AppError("La ressource GitHub demandée est introuvable.", 404, ErrorCode.NOT_FOUND);
     }
     if (res.status === 401) {
-      throw new AppError("Accès GitHub révoqué", 401, ErrorCode.UNAUTHORIZED);
+      throw new AppError(
+        "Votre accès GitHub a été révoqué. Reconnectez votre compte.",
+        401,
+        ErrorCode.UNAUTHORIZED,
+      );
     }
     if (res.status === 403 || res.status === 429) {
-      throw new AppError("Limite de l'API GitHub atteinte", 429, ErrorCode.TOO_MANY_REQUESTS);
+      throw new AppError(
+        "La limite de l’API GitHub est atteinte. Réessayez plus tard.",
+        429,
+        ErrorCode.TOO_MANY_REQUESTS,
+      );
     }
-    throw new AppError(`Erreur GitHub (${res.status})`, 502, ErrorCode.INTERNAL);
+    throw new AppError("GitHub n’a pas pu répondre. Réessayez plus tard.", 502, ErrorCode.INTERNAL);
   }
 
   return res;
@@ -84,7 +93,13 @@ async function request(token: string, path: string, init?: RequestInit): Promise
 
 export async function githubFetch<T>(token: string, path: string, init?: RequestInit): Promise<T> {
   const res = await request(token, path, init);
-  return (await res.json()) as T;
+  const text = await res.text();
+  if (!text) return {} as T;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new AppError("Réponse GitHub invalide.", 502, ErrorCode.INTERNAL);
+  }
 }
 
 export async function githubPaginate<T>(
@@ -105,7 +120,7 @@ export async function githubPaginate<T>(
 export async function exchangeCodeForToken(code: string): Promise<GitHubTokenResponse> {
   const config = getGitHubOAuthConfig();
   if (!config) {
-    throw new AppError("GitHub OAuth non configuré", 503, ErrorCode.INTERNAL);
+    throw new AppError("La connexion GitHub n’est pas encore configurée.", 503, ErrorCode.INTERNAL);
   }
 
   const res = await fetch(`${GITHUB_AUTH}/access_token`, {
@@ -125,11 +140,10 @@ export async function exchangeCodeForToken(code: string): Promise<GitHubTokenRes
   const data = (await res.json()) as GitHubTokenResponse;
 
   if (!res.ok || !data.access_token || data.error) {
-    throw new AppError(
-      data.error_description ?? "Échange du code GitHub impossible",
-      400,
-      ErrorCode.BAD_REQUEST,
-    );
+    const detail = data.error_description ?? "";
+    const userMessage =
+      detail && !isTechnicalError(detail) ? detail : "La connexion GitHub a échoué. Réessayez.";
+    throw new AppError(userMessage, 400, ErrorCode.BAD_REQUEST);
   }
 
   return data;
@@ -138,7 +152,7 @@ export async function exchangeCodeForToken(code: string): Promise<GitHubTokenRes
 export function getAuthorizeUrl(state: string, origin?: string): string {
   const config = getGitHubOAuthConfig();
   if (!config) {
-    throw new AppError("GitHub OAuth non configuré", 503, ErrorCode.INTERNAL);
+    throw new AppError("La connexion GitHub n’est pas encore configurée.", 503, ErrorCode.INTERNAL);
   }
 
   const redirectUri = `${getRedirectBase(origin)}/api/github/callback`;
