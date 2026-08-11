@@ -1,4 +1,5 @@
 import { AppError, ErrorCode } from "@/lib/errors";
+import { Messages } from "@/lib/messages";
 
 interface RateLimitOptions {
   windowMs?: number;
@@ -78,7 +79,7 @@ export async function rateLimit(
       const ttl = await redis.ttl(redisKey);
       if (count > max) {
         const retryAfter = Math.max(1, ttl);
-        throw new AppError("Trop de requêtes", 429, ErrorCode.TOO_MANY_REQUESTS, {
+        throw new AppError(Messages.errors.tooManyRequests, 429, ErrorCode.TOO_MANY_REQUESTS, {
           "Retry-After": String(retryAfter),
           "X-RateLimit-Remaining": "0",
           "X-RateLimit-Reset": String(Math.floor(now / 1000) + ttl),
@@ -103,7 +104,7 @@ export async function rateLimit(
   entry.count += 1;
   if (entry.count > max) {
     const retryAfter = Math.max(1, Math.ceil((entry.expiresAt - now) / 1000));
-    throw new AppError("Trop de requêtes", 429, ErrorCode.TOO_MANY_REQUESTS, {
+    throw new AppError(Messages.errors.tooManyRequests, 429, ErrorCode.TOO_MANY_REQUESTS, {
       "Retry-After": String(retryAfter),
       "X-RateLimit-Remaining": "0",
       "X-RateLimit-Reset": String(Math.floor(entry.expiresAt / 1000)),

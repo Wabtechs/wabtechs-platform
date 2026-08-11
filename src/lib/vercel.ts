@@ -31,14 +31,26 @@ export async function triggerVercelDeploy(): Promise<VercelDeploymentResult> {
 
   if (!res.ok) {
     if (res.status === 401 || res.status === 403) {
-      throw new AppError("Token de déploiement Vercel invalide", 401, ErrorCode.UNAUTHORIZED);
+      throw new AppError(
+        "Le jeton de déploiement Vercel est invalide.",
+        401,
+        ErrorCode.UNAUTHORIZED,
+      );
     }
-    throw new AppError(`Échec du déploiement Vercel (${res.status})`, 502, ErrorCode.INTERNAL);
+    throw new AppError(
+      "Le déploiement Vercel a échoué. Réessayez plus tard.",
+      502,
+      ErrorCode.INTERNAL,
+    );
   }
 
   const data = (await res.json()) as VercelHookResponse;
   if (!data.id || !data.url) {
-    throw new AppError("Réponse du déploiement Vercel inattendue", 502, ErrorCode.INTERNAL);
+    throw new AppError(
+      "Le déploiement Vercel n’a pas pu être confirmé. Réessayez plus tard.",
+      502,
+      ErrorCode.INTERNAL,
+    );
   }
 
   return {

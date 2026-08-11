@@ -33,5 +33,5 @@ export function buildGrowthSeries(snapshots: Snapshot[]): GrowthPoint[] {
     if (s.metric === "downloads") entry.downloads += s.value;
     byDate.set(key, entry);
   }
-  return [...byDate.values()].sort((a, b) => a.label.localeCompare(b.label));
+  return [...byDate.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, point]) => point);
 }

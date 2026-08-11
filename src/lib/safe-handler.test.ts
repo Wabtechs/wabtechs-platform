@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { AppError, ErrorCode } from "@/lib/errors";
+import { Messages } from "@/lib/messages";
 import { safeHandler } from "@/lib/safe-handler";
 
 describe("safeHandler", () => {
@@ -10,7 +11,7 @@ describe("safeHandler", () => {
     expect(await res.text()).toBe("ok");
   });
 
-  it("convertit une AppError en JSON avec son statut et son code", async () => {
+  it("convertit une AppError en JSON avec succès, message et code", async () => {
     const handler = safeHandler(async () => {
       throw new AppError("Non autorisé", 401, ErrorCode.UNAUTHORIZED);
     });
@@ -18,7 +19,11 @@ describe("safeHandler", () => {
     expect(res.status).toBe(401);
     expect(res.headers.get("content-type")).toContain("application/json");
     const body = await res.json();
-    expect(body).toEqual({ error: "Non autorisé", code: ErrorCode.UNAUTHORIZED });
+    expect(body).toEqual({
+      success: false,
+      error: "Non autorisé",
+      code: ErrorCode.UNAUTHORIZED,
+    });
   });
 
   it("réutilise les headers de l'AppError", async () => {
@@ -32,14 +37,18 @@ describe("safeHandler", () => {
     expect(res.headers.get("Retry-After")).toBe("5");
   });
 
-  it("retourne une erreur 500 générique pour les erreurs inattendues", async () => {
+  it("retourne une erreur 500 générique et française pour les erreurs inattendues", async () => {
     const handler = safeHandler(async () => {
       throw new Error("boom");
     });
     const res = await handler(new Request("http://localhost"));
     expect(res.status).toBe(500);
     const body = await res.json();
-    expect(body).toEqual({ error: "Erreur serveur", code: ErrorCode.INTERNAL });
+    expect(body).toEqual({
+      success: false,
+      error: Messages.errors.internal,
+      code: ErrorCode.INTERNAL,
+    });
   });
 
   it("n'expose pas le message interne en production", async () => {
@@ -50,6 +59,16 @@ describe("safeHandler", () => {
     const res = await handler(new Request("http://localhost"));
     const body = await res.json();
     expect(body.error).not.toContain("secret");
+    expect(body.error).toBe(Messages.errors.internal);
     vi.unstubAllEnvs();
+  });
+
+  it("remplace un message technique d'AppError par un message utilisateur", async () => {
+    const handler = safeHandler(async () => {
+      throw new AppError("Internal Server Error (500)", 500, ErrorCode.INTERNAL);
+    });
+    const res = await handler(new Request("http://localhost"));
+    const body = await res.json();
+    expect(body.error).toBe(Messages.errors.internal);
   });
 });
