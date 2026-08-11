@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
-import { AppError, ErrorCode, isAppError } from "@/lib/errors";
+import { AppError, ErrorCode } from "@/lib/errors";
 import { githubFetch } from "@/lib/github";
+import { safeHandler } from "@/lib/safe-handler";
 
 interface GitHubTree {
   sha: string;
@@ -14,21 +15,18 @@ interface GitHubRepoDetail {
   default_branch: string;
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ owner: string; repo: string }> },
-) {
-  try {
+export const GET = safeHandler(
+  async (req: Request, { params }: { params: Promise<{ owner: string; repo: string }> }) => {
     const user = await requireAdmin();
     const { owner, repo } = await params;
-    const url = new URL(_req.url);
+    const url = new URL(req.url);
     const branch = url.searchParams.get("branch");
 
     const connection = await db.githubConnection.findUnique({
       where: { userId: user.id as string },
     });
     if (!connection) {
-      throw new AppError("Compte GitHub non connecté", 401, ErrorCode.UNAUTHORIZED);
+      throw new AppError("Votre compte GitHub n’est pas connecté.", 401, ErrorCode.UNAUTHORIZED);
     }
 
     const token = connection.accessToken;
@@ -40,7 +38,7 @@ export async function GET(
       defaultBranch = detail.default_branch;
     }
     if (!defaultBranch) {
-      throw new AppError("Branche du dépôt introuvable", 404, ErrorCode.NOT_FOUND);
+      throw new AppError("La branche demandée est introuvable.", 404, ErrorCode.NOT_FOUND);
     }
 
     const tree = await githubFetch<GitHubTree>(
@@ -58,13 +56,5 @@ export async function GET(
       defaultBranch,
       files,
     });
-  } catch (error) {
-    if (isAppError(error)) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: error.status, headers: error.headers },
-      );
-    }
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  },
+);

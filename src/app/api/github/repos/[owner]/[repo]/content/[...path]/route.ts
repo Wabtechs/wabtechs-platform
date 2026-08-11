@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-guard";
-import { AppError, ErrorCode, isAppError } from "@/lib/errors";
+import { AppError, ErrorCode } from "@/lib/errors";
 import { githubFetch } from "@/lib/github";
+import { safeHandler } from "@/lib/safe-handler";
 
 interface GitHubContent {
   name: string;
@@ -16,25 +17,25 @@ interface GitHubContent {
   message?: string;
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ owner: string; repo: string; path: string[] }> },
-) {
-  try {
+export const GET = safeHandler(
+  async (
+    req: Request,
+    { params }: { params: Promise<{ owner: string; repo: string; path: string[] }> },
+  ) => {
     const user = await requireAdmin();
     const { owner, repo, path } = await params;
-    const url = new URL(_req.url);
+    const url = new URL(req.url);
     const ref = url.searchParams.get("ref");
 
     if (path.length === 0) {
-      throw new AppError("Chemin de fichier manquant", 400, ErrorCode.BAD_REQUEST);
+      throw new AppError("Le chemin du fichier est manquant.", 400, ErrorCode.BAD_REQUEST);
     }
 
     const connection = await db.githubConnection.findUnique({
       where: { userId: user.id as string },
     });
     if (!connection) {
-      throw new AppError("Compte GitHub non connecté", 401, ErrorCode.UNAUTHORIZED);
+      throw new AppError("Votre compte GitHub n’est pas connecté.", 401, ErrorCode.UNAUTHORIZED);
     }
 
     const filePath = path.map((segment) => encodeURIComponent(segment)).join("/");
@@ -45,7 +46,7 @@ export async function GET(
     );
 
     if (data.type !== "file" || data.message) {
-      throw new AppError("Ce chemin ne pointe pas vers un fichier", 400, ErrorCode.BAD_REQUEST);
+      throw new AppError("Ce chemin ne pointe pas vers un fichier.", 400, ErrorCode.BAD_REQUEST);
     }
 
     const content =
@@ -61,13 +62,5 @@ export async function GET(
       htmlUrl: data.html_url,
       downloadUrl: data.download_url,
     });
-  } catch (error) {
-    if (isAppError(error)) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: error.status, headers: error.headers },
-      );
-    }
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  },
+);
