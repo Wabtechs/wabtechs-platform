@@ -20,16 +20,14 @@ export const GET = safeHandler(async () => {
     include: { project: { select: { id: true, slug: true, name: true, color: true } } },
   });
 
+  const repositoryIds = linkedRepos.map((r) => r.id);
+
   const [issues, pullRequests, commits, releases, workflowRuns] = await Promise.all([
-    db.gitHubIssue.count({ where: { repository: { projectId: { not: null } } } }).catch(() => 0),
-    db.gitHubPullRequest
-      .count({ where: { repository: { projectId: { not: null } } } })
-      .catch(() => 0),
-    db.gitHubCommit.count({ where: { repository: { projectId: { not: null } } } }).catch(() => 0),
-    db.gitHubRelease.count({ where: { repository: { projectId: { not: null } } } }).catch(() => 0),
-    db.gitHubWorkflowRun
-      .count({ where: { repository: { projectId: { not: null } } } })
-      .catch(() => 0),
+    db.gitHubIssue.count({ where: { repositoryId: { in: repositoryIds } } }).catch(() => 0),
+    db.gitHubPullRequest.count({ where: { repositoryId: { in: repositoryIds } } }).catch(() => 0),
+    db.gitHubCommit.count({ where: { repositoryId: { in: repositoryIds } } }).catch(() => 0),
+    db.gitHubRelease.count({ where: { repositoryId: { in: repositoryIds } } }).catch(() => 0),
+    db.gitHubWorkflowRun.count({ where: { repositoryId: { in: repositoryIds } } }).catch(() => 0),
   ]);
 
   return NextResponse.json({

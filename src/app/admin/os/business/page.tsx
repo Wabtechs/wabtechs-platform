@@ -5,10 +5,10 @@ import { OsStatCard } from "@/components/admin/os/os-stat-card";
 import { OsProjectFilter } from "@/components/admin/os/os-project-filter";
 import { OsLineChart } from "@/components/admin/os/os-charts";
 import { OsEmpty } from "@/components/admin/os/os-empty";
-import { buildGrowthSeries, METRIC_SNAPSHOT_LIMIT } from "@/lib/os-growth";
-import { fmtEur, fmtNum } from "@/lib/os-utils";
+import { countWithinDays, seriesByDate, commitsPerDay } from "@/lib/os-github";
+import { fmtNum } from "@/lib/os-utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Wallet, Euro, TrendingUp, Star } from "lucide-react";
+import { Wallet, Star, GitFork, GitCommitVertical, GitMerge } from "lucide-react";
 
 export const metadata: Metadata = { title: "Project OS — Business" };
 export const dynamic = "force-dynamic";
@@ -19,34 +19,45 @@ export default async function OsBusinessPage({
   searchParams: Promise<{ project?: string }>;
 }) {
   const { project } = await searchParams;
-  const projects = await db.osProject.findMany({
-    select: { id: true, slug: true, name: true, color: true },
-    orderBy: { name: "asc" },
-  });
-  const selected = projects.find((p) => p.slug === project);
-  const whereProject = selected ? { projectId: selected.id } : {};
-  const whereOsProject = selected ? { slug: selected.slug } : {};
 
-  const [allProjects, mrrAgg, snapshots, starsAgg] = await Promise.all([
-    db.osProject.findMany({
-      orderBy: { name: "asc" },
-      select: { id: true, slug: true, name: true, color: true, mrr: true, githubStars: true },
+  const repos = await db.gitHubRepository.findMany({
+    select: { id: true, fullName: true, name: true, owner: true, stars: true, forks: true },
+    orderBy: { fullName: "asc" },
+  });
+  const selected = project ? repos.find((r) => r.id === project) : null;
+  const whereRepo = selected ? { repositoryId: selected.id } : {};
+
+  const [commitRows, closedIssueRows, mergedPrRows, mergedCount] = await Promise.all([
+    db.gitHubCommit.findMany({
+      where: whereRepo,
+      select: { committedAt: true },
+      orderBy: { committedAt: "desc" },
     }),
-    db.osProject.aggregate({ where: whereOsProject, _sum: { mrr: true } }),
-    db.metricSnapshot.findMany({
-      where: whereProject,
-      orderBy: { date: "asc" },
-      take: -METRIC_SNAPSHOT_LIMIT,
+    db.gitHubIssue.findMany({
+      where: { ...whereRepo, isPr: false },
+      select: { closedAt: true },
+      orderBy: { closedAt: "desc" },
+      take: 2000,
     }),
-    db.osProject.aggregate({ where: whereOsProject, _sum: { githubStars: true } }),
+    db.gitHubPullRequest.findMany({
+      where: { ...whereRepo, merged: true },
+      select: { mergedAt: true },
+      orderBy: { mergedAt: "desc" },
+      take: 2000,
+    }),
+    db.gitHubPullRequest.count({ where: { ...whereRepo, merged: true } }),
   ]);
 
-  const growth = buildGrowthSeries(snapshots);
-  const revenueProjects = allProjects
-    .filter((p) => Number(p.mrr) > 0)
-    .sort((a, b) => Number(b.mrr) - Number(a.mrr));
-  const totalMrr = Number(mrrAgg._sum?.mrr ?? 0);
-  const totalStars = Number(starsAgg._sum?.githubStars ?? 0);
+  const totalStars = selected ? selected.stars : repos.reduce((a, r) => a + r.stars, 0);
+  const totalForks = selected ? selected.forks : repos.reduce((a, r) => a + r.forks, 0);
+  const commits30 = countWithinDays(commitRows, 30);
+
+  const commitsData = commitsPerDay(commitRows, 30);
+  const closedData = seriesByDate(closedIssueRows, 30);
+  const mergedData = seriesByDate(mergedPrRows, 30);
+
+  const topRepos = repos.sort((a, b) => b.stars - a.stars).slice(0, 8);
+  const maxStars = Math.max(1, ...topRepos.map((r) => r.stars));
 
   return (
     <div>
@@ -54,33 +65,19 @@ export default async function OsBusinessPage({
         title="Business"
         description={
           selected
-            ? `Métriques business — ${selected.name}`
-            : "Métriques business sur l'ensemble du portfolio"
+            ? `Métriques GitHub — ${selected.fullName}`
+            : "Métriques de traction et d'activité issues de GitHub"
         }
         icon={<Wallet className="h-5 w-5" />}
       >
         <OsProjectFilter
-          projects={projects}
-          value={selected?.slug ?? "all"}
+          projects={repos.map((r) => ({ id: r.id, slug: r.id, name: r.fullName }))}
+          value={selected?.id ?? "all"}
           basePath="/admin/os/business"
         />
       </OsPageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <OsStatCard
-          label="MRR cumulé"
-          value={fmtEur(totalMrr)}
-          hint="Revenu mensuel récurrent"
-          icon={<Euro className="h-4 w-4" />}
-          accent="text-emerald-500"
-        />
-        <OsStatCard
-          label="Projets monétisés"
-          value={`${revenueProjects.length}/${allProjects.length}`}
-          hint="Générant du revenu"
-          icon={<Wallet className="h-4 w-4" />}
-          accent="text-blue-500"
-        />
         <OsStatCard
           label="Stars cumulées"
           value={fmtNum(totalStars)}
@@ -89,149 +86,117 @@ export default async function OsBusinessPage({
           accent="text-amber-500"
         />
         <OsStatCard
-          label="Top projet"
-          value={revenueProjects[0]?.name ?? "—"}
-          hint={revenueProjects[0] ? `${fmtEur(revenueProjects[0].mrr)} MRR` : "Aucun revenu"}
-          icon={<TrendingUp className="h-4 w-4" />}
-          accent="text-primary"
+          label="Forks cumulés"
+          value={fmtNum(totalForks)}
+          hint="Réutilisation du code"
+          icon={<GitFork className="h-4 w-4" />}
+          accent="text-sky-500"
+        />
+        <OsStatCard
+          label="Commits (30 jours)"
+          value={fmtNum(commits30)}
+          hint={`${fmtNum(commitRows.length)} au total`}
+          icon={<GitCommitVertical className="h-4 w-4" />}
+          accent="text-violet-500"
+        />
+        <OsStatCard
+          label="PRs fusionnées"
+          value={fmtNum(mergedCount)}
+          hint="Livraisons de code"
+          icon={<GitMerge className="h-4 w-4" />}
+          accent="text-emerald-500"
         />
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
+      <div className="mt-8 grid gap-4 lg:grid-cols-3">
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">MRR par projet</CardTitle>
-            <CardDescription>Contribution au revenu récurrent</CardDescription>
+            <CardTitle className="text-sm">Activité commits</CardTitle>
+            <CardDescription>Commits par jour — 30 derniers jours</CardDescription>
           </CardHeader>
           <CardContent>
-            {revenueProjects.length === 0 ? (
-              <OsEmpty
-                title="Aucun revenu"
-                hint="Aucun projet ne génère de revenu pour le moment."
+            {commitsData.some((d) => d.commits > 0) ? (
+              <OsLineChart
+                data={commitsData}
+                xKey="label"
+                height={220}
+                lines={[{ key: "commits", name: "Commits", color: "#842ae3" }]}
               />
             ) : (
-              <div className="space-y-4">
-                {revenueProjects.map((p) => {
-                  const max = revenueProjects[0]?.mrr;
-                  const pctVal =
-                    max && Number(max) > 0
-                      ? Math.max(4, Math.round((Number(p.mrr) / Number(max)) * 100))
-                      : 0;
-                  return (
-                    <div key={p.id} className="flex items-center gap-3">
-                      <span
-                        className="h-2.5 w-2.5 shrink-0 rounded-full"
-                        style={{ background: p.color }}
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between text-[12px]">
-                          <span className="truncate font-medium">{p.name}</span>
-                          <span className="ml-2 font-semibold">{fmtEur(p.mrr)}</span>
-                        </div>
-                        <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-                          <div
-                            className="h-full rounded-full"
-                            style={{ width: `${pctVal}%`, background: p.color }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <OsEmpty title="Aucun commit" />
             )}
           </CardContent>
         </Card>
-
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">MRR — évolution</CardTitle>
-            <CardDescription>Croissance du revenu mensuel</CardDescription>
+            <CardTitle className="text-sm">Issues fermées</CardTitle>
+            <CardDescription>Résolution par jour — 30 derniers jours</CardDescription>
           </CardHeader>
           <CardContent>
-            {growth.length ? (
+            {closedData.some((d) => d.value > 0) ? (
               <OsLineChart
-                data={growth}
+                data={closedData}
                 xKey="label"
-                height={240}
-                lines={[{ key: "mrr", name: "MRR (€)", color: "#10b981" }]}
+                height={220}
+                lines={[{ key: "value", name: "Fermées", color: "#10b981" }]}
               />
             ) : (
-              <OsEmpty title="Aucune donnée" />
+              <OsEmpty title="Aucune issue fermée" />
+            )}
+          </CardContent>
+        </Card>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">PRs fusionnées</CardTitle>
+            <CardDescription>Fusions par jour — 30 derniers jours</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {mergedData.some((d) => d.value > 0) ? (
+              <OsLineChart
+                data={mergedData}
+                xKey="label"
+                height={220}
+                lines={[{ key: "value", name: "Fusionnées", color: "#3b82f6" }]}
+              />
+            ) : (
+              <OsEmpty title="Aucune PR fusionnée" />
             )}
           </CardContent>
         </Card>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+      <div className="mt-4">
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Croissance — Utilisateurs & Téléchargements</CardTitle>
+            <CardTitle className="text-sm">Traction par dépôt</CardTitle>
+            <CardDescription>Stars des dépôts les plus suivis</CardDescription>
           </CardHeader>
           <CardContent>
-            {growth.length ? (
-              <OsLineChart
-                data={growth}
-                xKey="label"
-                height={220}
-                lines={[
-                  { key: "users", name: "Utilisateurs", color: "#3b82f6" },
-                  { key: "downloads", name: "Téléchargements", color: "#f59e0b" },
-                ]}
-              />
+            {topRepos.length === 0 ? (
+              <OsEmpty title="Aucun dépôt" />
             ) : (
-              <OsEmpty title="Aucune donnée" />
+              <div className="space-y-4">
+                {topRepos.map((r) => (
+                  <div key={r.id} className="flex items-center gap-3">
+                    <span className="flex h-2.5 w-2.5 shrink-0 items-center justify-center">
+                      <Star className="h-3.5 w-3.5 text-amber-400" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between text-[12px]">
+                        <span className="truncate font-medium">{r.fullName}</span>
+                        <span className="ml-2 font-semibold">{fmtNum(r.stars)}</span>
+                      </div>
+                      <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
+                        <div
+                          className="bg-primary h-full rounded-full"
+                          style={{ width: `${Math.max(2, (r.stars / maxStars) * 100)}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </CardContent>
-        </Card>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Croissance — Stars GitHub</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {growth.length ? (
-              <OsLineChart
-                data={growth}
-                xKey="label"
-                height={220}
-                lines={[{ key: "stars", name: "Stars", color: "#842ae3" }]}
-              />
-            ) : (
-              <OsEmpty title="Aucune donnée" />
-            )}
-          </CardContent>
-        </Card>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Répartition des revenus</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {allProjects.length === 0 && <OsEmpty title="Aucun projet" />}
-            {allProjects.map((p) => {
-              const share = totalMrr > 0 ? Math.round((Number(p.mrr) / totalMrr) * 100) : 0;
-              return (
-                <div key={p.id} className="flex items-center justify-between text-[12px]">
-                  <span className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                    <span className="h-2 w-2 rounded-full" style={{ background: p.color }} />
-                    <span className="truncate">{p.name}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    <span className="w-10 text-right font-semibold">{share}%</span>
-                  </span>
-                </div>
-              );
-            })}
-            <div className="mt-2 flex h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-              {allProjects.map((p) => (
-                <span
-                  key={p.id}
-                  style={{
-                    width: `${totalMrr > 0 ? (Number(p.mrr) / totalMrr) * 100 : 0}%`,
-                    background: p.color,
-                  }}
-                />
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>

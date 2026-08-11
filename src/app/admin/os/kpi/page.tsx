@@ -5,37 +5,22 @@ import { OsStatCard } from "@/components/admin/os/os-stat-card";
 import { OsProjectFilter } from "@/components/admin/os/os-project-filter";
 import { OsBarChart, OsPieChart, OsLineChart } from "@/components/admin/os/os-charts";
 import { OsEmpty } from "@/components/admin/os/os-empty";
-import { OS_STATUS_META, healthColor } from "@/lib/os-labels";
-import { buildGrowthSeries, METRIC_SNAPSHOT_LIMIT } from "@/lib/os-growth";
+import { summarizeCiRuns, countWithinDays, commitsPerDay } from "@/lib/os-github";
 import { fmtNum } from "@/lib/os-utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   TrendingUp,
+  Github,
   Rocket,
-  Bug,
-  Target,
-  Gauge,
-  Zap,
-  CalendarCheck,
-  Boxes,
-  HeartPulse,
+  GitMerge,
+  GitCommitVertical,
+  Activity,
+  Star,
+  GitPullRequest,
 } from "lucide-react";
 
 export const metadata: Metadata = { title: "Project OS — KPI" };
 export const dynamic = "force-dynamic";
-
-const FEATURE_ORDER = [
-  "BACKLOG",
-  "PLANNED",
-  "READY",
-  "DEVELOPMENT",
-  "REVIEW",
-  "TESTING",
-  "VALIDATION",
-  "DONE",
-  "RELEASED",
-];
-const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "TRIVIAL"];
 
 export default async function OsKpiPage({
   searchParams,
@@ -43,58 +28,64 @@ export default async function OsKpiPage({
   searchParams: Promise<{ project?: string }>;
 }) {
   const { project } = await searchParams;
-  const projects = await db.osProject.findMany({
-    select: { id: true, slug: true, name: true, color: true, healthScore: true },
-    orderBy: { name: "asc" },
+
+  const repos = await db.gitHubRepository.findMany({
+    select: { id: true, fullName: true, name: true, owner: true, stars: true },
+    orderBy: { fullName: "asc" },
   });
-  const selected = projects.find((p) => p.slug === project);
-  const whereProject = selected ? { projectId: selected.id } : {};
+  const selected = project ? repos.find((r) => r.id === project) : null;
+  const whereRepo = selected ? { repositoryId: selected.id } : {};
 
-  const [
-    featureGroups,
-    bugGroups,
-    bugSevGroups,
-    sprintGroups,
-    objectiveGroups,
-    velocityAgg,
-    snapshots,
-  ] = await Promise.all([
-    db.feature.groupBy({ by: ["status"], _count: { _all: true }, where: whereProject }),
-    db.bug.groupBy({ by: ["status"], _count: { _all: true }, where: whereProject }),
-    db.bug.groupBy({ by: ["severity"], _count: { _all: true }, where: whereProject }),
-    db.sprint.groupBy({ by: ["status"], _count: { _all: true }, where: whereProject }),
-    db.objective.groupBy({ by: ["status"], _count: { _all: true }, where: whereProject }),
-    db.sprint.aggregate({ where: whereProject, _avg: { velocity: true } }),
-    db.metricSnapshot.findMany({
-      where: whereProject,
-      orderBy: { date: "asc" },
-      take: -METRIC_SNAPSHOT_LIMIT,
-    }),
-  ]);
+  const [issueGroups, prGroups, mergedCount, releaseCount, commitRows, runRows] = await Promise.all(
+    [
+      db.gitHubIssue.groupBy({
+        by: ["state"],
+        where: { ...whereRepo, isPr: false },
+        _count: { _all: true },
+      }),
+      db.gitHubPullRequest.groupBy({
+        by: ["state"],
+        where: { ...whereRepo, merged: false },
+        _count: { _all: true },
+      }),
+      db.gitHubPullRequest.count({ where: { ...whereRepo, merged: true } }),
+      db.gitHubRelease.count({ where: whereRepo }),
+      db.gitHubCommit.findMany({
+        where: whereRepo,
+        select: { committedAt: true },
+        orderBy: { committedAt: "desc" },
+      }),
+      db.gitHubWorkflowRun.findMany({
+        where: whereRepo,
+        orderBy: { createdAt: "desc" },
+        take: 50,
+      }),
+    ],
+  );
 
-  const fc: Record<string, number> = {};
-  for (const g of featureGroups) fc[g.status] = g._count._all;
-  const bc: Record<string, number> = {};
-  for (const g of bugGroups) bc[g.status] = g._count._all;
-  const bsc: Record<string, number> = {};
-  for (const g of bugSevGroups) bsc[g.severity] = g._count._all;
-  const sc: Record<string, number> = {};
-  for (const g of sprintGroups) sc[g.status] = g._count._all;
-  const oc: Record<string, number> = {};
-  for (const g of objectiveGroups) oc[g.status] = g._count._all;
+  const issueCounts: Record<string, number> = {};
+  for (const g of issueGroups) issueCounts[g.state] = g._count._all;
+  const prCounts: Record<string, number> = {};
+  for (const g of prGroups) prCounts[g.state] = g._count._all;
 
-  const featureTotal = Object.values(fc).reduce((a, b) => a + b, 0);
-  const featureDone = (fc.DONE ?? 0) + (fc.RELEASED ?? 0);
-  const bugOpen = (bc.NEW ?? 0) + (bc.TRIAGED ?? 0) + (bc.IN_PROGRESS ?? 0);
-  const featureData = FEATURE_ORDER.map((s) => ({
-    name: OS_STATUS_META[s]?.label ?? s,
-    value: fc[s] ?? 0,
-  })).filter((d) => d.value > 0);
-  const severityData = SEVERITY_ORDER.map((s) => ({
-    name: OS_STATUS_META[s]?.label ?? s,
-    value: bsc[s] ?? 0,
-  })).filter((d) => d.value > 0);
-  const growth = buildGrowthSeries(snapshots);
+  const openIssues = issueCounts.open ?? 0;
+  const closedIssues = issueCounts.closed ?? 0;
+  const openPrs = prCounts.open ?? 0;
+  const closedPrs = prCounts.closed ?? 0;
+  const ci = summarizeCiRuns(runRows);
+  const commits30 = countWithinDays(commitRows, 30);
+  const stars = selected ? selected.stars : repos.reduce((a, r) => a + r.stars, 0);
+
+  const issueData = [
+    { name: "Ouvertes", value: openIssues },
+    { name: "Fermées", value: closedIssues },
+  ].filter((d) => d.value > 0);
+  const prData = [
+    { name: "Ouvertes", value: openPrs },
+    { name: "Fusionnées", value: mergedCount },
+    { name: "Fermées", value: closedPrs },
+  ].filter((d) => d.value > 0);
+  const growthData = commitsPerDay(commitRows, 30);
 
   return (
     <div>
@@ -102,123 +93,125 @@ export default async function OsKpiPage({
         title="KPI"
         description={
           selected
-            ? `Indicateurs clés — ${selected.name}`
-            : "Indicateurs clés sur l'ensemble du portfolio"
+            ? `Indicateurs clés — ${selected.fullName}`
+            : "Indicateurs clés issus des données GitHub du portfolio"
         }
         icon={<TrendingUp className="h-5 w-5" />}
       >
         <OsProjectFilter
-          projects={projects}
-          value={selected?.slug ?? "all"}
+          projects={repos.map((r) => ({ id: r.id, slug: r.id, name: r.fullName }))}
+          value={selected?.id ?? "all"}
           basePath="/admin/os/kpi"
         />
       </OsPageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <OsStatCard
-          label="Features totales"
-          value={fmtNum(featureTotal)}
-          hint="Sur le scope sélectionné"
-          icon={<Boxes className="h-4 w-4" />}
-          accent="text-blue-500"
-        />
-        <OsStatCard
-          label="Features livrées"
-          value={featureTotal ? `${Math.round((featureDone / featureTotal) * 100)}%` : "0%"}
-          hint={`${featureDone}/${featureTotal} terminées`}
-          icon={<Rocket className="h-4 w-4" />}
+          label="Issues ouvertes"
+          value={fmtNum(openIssues)}
+          hint={`${closedIssues} fermées`}
+          icon={<Github className="h-4 w-4" />}
           accent="text-emerald-500"
         />
         <OsStatCard
-          label="Bugs ouverts"
-          value={fmtNum(bugOpen)}
-          hint={`${(bsc.CRITICAL ?? 0) + (bsc.BLOCKER ?? 0)} critiques`}
-          icon={<Bug className="h-4 w-4" />}
-          accent="text-rose-500"
+          label="Issues fermées"
+          value={fmtNum(closedIssues)}
+          hint={`${openIssues} encore ouvertes`}
+          icon={<Rocket className="h-4 w-4" />}
+          accent="text-blue-500"
         />
         <OsStatCard
-          label="Objectifs on track"
-          value={`${oc.ON_TRACK ?? 0}/${Object.values(oc).reduce((a, b) => a + b, 0)}`}
-          hint={`${(oc.AT_RISK ?? 0) + (oc.DELAYED ?? 0)} à risque`}
-          icon={<Target className="h-4 w-4" />}
-          accent="text-amber-500"
-        />
-        <OsStatCard
-          label="Vélocité moyenne"
-          value={fmtNum(Math.round((velocityAgg._avg.velocity ?? 0) * 10) / 10)}
-          hint="Story points / sprint"
-          icon={<Zap className="h-4 w-4" />}
+          label="PRs fusionnées"
+          value={fmtNum(mergedCount)}
+          hint={`${openPrs} ouvertes · ${closedPrs} fermées`}
+          icon={<GitMerge className="h-4 w-4" />}
           accent="text-violet-500"
         />
         <OsStatCard
-          label="Sprints actifs"
-          value={fmtNum(sc.ACTIVE ?? 0)}
-          hint={`${sc.PLANNED ?? 0} planifiés`}
-          icon={<CalendarCheck className="h-4 w-4" />}
+          label="PRs ouvertes"
+          value={fmtNum(openPrs)}
+          hint={`${mergedCount} fusionnées au total`}
+          icon={<GitPullRequest className="h-4 w-4" />}
           accent="text-fuchsia-500"
         />
         <OsStatCard
-          label="Bugs fixes (h)"
-          value="—"
-          hint="Cumul des heures de fix estimées"
-          icon={<Gauge className="h-4 w-4" />}
+          label="Commits (30 jours)"
+          value={fmtNum(commits30)}
+          hint={`${fmtNum(commitRows.length)} au total`}
+          icon={<GitCommitVertical className="h-4 w-4" />}
           accent="text-orange-500"
         />
         <OsStatCard
-          label="Health score"
-          value={selected ? `${selected.healthScore}/100` : "—"}
-          hint="Santé du projet"
-          icon={<HeartPulse className="h-4 w-4" />}
-          accent={selected ? healthColor(selected.healthScore) : undefined}
+          label="Releases"
+          value={fmtNum(releaseCount)}
+          hint="Versions publiées"
+          icon={<Rocket className="h-4 w-4" />}
+          accent="text-cyan-500"
+        />
+        <OsStatCard
+          label="CI — succès"
+          value={`${ci.passRate}%`}
+          hint={`${ci.success}/${ci.total} derniers runs`}
+          icon={<Activity className="h-4 w-4" />}
+          accent={
+            ci.passRate >= 80
+              ? "text-emerald-500"
+              : ci.passRate >= 60
+                ? "text-amber-500"
+                : "text-rose-500"
+          }
+        />
+        <OsStatCard
+          label="Stars"
+          value={fmtNum(stars)}
+          hint="Stars cumulées"
+          icon={<Star className="h-4 w-4" />}
+          accent="text-amber-500"
         />
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Features par statut</CardTitle>
-            <CardDescription>Distribution du pipeline</CardDescription>
+            <CardTitle className="text-sm">Issues par état</CardTitle>
+            <CardDescription>Distribution des issues</CardDescription>
           </CardHeader>
           <CardContent>
-            {featureData.length ? (
-              <OsBarChart data={featureData} height={260} />
+            {issueData.length ? (
+              <OsBarChart data={issueData} height={260} />
             ) : (
-              <OsEmpty title="Aucune feature" />
+              <OsEmpty title="Aucune issue" />
             )}
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Bugs par sévérité</CardTitle>
-            <CardDescription>Qualité du code</CardDescription>
+            <CardTitle className="text-sm">Pull requests</CardTitle>
+            <CardDescription>Distribution des PRs</CardDescription>
           </CardHeader>
           <CardContent>
-            {severityData.length ? (
-              <OsPieChart data={severityData} height={260} />
+            {prData.length ? (
+              <OsPieChart data={prData} height={260} />
             ) : (
-              <OsEmpty title="Aucun bug" />
+              <OsEmpty title="Aucune pull request" />
             )}
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Croissance</CardTitle>
-            <CardDescription>Évolution des métriques</CardDescription>
+            <CardTitle className="text-sm">Activité commits</CardTitle>
+            <CardDescription>Commits par jour — 30 derniers jours</CardDescription>
           </CardHeader>
           <CardContent>
-            {growth.length ? (
+            {growthData.some((d) => d.commits > 0) ? (
               <OsLineChart
-                data={growth}
+                data={growthData}
                 xKey="label"
                 height={260}
-                lines={[
-                  { key: "stars", name: "Stars", color: "#842ae3" },
-                  { key: "users", name: "Utilisateurs", color: "#3b82f6" },
-                  { key: "downloads", name: "Téléchargements", color: "#f59e0b" },
-                ]}
+                lines={[{ key: "commits", name: "Commits", color: "#842ae3" }]}
               />
             ) : (
-              <OsEmpty title="Aucune donnée de croissance" />
+              <OsEmpty title="Aucun commit" />
             )}
           </CardContent>
         </Card>

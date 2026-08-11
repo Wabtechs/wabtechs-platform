@@ -3,151 +3,109 @@ import Link from "next/link";
 import { db } from "@/lib/prisma";
 import { OsPageHeader } from "@/components/admin/os/os-page-header";
 import { OsStatCard } from "@/components/admin/os/os-stat-card";
-import { OsStatusBadge, OsTypeBadge, OsPriorityBadge } from "@/components/admin/os/os-badge";
+import { OsStatusBadge } from "@/components/admin/os/os-badge";
 import { OsEmpty } from "@/components/admin/os/os-empty";
 import { OsBarChart, OsLineChart, OsPieChart } from "@/components/admin/os/os-charts";
-import { METRIC_SNAPSHOT_LIMIT } from "@/lib/os-growth";
-import { OS_STATUS_META, healthColor } from "@/lib/os-labels";
-import { fmtEur, fmtDate, daysUntil } from "@/lib/os-utils";
+import { summarizeCiRuns, countWithinDays, commitsPerDay } from "@/lib/os-github";
+import { fmtNum, fmtDate, fmtDateTime } from "@/lib/os-utils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Boxes,
-  HeartPulse,
-  Euro,
-  Bug,
-  Rocket,
-  Target,
-  CalendarCheck,
   Layers,
-  Map as MapIcon,
-  Bell,
+  Github,
+  GitPullRequest,
+  GitMerge,
+  GitCommitVertical,
+  Rocket,
+  Activity,
+  HeartPulse,
   ExternalLink,
 } from "lucide-react";
 
 export const metadata: Metadata = { title: "Project OS — Dashboard" };
 export const dynamic = "force-dynamic";
 
-const FEATURE_ORDER = [
-  "BACKLOG",
-  "PLANNED",
-  "READY",
-  "DEVELOPMENT",
-  "REVIEW",
-  "TESTING",
-  "VALIDATION",
-  "DONE",
-  "RELEASED",
-];
-const SEVERITY_ORDER = ["BLOCKER", "CRITICAL", "MAJOR", "MINOR", "TRIVIAL"];
-
 export default async function OsDashboardPage() {
   const [
-    projects,
-    featureGroups,
-    bugGroups,
-    bugSevGroups,
-    sprintGroups,
-    objectiveGroups,
-    releases,
-    milestones,
-    notifications,
-    healthAgg,
-    mrrAgg,
-    roadmapItems,
-    growth,
+    repos,
+    issueGroups,
+    openPrGroups,
+    mergedPrCount,
+    releaseCount,
+    releaseList,
+    allCommits,
+    recentRuns,
   ] = await Promise.all([
-    db.osProject.findMany({
-      orderBy: { name: "asc" },
+    db.gitHubRepository.findMany({
+      orderBy: { updatedAt: "desc" },
       include: {
         _count: {
-          select: { features: true, bugs: true, objectives: true, modules: true, sprints: true },
+          select: {
+            issues: true,
+            pullRequests: true,
+            commits: true,
+            releases: true,
+            workflowRuns: true,
+          },
         },
       },
     }),
-    db.feature.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.bug.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.bug.groupBy({ by: ["severity"], _count: { _all: true } }),
-    db.sprint.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.objective.groupBy({ by: ["status"], _count: { _all: true } }),
-    db.release.findMany({
-      orderBy: { createdAt: "desc" },
+    db.gitHubIssue.groupBy({
+      by: ["state"],
+      where: { isPr: false },
+      _count: { _all: true },
+    }),
+    db.gitHubPullRequest.groupBy({
+      by: ["state"],
+      where: { merged: false },
+      _count: { _all: true },
+    }),
+    db.gitHubPullRequest.count({ where: { merged: true } }),
+    db.gitHubRelease.count(),
+    db.gitHubRelease.findMany({
+      orderBy: { publishedAt: "desc" },
       take: 6,
-      include: { project: { select: { slug: true, name: true, color: true } } },
+      include: { repository: { select: { id: true, fullName: true, name: true } } },
     }),
-    db.milestone.findMany({
-      orderBy: { date: "asc" },
-      take: 6,
-      include: { project: { select: { slug: true, name: true, color: true } } },
+    db.gitHubCommit.findMany({
+      select: { committedAt: true },
+      orderBy: { committedAt: "desc" },
     }),
-    db.notification.findMany({
-      where: { read: false },
+    db.gitHubWorkflowRun.findMany({
       orderBy: { createdAt: "desc" },
-      take: 8,
-      include: { user: { select: { name: true } } },
+      take: 15,
+      include: { repository: { select: { id: true, fullName: true, name: true } } },
     }),
-    db.osProject.aggregate({ _avg: { healthScore: true } }),
-    db.osProject.aggregate({ _sum: { mrr: true } }),
-    db.roadmapItem.findMany({
-      orderBy: { endDate: "asc" },
-      take: 8,
-      include: { project: { select: { slug: true, name: true, color: true } } },
-    }),
-    db.metricSnapshot.findMany({ orderBy: { date: "asc" }, take: -METRIC_SNAPSHOT_LIMIT }),
   ]);
 
-  const fc: Record<string, number> = {};
-  for (const g of featureGroups) fc[g.status] = g._count._all;
-  const bc: Record<string, number> = {};
-  for (const g of bugGroups) bc[g.status] = g._count._all;
-  const bsc: Record<string, number> = {};
-  for (const g of bugSevGroups) bsc[g.severity] = g._count._all;
-  const sc: Record<string, number> = {};
-  for (const g of sprintGroups) sc[g.status] = g._count._all;
-  const oc: Record<string, number> = {};
-  for (const g of objectiveGroups) oc[g.status] = g._count._all;
+  const issueStateCounts: Record<string, number> = {};
+  for (const g of issueGroups) issueStateCounts[g.state] = g._count._all;
+  const prStateCounts: Record<string, number> = {};
+  for (const g of openPrGroups) prStateCounts[g.state] = g._count._all;
 
-  const featureTotal = Object.values(fc).reduce((a, b) => a + b, 0);
-  const featureDone = (fc.DONE ?? 0) + (fc.RELEASED ?? 0);
-  const bugOpen = (bc.NEW ?? 0) + (bc.TRIAGED ?? 0) + (bc.IN_PROGRESS ?? 0);
-  const bugCritical = (bsc.CRITICAL ?? 0) + (bsc.BLOCKER ?? 0);
-  const avgHealth = Math.round((healthAgg._avg.healthScore ?? 0) * 10) / 10;
-  const activeProjects = projects.filter((p) => p.status === "ACTIVE").length;
+  const openIssues = issueStateCounts.open ?? 0;
+  const closedIssues = issueStateCounts.closed ?? 0;
+  const openPrs = prStateCounts.open ?? 0;
+  const closedPrs = prStateCounts.closed ?? 0;
+  const ci = summarizeCiRuns(recentRuns);
+  const commits30 = countWithinDays(allCommits, 30);
 
-  const featureData = FEATURE_ORDER.map((s) => ({
-    name: OS_STATUS_META[s]?.label ?? s,
-    value: fc[s] ?? 0,
-  })).filter((d) => d.value > 0);
-  const severityData = SEVERITY_ORDER.map((s) => ({
-    name: OS_STATUS_META[s]?.label ?? s,
-    value: bsc[s] ?? 0,
-  })).filter((d) => d.value > 0);
-
-  const byDate = new Map<
-    string,
-    { label: string; stars: number; users: number; mrr: number; downloads: number }
-  >();
-  for (const s of growth) {
-    const key = s.date.toISOString().slice(0, 10);
-    const entry = byDate.get(key) ?? {
-      label: fmtDate(s.date),
-      stars: 0,
-      users: 0,
-      mrr: 0,
-      downloads: 0,
-    };
-    if (s.metric === "stars") entry.stars += s.value;
-    if (s.metric === "users") entry.users += s.value;
-    if (s.metric === "mrr") entry.mrr += s.value;
-    if (s.metric === "downloads") entry.downloads += s.value;
-    byDate.set(key, entry);
-  }
-  const growthData = [...byDate.values()].sort((a, b) => a.label.localeCompare(b.label));
+  const issueData = [
+    { name: "Ouvertes", value: openIssues },
+    { name: "Fermées", value: closedIssues },
+  ].filter((d) => d.value > 0);
+  const prData = [
+    { name: "Ouvertes", value: openPrs },
+    { name: "Fusionnées", value: mergedPrCount },
+    { name: "Fermées", value: closedPrs },
+  ].filter((d) => d.value > 0);
+  const growthData = commitsPerDay(allCommits, 30);
 
   return (
     <div>
       <OsPageHeader
         title="Project OS"
-        description="Centre de contrôle des projets Wabtechs — vue d'ensemble"
+        description="Centre de contrôle des projets Wabtechs — données réelles GitHub"
         icon={<Boxes className="h-5 w-5" />}
       >
         <div className="bg-primary/[0.06] text-primary rounded-lg px-3 py-1.5 text-[12px] font-medium">
@@ -157,225 +115,112 @@ export default async function OsDashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <OsStatCard
-          label="Projets actifs"
-          value={`${activeProjects}/${projects.length}`}
-          hint="Sur l'ensemble du portfolio"
+          label="Dépôts liés"
+          value={repos.length}
+          hint="Repositories synchronisés"
           icon={<Layers className="h-4 w-4" />}
           accent="text-primary"
         />
         <OsStatCard
-          label="MRR total"
-          value={fmtEur(mrrAgg._sum.mrr ?? 0)}
-          hint="Revenu mensuel récurrent"
-          icon={<Euro className="h-4 w-4" />}
+          label="Issues ouvertes"
+          value={openIssues}
+          hint={`${closedIssues} fermées`}
+          icon={<Github className="h-4 w-4" />}
           accent="text-emerald-500"
         />
         <OsStatCard
-          label="Santé moyenne"
-          value={`${avgHealth}/100`}
-          hint="Health score agrégé"
-          icon={<HeartPulse className="h-4 w-4" />}
-          accent={healthColor(avgHealth)}
-        />
-        <OsStatCard
-          label="Bugs ouverts"
-          value={bugOpen}
-          hint={`${bugCritical} critiques/bloquants`}
-          icon={<Bug className="h-4 w-4" />}
-          accent="text-rose-500"
-        />
-        <OsStatCard
-          label="Features livrées"
-          value={featureTotal ? `${Math.round((featureDone / featureTotal) * 100)}%` : "0%"}
-          hint={`${featureDone}/${featureTotal} done ou released`}
-          icon={<Rocket className="h-4 w-4" />}
+          label="Pull requests ouvertes"
+          value={openPrs}
+          hint={`${mergedPrCount} fusionnées`}
+          icon={<GitPullRequest className="h-4 w-4" />}
           accent="text-blue-500"
         />
         <OsStatCard
-          label="Sprints actifs"
-          value={sc.ACTIVE ?? 0}
-          hint={`${sc.COMPLETED ?? 0} sprints terminés`}
-          icon={<CalendarCheck className="h-4 w-4" />}
+          label="Commits (30 jours)"
+          value={commits30}
+          hint={`${fmtNum(allCommits.length)} au total`}
+          icon={<GitCommitVertical className="h-4 w-4" />}
           accent="text-violet-500"
         />
         <OsStatCard
-          label="Objectifs à risque"
-          value={(oc.AT_RISK ?? 0) + (oc.DELAYED ?? 0)}
-          hint={`${oc.ON_TRACK ?? 0} on track · ${oc.COMPLETED ?? 0} complétés`}
-          icon={<Target className="h-4 w-4" />}
-          accent="text-amber-500"
+          label="Releases"
+          value={releaseCount}
+          hint="Versions publiées"
+          icon={<Rocket className="h-4 w-4" />}
+          accent="text-fuchsia-500"
         />
         <OsStatCard
-          label="Items roadmap"
-          value={roadmapItems.length}
-          hint="Prochains livrables planifiés"
-          icon={<MapIcon className="h-4 w-4" />}
-          accent="text-fuchsia-500"
+          label="Runs CI"
+          value={ci.total}
+          hint={`${ci.success} succès · ${ci.failure} échecs`}
+          icon={<Activity className="h-4 w-4" />}
+          accent="text-cyan-500"
+        />
+        <OsStatCard
+          label="CI — succès"
+          value={`${ci.passRate}%`}
+          hint="Taux de succès des derniers runs"
+          icon={<HeartPulse className="h-4 w-4" />}
+          accent={
+            ci.passRate >= 80
+              ? "text-emerald-500"
+              : ci.passRate >= 60
+                ? "text-amber-500"
+                : "text-rose-500"
+          }
+        />
+        <OsStatCard
+          label="PRs fusionnées"
+          value={mergedPrCount}
+          hint={`${openPrs} en attente de revue`}
+          icon={<GitMerge className="h-4 w-4" />}
+          accent="text-green-600"
         />
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Répartition des features</CardTitle>
-            <CardDescription>Statut des fonctionnalités</CardDescription>
+            <CardTitle className="text-sm">Issues par état</CardTitle>
+            <CardDescription>Répartition des issues GitHub</CardDescription>
           </CardHeader>
           <CardContent>
-            {featureData.length ? (
-              <OsBarChart data={featureData} height={250} />
+            {issueData.length ? (
+              <OsBarChart data={issueData} height={250} />
             ) : (
-              <OsEmpty title="Aucune feature" />
+              <OsEmpty title="Aucune issue" />
             )}
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Bugs par sévérité</CardTitle>
-            <CardDescription>Distribution des bugs</CardDescription>
+            <CardTitle className="text-sm">Pull requests</CardTitle>
+            <CardDescription>Distribution des PRs</CardDescription>
           </CardHeader>
           <CardContent>
-            {severityData.length ? (
-              <OsPieChart data={severityData} height={250} />
+            {prData.length ? (
+              <OsPieChart data={prData} height={250} />
             ) : (
-              <OsEmpty title="Aucun bug" />
+              <OsEmpty title="Aucune pull request" />
             )}
           </CardContent>
         </Card>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Croissance du portfolio</CardTitle>
-            <CardDescription>Évolution des métriques agrégées</CardDescription>
+            <CardTitle className="text-sm">Activité commits</CardTitle>
+            <CardDescription>Commits par jour — 30 derniers jours</CardDescription>
           </CardHeader>
           <CardContent>
-            {growthData.length ? (
+            {growthData.some((d) => d.commits > 0) ? (
               <OsLineChart
                 data={growthData}
                 xKey="label"
                 height={250}
-                lines={[
-                  { key: "stars", name: "Stars", color: "#842ae3" },
-                  { key: "users", name: "Utilisateurs", color: "#3b82f6" },
-                  { key: "mrr", name: "MRR (€)", color: "#10b981" },
-                  { key: "downloads", name: "Téléchargements", color: "#f59e0b" },
-                ]}
+                lines={[{ key: "commits", name: "Commits", color: "#842ae3" }]}
               />
             ) : (
-              <OsEmpty title="Aucune donnée de croissance" />
+              <OsEmpty title="Aucun commit" />
             )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        <Card className="border-border bg-card lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Prochains jalons</CardTitle>
-            <CardDescription>Milestones à venir</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {milestones.length === 0 && <OsEmpty title="Aucun jalon" />}
-            {milestones.map((m) => {
-              const d = daysUntil(m.date);
-              return (
-                <div
-                  key={m.id}
-                  className="dark:border-border flex items-start justify-between gap-3 rounded-lg border border-gray-100 p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium">{m.title}</p>
-                    <p className="mt-0.5 text-[11px] text-gray-400">
-                      <span
-                        className="inline-block h-2 w-2 rounded-full"
-                        style={{ background: m.project.color }}
-                      />
-                      <span className="ml-1.5">{m.project.name}</span>
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <p className="text-[11px] font-semibold">{m.date ? fmtDate(m.date) : "—"}</p>
-                    {d !== null && d >= 0 && (
-                      <p className="text-[10px] text-gray-400">dans {d} j</p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Roadmap prioritaire</CardTitle>
-            <CardDescription>Prochains livrables</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {roadmapItems.length === 0 && <OsEmpty title="Roadmap vide" />}
-            {roadmapItems.map((r) => {
-              const d = daysUntil(r.endDate);
-              return (
-                <div
-                  key={r.id}
-                  className="dark:border-border rounded-lg border border-gray-100 p-3"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="truncate text-[13px] font-medium">{r.title}</p>
-                    <OsPriorityBadge priority={r.priority} className="shrink-0" />
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-gray-400">
-                    <span>
-                      <span
-                        className="inline-block h-2 w-2 rounded-full"
-                        style={{ background: r.project.color }}
-                      />
-                      <span className="ml-1.5">{r.project.name}</span>
-                    </span>
-                    {d !== null && d >= 0 ? (
-                      <span>livraison dans {d} j</span>
-                    ) : (
-                      <span>{r.progress}% fait</span>
-                    )}
-                  </div>
-                  <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-                    <div
-                      className="bg-primary h-full rounded-full"
-                      style={{ width: `${r.progress}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        <Card className="border-border bg-card lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Releases récentes</CardTitle>
-            <CardDescription>Dernières versions publiées</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {releases.length === 0 && <OsEmpty title="Aucune release" />}
-            {releases.map((r) => (
-              <div
-                key={r.id}
-                className="dark:border-border flex items-center justify-between gap-3 rounded-lg border border-gray-100 p-3"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-[13px] font-medium">{r.name}</p>
-                  <p className="mt-0.5 text-[11px] text-gray-400">
-                    <span
-                      className="inline-block h-2 w-2 rounded-full"
-                      style={{ background: r.project.color }}
-                    />
-                    <span className="ml-1.5">{r.project.name}</span>
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <p className="text-[11px] font-semibold text-emerald-500">
-                    {r.releasedAt ? fmtDate(r.releasedAt) : r.status}
-                  </p>
-                </div>
-              </div>
-            ))}
           </CardContent>
         </Card>
       </div>
@@ -383,7 +228,7 @@ export default async function OsDashboardPage() {
       <div className="mt-8 grid gap-4 lg:grid-cols-3">
         <div className="space-y-3 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Projets</h2>
+            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Dépôts</h2>
             <Link
               href="/admin/os/projects"
               className="text-primary flex items-center gap-1 text-[12px] font-medium hover:underline"
@@ -391,76 +236,117 @@ export default async function OsDashboardPage() {
               Tout voir <ExternalLink className="h-3 w-3" />
             </Link>
           </div>
-          {projects.map((p) => (
+          {repos.map((r) => (
             <Link
-              key={p.id}
-              href={`/admin/os/projects/${p.slug}`}
+              key={r.id}
+              href={`/admin/os/projects/${r.id}`}
               className="border-border bg-card flex items-center justify-between rounded-xl border px-5 py-4 shadow-sm transition-all hover:shadow-md"
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2.5">
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ background: p.color }}
-                  />
-                  <p className="truncate text-[14px] font-medium">{p.name}</p>
-                  <OsTypeBadge type={p.type} className="hidden sm:inline-flex" />
+                  <span className="bg-primary/[0.08] flex h-6 w-6 shrink-0 items-center justify-center rounded-md">
+                    <Github className="text-primary h-3.5 w-3.5" />
+                  </span>
+                  <p className="truncate text-[14px] font-medium">{r.fullName}</p>
+                  {r.archived && (
+                    <OsStatusBadge status="ARCHIVED" className="hidden sm:inline-flex" />
+                  )}
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-gray-400">
-                  <span>v{p.version}</span>
+                  {r.language && (
+                    <>
+                      <span>{r.language}</span>
+                      <span>·</span>
+                    </>
+                  )}
+                  <span>{r.stars} stars</span>
                   <span>·</span>
-                  <span>{p._count.features} features</span>
+                  <span>{r.forks} forks</span>
                   <span>·</span>
-                  <span>{p._count.bugs} bugs</span>
+                  <span>{r._count.issues} issues</span>
                   <span>·</span>
-                  <span>{p._count.objectives} objectifs</span>
+                  <span>{r._count.pullRequests} PRs</span>
                   <span>·</span>
-                  <span>{fmtEur(p.mrr)} MRR</span>
+                  <span>{fmtNum(r._count.commits)} commits</span>
                 </div>
               </div>
               <div className="ml-4 flex shrink-0 items-center gap-3">
                 <div className="text-right">
-                  <p className={`text-sm font-semibold ${healthColor(p.healthScore)}`}>
-                    {p.healthScore}
-                  </p>
-                  <p className="text-[10px] text-gray-400">santé</p>
+                  <p className="text-sm font-semibold">{r._count.releases}</p>
+                  <p className="text-[10px] text-gray-400">releases</p>
                 </div>
-                <OsStatusBadge status={p.status} />
+                <div className="text-right">
+                  <p className="text-sm font-semibold">{r._count.workflowRuns}</p>
+                  <p className="text-[10px] text-gray-400">runs CI</p>
+                </div>
               </div>
             </Link>
           ))}
+          {repos.length === 0 && (
+            <Card className="border-border bg-card">
+              <CardContent className="py-12">
+                <OsEmpty
+                  title="Aucun dépôt lié"
+                  hint="Connectez et liez un repository dans l'onglet GitHub, puis synchronisez."
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              Notifications
-            </h2>
-            <Link
-              href="/admin/os/notifications"
-              className="text-primary flex items-center gap-1 text-[12px] font-medium hover:underline"
-            >
-              Tout voir <ExternalLink className="h-3 w-3" />
-            </Link>
-          </div>
           <Card className="border-border bg-card">
-            <CardContent className="space-y-2 p-4">
-              {notifications.length === 0 && <OsEmpty title="Aucune notification" />}
-              {notifications.map((n) => (
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Releases récentes</CardTitle>
+              <CardDescription>Dernières versions publiées</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {releaseList.length === 0 && <OsEmpty title="Aucune release" />}
+              {releaseList.map((r) => (
                 <div
-                  key={n.id}
-                  className="dark:border-border flex items-start gap-3 rounded-lg border border-gray-100 p-3"
+                  key={r.id}
+                  className="dark:border-border flex items-center justify-between gap-3 rounded-lg border border-gray-100 p-3"
                 >
-                  <div className="bg-primary/[0.06] flex h-7 w-7 shrink-0 items-center justify-center rounded-md">
-                    <Bell className="text-primary h-3.5 w-3.5" />
-                  </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium">{n.title}</p>
-                    {n.content && (
-                      <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-400">{n.content}</p>
-                    )}
-                    <p className="mt-1 text-[10px] text-gray-400">{fmtDate(n.createdAt)}</p>
+                    <p className="truncate text-[13px] font-medium">{r.tagName}</p>
+                    <p className="mt-0.5 truncate text-[11px] text-gray-400">
+                      {r.repository.fullName}
+                    </p>
                   </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-[11px] font-semibold text-emerald-500">
+                      {r.publishedAt ? fmtDate(r.publishedAt) : "—"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Derniers runs CI</CardTitle>
+              <CardDescription>Workflow runs récents</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {recentRuns.length === 0 && <OsEmpty title="Aucun run CI" />}
+              {recentRuns.map((run) => (
+                <div
+                  key={run.id}
+                  className="dark:border-border flex items-center justify-between gap-3 rounded-lg border border-gray-100 p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-[12px] font-medium">
+                      {run.name ?? `Run #${run.runNumber}`}
+                    </p>
+                    <p className="mt-0.5 truncate text-[10px] text-gray-400">
+                      {run.repository.fullName} · {fmtDateTime(run.createdAt)}
+                    </p>
+                  </div>
+                  <OsStatusBadge
+                    status={(run.conclusion ?? run.status ?? "").toUpperCase()}
+                    className="shrink-0"
+                  />
                 </div>
               ))}
             </CardContent>
