@@ -57,6 +57,7 @@ model GithubConnection {
   tokenType   String    @default("bearer")
   scope       String?
   expiresAt   DateTime?
+  lastSyncAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -763,6 +764,13 @@ model OsProject {
   roadmapItems    RoadmapItem[]
   metricSnapshots MetricSnapshot[]
 
+  ghRepositories GitHubRepository[]
+  ghIssues       GitHubIssue[]
+  ghPullRequests GitHubPullRequest[]
+  ghCommits      GitHubCommit[]
+  ghReleases     GitHubRelease[]
+  ghWorkflowRuns GitHubWorkflowRun[]
+
   @@map("os_projects")
 }
 
@@ -873,6 +881,10 @@ model Feature {
   subtasks Subtask[]
   bugs     Bug[]
 
+  githubIssue       GitHubIssue?
+  githubPullRequests GitHubPullRequest[]
+  githubCommits      GitHubCommit[]
+
   @@index([projectId, status])
   @@index([sprintId])
   @@map("features")
@@ -915,6 +927,9 @@ model Bug {
   project  OsProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
   feature  Feature?  @relation(fields: [featureId], references: [id], onDelete: SetNull)
   assignee User?     @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  githubIssue       GitHubIssue?
+  githubPullRequests GitHubPullRequest[]
 
   @@index([projectId, status])
   @@map("bugs")
@@ -984,6 +999,9 @@ model Release {
   updatedAt   DateTime  @updatedAt
 
   project OsProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  githubRelease      GitHubRelease?
+  githubPullRequests GitHubPullRequest[]
 
   @@index([projectId])
   @@map("releases")
@@ -1055,6 +1073,180 @@ model MetricSnapshot {
 
   @@index([metric, date])
   @@map("metric_snapshots")
+}
+
+// ============================================================
+// PROJECT OS — GITHUB INTEGRATION
+// ============================================================
+
+model GitHubRepository {
+  id            String   @id @default(cuid())
+  githubId      Int      @unique
+  owner         String
+  name          String
+  fullName      String
+  url           String
+  defaultBranch String   @default("main")
+  visibility    String   @default("public")
+  language      String?
+  description   String?
+  stars         Int      @default(0)
+  forks         Int      @default(0)
+  openIssues    Int      @default(0)
+  archived      Boolean  @default(false)
+  status        String   @default("SYNCED")
+  projectId     String?  @unique
+  lastSyncAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  project      OsProject?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  issues       GitHubIssue[]
+  pullRequests GitHubPullRequest[]
+  commits      GitHubCommit[]
+  releases     GitHubRelease[]
+  workflowRuns GitHubWorkflowRun[]
+
+  @@unique([owner, name])
+  @@map("github_repositories")
+}
+
+model GitHubIssue {
+  id           String   @id @default(cuid())
+  githubId     Int
+  repositoryId String
+  number       Int
+  title        String
+  body         String?
+  state        String   @default("open")
+  htmlUrl      String
+  labels       Json?
+  assignees    Json?
+  isPr         Boolean  @default(false)
+  projectId    String?
+  bugId        String?  @unique
+  featureId    String?  @unique
+  createdAt    DateTime
+  updatedAt    DateTime
+  closedAt     DateTime?
+  syncedAt     DateTime @default(now())
+
+  repository GitHubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  project   OsProject?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  bug       Bug?              @relation(fields: [bugId], references: [id], onDelete: SetNull)
+  feature   Feature?          @relation(fields: [featureId], references: [id], onDelete: SetNull)
+
+  @@unique([repositoryId, githubId])
+  @@index([repositoryId, number])
+  @@index([state])
+  @@map("github_issues")
+}
+
+model GitHubPullRequest {
+  id             String   @id @default(cuid())
+  githubId       Int
+  repositoryId   String
+  number         Int
+  title          String
+  body           String?
+  state          String
+  htmlUrl        String
+  author         String?
+  headBranch     String?
+  baseBranch     String?
+  merged         Boolean  @default(false)
+  mergeCommitSha String?
+  ciStatus       String?
+  projectId      String?
+  featureId      String?
+  bugId          String?
+  releaseId      String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  mergedAt       DateTime?
+  closedAt       DateTime?
+  syncedAt       DateTime @default(now())
+
+  repository GitHubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  project   OsProject?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  feature   Feature?          @relation(fields: [featureId], references: [id], onDelete: SetNull)
+  bug       Bug?              @relation(fields: [bugId], references: [id], onDelete: SetNull)
+  release   Release?          @relation(fields: [releaseId], references: [id], onDelete: SetNull)
+
+  @@unique([repositoryId, githubId])
+  @@index([repositoryId, number])
+  @@index([state])
+  @@map("github_pull_requests")
+}
+
+model GitHubCommit {
+  id           String   @id @default(cuid())
+  sha          String
+  repositoryId String
+  message      String
+  authorName   String?
+  authorEmail  String?
+  authorLogin  String?
+  url          String
+  committedAt  DateTime
+  projectId    String?
+  featureId    String?
+  syncedAt     DateTime @default(now())
+
+  repository GitHubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  project   OsProject?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  feature   Feature?          @relation(fields: [featureId], references: [id], onDelete: SetNull)
+
+  @@unique([repositoryId, sha])
+  @@index([repositoryId, committedAt])
+  @@map("github_commits")
+}
+
+model GitHubRelease {
+  id           String   @id @default(cuid())
+  githubId     Int
+  repositoryId String
+  tagName      String
+  name         String
+  body         String?
+  htmlUrl      String
+  publishedAt  DateTime?
+  projectId    String?
+  osReleaseId  String?  @unique
+  syncedAt     DateTime @default(now())
+
+  repository GitHubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  project   OsProject?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  osRelease Release?          @relation(fields: [osReleaseId], references: [id], onDelete: SetNull)
+
+  @@unique([repositoryId, githubId])
+  @@index([repositoryId, publishedAt])
+  @@map("github_releases")
+}
+
+model GitHubWorkflowRun {
+  id           String   @id @default(cuid())
+  githubId     Int
+  repositoryId String
+  runNumber    Int
+  name         String?
+  workflowId   Int?
+  branch       String?
+  headSha      String?
+  status       String?
+  conclusion   String?
+  htmlUrl      String
+  createdAt    DateTime
+  updatedAt    DateTime?
+  syncedAt     DateTime @default(now())
+  projectId    String?
+
+  repository GitHubRepository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  project   OsProject?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@unique([repositoryId, githubId])
+  @@index([repositoryId, createdAt])
+  @@map("github_workflow_runs")
 }
 
 // ============================================================
