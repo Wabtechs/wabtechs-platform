@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Mail, Loader2, Check } from "lucide-react";
+import { getErrorMessage, Messages } from "@/lib/messages";
 
 export function NewsletterPopup() {
   const [visible, setVisible] = useState(false);
@@ -20,7 +21,8 @@ export function NewsletterPopup() {
     };
 
     const handleScroll = () => {
-      const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+      const scrollPercent =
+        window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       if (scrollPercent > 0.6) {
         setVisible(true);
       }
@@ -62,41 +64,43 @@ export function NewsletterPopup() {
       setStatus(res.ok ? "success" : "error");
       setMessage(data.message ?? data.error ?? "");
       if (res.ok) setEmail("");
-    } catch {
+    } catch (e) {
       setStatus("error");
-      setMessage("Erreur de connexion.");
+      setMessage(getErrorMessage(e, Messages.errors.network));
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#1e1e1e] p-8 shadow-2xl">
         <button
           onClick={dismiss}
-          className="absolute right-4 top-4 text-muted-foreground hover:text-white transition-colors"
+          className="text-muted-foreground absolute top-4 right-4 transition-colors hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-            <Mail className="h-7 w-7 text-primary" />
+          <div className="bg-primary/10 mx-auto flex h-14 w-14 items-center justify-center rounded-full">
+            <Mail className="text-primary h-7 w-7" />
           </div>
-          <h3 className="mt-4 text-xl font-bold text-white">
-            Ne manquez rien !
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Recevez les derniers articles, tutoriels et actualités directement dans votre boîte mail.
+          <h3 className="mt-4 text-xl font-bold text-white">Ne manquez rien !</h3>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Recevez les derniers articles, tutoriels et actualités directement dans votre boîte
+            mail.
           </p>
         </div>
 
         {status === "success" ? (
-          <div className="mt-6 text-center space-y-2">
+          <div className="mt-6 space-y-2 text-center">
             <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-green-500/10">
               <Check className="h-5 w-5 text-green-500" />
             </div>
             <p className="text-sm text-green-400">{message || "Inscription réussie !"}</p>
-            <button onClick={dismiss} className="text-xs text-muted-foreground hover:text-white underline underline-offset-4">
+            <button
+              onClick={dismiss}
+              className="text-muted-foreground text-xs underline underline-offset-4 hover:text-white"
+            >
               Fermer
             </button>
           </div>
@@ -106,15 +110,18 @@ export function NewsletterPopup() {
               type="email"
               placeholder="votre@email.com"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setStatus("idle");
+              }}
               required
               disabled={status === "loading"}
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary/50"
+              className="text-foreground placeholder:text-muted-foreground focus:border-primary/50 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm outline-none"
             />
             <button
               type="submit"
               disabled={status === "loading"}
-              className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-[#1e1e1e] transition-all hover:bg-[#9333ea] disabled:opacity-50"
+              className="bg-primary w-full rounded-full py-3 text-sm font-semibold text-[#1e1e1e] transition-all hover:bg-[#9333ea] disabled:opacity-50"
             >
               {status === "loading" ? (
                 <Loader2 className="mx-auto h-4 w-4 animate-spin" />
@@ -122,7 +129,7 @@ export function NewsletterPopup() {
                 "S'abonner"
               )}
             </button>
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-center text-xs">
               Pas de spam. Désabonnement en un clic.
             </p>
           </form>

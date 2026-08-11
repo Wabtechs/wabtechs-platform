@@ -26,6 +26,7 @@ import { OsPriorityBadge, OsStatusBadge, OsSeverityBadge } from "@/components/ad
 import { progressColor } from "@/lib/os-labels";
 import { fmtDate } from "@/lib/os-utils";
 import { cn } from "@/lib/utils";
+import { Messages } from "@/lib/messages";
 import { Check, Plus, Trash2, Loader2, Calendar, User, Tag, BarChart3, Bug } from "lucide-react";
 import type { OsFeature } from "./types";
 
@@ -68,7 +69,7 @@ export function FeatureDrawer({
       toast.success("Tâche mise à jour");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la mise à jour"),
+    onError: () => toast.error(Messages.errors.updateFailed),
   });
 
   const createSubtaskMutation = useMutation({
@@ -86,7 +87,7 @@ export function FeatureDrawer({
       setNewSubtaskTitle("");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la création"),
+    onError: () => toast.error(Messages.errors.createFailedShort),
   });
 
   const deleteSubtaskMutation = useMutation({
@@ -102,7 +103,7 @@ export function FeatureDrawer({
       toast.success("Sous-tâche supprimée");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la suppression"),
+    onError: () => toast.error(Messages.errors.deleteFailedShort),
   });
 
   const updateFeatureMutation = useMutation({
@@ -119,7 +120,7 @@ export function FeatureDrawer({
       toast.success("Feature mise à jour");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la mise à jour"),
+    onError: () => toast.error(Messages.errors.updateFailed),
   });
 
   const total = feature.subtasks.length;

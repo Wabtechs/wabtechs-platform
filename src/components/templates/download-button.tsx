@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { Loader2, Download, Lock, CreditCard, Check } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { getErrorMessage, Messages } from "@/lib/messages";
 
 export function DownloadButton({
   slug,
@@ -75,8 +77,10 @@ export function DownloadButton({
       if (data?.error === "Déjà acheté") {
         setDone(true);
       } else {
-        alert(data?.error ?? "Une erreur est survenue");
+        toast.error(getErrorMessage(data?.error, Messages.errors.internal));
       }
+    } catch (e) {
+      toast.error(getErrorMessage(e, Messages.errors.network));
     } finally {
       setLoading(false);
     }

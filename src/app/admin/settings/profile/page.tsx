@@ -14,12 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const profileSchema = z.object({
-  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z.string().email("Adresse email invalide"),
-  bio: z.string().max(500, "La bio ne peut pas dépasser 500 caractères").optional(),
-  github: z.string().url("URL invalide").optional().or(z.literal("")),
-  twitter: z.string().url("URL invalide").optional().or(z.literal("")),
-  website: z.string().url("URL invalide").optional().or(z.literal("")),
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
+  email: z.string().email("Veuillez saisir une adresse e-mail valide."),
+  bio: z.string().max(500, "La bio ne peut pas dépasser 500 caractères.").optional(),
+  github: z.string().url("Veuillez saisir une URL valide.").optional().or(z.literal("")),
+  twitter: z.string().url("Veuillez saisir une URL valide.").optional().or(z.literal("")),
+  website: z.string().url("Veuillez saisir une URL valide.").optional().or(z.literal("")),
 });
 
 type ProfileForm = z.infer<typeof profileSchema>;
@@ -56,7 +56,10 @@ export default function ProfilePage() {
       await new Promise((r) => setTimeout(r, 1000));
       setToast({ message: "Profil enregistré avec succès !", type: "success" });
     } catch {
-      setToast({ message: "Erreur lors de l'enregistrement", type: "error" });
+      setToast({
+        message: "Les modifications n’ont pas pu être enregistrées. Veuillez réessayer.",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -73,10 +76,10 @@ export default function ProfilePage() {
         <Card className="border-border bg-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                <Camera className="h-3.5 w-3.5 text-primary" />
+              <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+                <Camera className="text-primary h-3.5 w-3.5" />
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+              <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
                 Informations personnelles
               </CardTitle>
             </div>
@@ -84,7 +87,7 @@ export default function ProfilePage() {
           <CardContent className="space-y-6">
             {/* Avatar */}
             <div className="flex items-center gap-4">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary">
+              <div className="bg-primary/10 text-primary flex h-20 w-20 items-center justify-center rounded-full text-2xl font-semibold">
                 EM
               </div>
               <div>
@@ -92,65 +95,57 @@ export default function ProfilePage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-8 border-gray-200/80 dark:border-border"
+                  className="dark:border-border h-8 border-gray-200/80"
                 >
                   <Camera className="mr-1.5 h-3.5 w-3.5" />
                   Changer l&apos;avatar
                 </Button>
-                <p className="mt-1.5 text-[11px] text-gray-400">
-                  PNG, JPG. Max 2 Mo.
-                </p>
+                <p className="mt-1.5 text-[11px] text-gray-400">PNG, JPG. Max 2 Mo.</p>
               </div>
             </div>
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-[13px] text-gray-900 dark:text-foreground">
+              <Label htmlFor="name" className="dark:text-foreground text-[13px] text-gray-900">
                 Nom complet
               </Label>
               <Input
                 id="name"
                 {...register("name")}
-                className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 placeholder="Votre nom"
               />
-              {errors.name && (
-                <p className="text-[11px] text-red-500">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-[11px] text-red-500">{errors.name.message}</p>}
             </div>
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[13px] text-gray-900 dark:text-foreground">
+              <Label htmlFor="email" className="dark:text-foreground text-[13px] text-gray-900">
                 Adresse email
               </Label>
               <Input
                 id="email"
                 type="email"
                 {...register("email")}
-                className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 placeholder="votre@email.com"
               />
-              {errors.email && (
-                <p className="text-[11px] text-red-500">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-[11px] text-red-500">{errors.email.message}</p>}
             </div>
 
             {/* Bio */}
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-[13px] text-gray-900 dark:text-foreground">
+              <Label htmlFor="bio" className="dark:text-foreground text-[13px] text-gray-900">
                 Bio
               </Label>
               <Textarea
                 id="bio"
                 {...register("bio")}
-                className="border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 rows={3}
                 placeholder="Décrivez-vous en quelques mots..."
               />
-              {errors.bio && (
-                <p className="text-[11px] text-red-500">{errors.bio.message}</p>
-              )}
+              {errors.bio && <p className="text-[11px] text-red-500">{errors.bio.message}</p>}
             </div>
           </CardContent>
         </Card>
@@ -159,40 +154,44 @@ export default function ProfilePage() {
         <Card className="border-border bg-card">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                <Globe className="h-3.5 w-3.5 text-primary" />
+              <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+                <Globe className="text-primary h-3.5 w-3.5" />
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+              <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
                 Réseaux sociaux
               </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="github" className="flex items-center gap-2 text-[13px] text-gray-900 dark:text-foreground">
+              <Label
+                htmlFor="github"
+                className="dark:text-foreground flex items-center gap-2 text-[13px] text-gray-900"
+              >
                 <Github className="h-3.5 w-3.5" />
                 GitHub
               </Label>
               <Input
                 id="github"
                 {...register("github")}
-                className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 placeholder="https://github.com/votre-profil"
               />
-              {errors.github && (
-                <p className="text-[11px] text-red-500">{errors.github.message}</p>
-              )}
+              {errors.github && <p className="text-[11px] text-red-500">{errors.github.message}</p>}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="twitter" className="flex items-center gap-2 text-[13px] text-gray-900 dark:text-foreground">
+              <Label
+                htmlFor="twitter"
+                className="dark:text-foreground flex items-center gap-2 text-[13px] text-gray-900"
+              >
                 <Twitter className="h-3.5 w-3.5" />
                 Twitter
               </Label>
               <Input
                 id="twitter"
                 {...register("twitter")}
-                className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 placeholder="https://twitter.com/votre-profil"
               />
               {errors.twitter && (
@@ -201,14 +200,17 @@ export default function ProfilePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="website" className="flex items-center gap-2 text-[13px] text-gray-900 dark:text-foreground">
+              <Label
+                htmlFor="website"
+                className="dark:text-foreground flex items-center gap-2 text-[13px] text-gray-900"
+              >
                 <Globe className="h-3.5 w-3.5" />
                 Site web
               </Label>
               <Input
                 id="website"
                 {...register("website")}
-                className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                 placeholder="https://votre-site.com"
               />
               {errors.website && (
@@ -224,7 +226,7 @@ export default function ProfilePage() {
             type="submit"
             size="sm"
             disabled={saving}
-            className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+            className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
           >
             {saving ? (
               <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
@@ -237,11 +239,11 @@ export default function ProfilePage() {
       </form>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed right-6 bottom-6 z-50">
           <div
             className={cn(
               "rounded-lg px-4 py-3 text-sm font-medium shadow-lg",
-              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white",
             )}
           >
             {toast.message}

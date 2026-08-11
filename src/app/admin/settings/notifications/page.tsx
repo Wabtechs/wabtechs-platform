@@ -64,9 +64,7 @@ export default function NotificationsPage() {
   ]);
 
   const toggleSetting = (id: string) => {
-    setSettings((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s))
-    );
+    setSettings((prev) => prev.map((s) => (s.id === id ? { ...s, enabled: !s.enabled } : s)));
   };
 
   const handleSave = async () => {
@@ -75,7 +73,10 @@ export default function NotificationsPage() {
       await new Promise((r) => setTimeout(r, 1000));
       setToast({ message: "Paramètres de notification enregistrés !", type: "success" });
     } catch {
-      setToast({ message: "Erreur lors de l'enregistrement", type: "error" });
+      setToast({
+        message: "Les modifications n’ont pas pu être enregistrées. Veuillez réessayer.",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -87,10 +88,10 @@ export default function NotificationsPage() {
       <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <Bell className="h-3.5 w-3.5 text-primary" />
+            <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+              <Bell className="text-primary h-3.5 w-3.5" />
             </div>
-            <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+            <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
               Préférences de notification
             </CardTitle>
           </div>
@@ -98,16 +99,13 @@ export default function NotificationsPage() {
         <CardContent className="p-0">
           <div className="divide-y divide-gray-100/80 dark:divide-white/[0.04]">
             {settings.map((setting) => (
-              <div
-                key={setting.id}
-                className="flex items-center justify-between px-6 py-4"
-              >
+              <div key={setting.id} className="flex items-center justify-between px-6 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-muted">
+                  <div className="dark:bg-muted flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
                     <setting.icon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                   </div>
                   <div>
-                    <Label className="text-[13px] font-medium text-gray-900 dark:text-foreground">
+                    <Label className="dark:text-foreground text-[13px] font-medium text-gray-900">
                       {setting.label}
                     </Label>
                     <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -129,10 +127,10 @@ export default function NotificationsPage() {
       <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <Clock className="h-3.5 w-3.5 text-primary" />
+            <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+              <Clock className="text-primary h-3.5 w-3.5" />
             </div>
-            <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+            <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
               Fréquence
             </CardTitle>
           </div>
@@ -149,28 +147,26 @@ export default function NotificationsPage() {
                     "flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all duration-200",
                     active
                       ? "border-primary bg-primary/[0.04]"
-                      : "border-gray-200/80 hover:border-gray-300 dark:border-border dark:hover:border-gray-600"
+                      : "dark:border-border border-gray-200/80 hover:border-gray-300 dark:hover:border-gray-600",
                   )}
                 >
                   <div
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-lg transition-colors",
-                      active
-                        ? "bg-primary/10"
-                        : "bg-gray-100 dark:bg-muted"
+                      active ? "bg-primary/10" : "dark:bg-muted bg-gray-100",
                     )}
                   >
                     <f.icon
                       className={cn(
                         "h-5 w-5",
-                        active ? "text-primary" : "text-gray-500 dark:text-gray-400"
+                        active ? "text-primary" : "text-gray-500 dark:text-gray-400",
                       )}
                     />
                   </div>
                   <span
                     className={cn(
                       "text-[12px] font-medium",
-                      active ? "text-primary" : "text-gray-500 dark:text-gray-400"
+                      active ? "text-primary" : "text-gray-500 dark:text-gray-400",
                     )}
                   >
                     {f.label}
@@ -189,7 +185,7 @@ export default function NotificationsPage() {
           size="sm"
           disabled={saving}
           onClick={handleSave}
-          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           {saving ? (
             <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
@@ -201,11 +197,11 @@ export default function NotificationsPage() {
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed right-6 bottom-6 z-50">
           <div
             className={cn(
               "rounded-lg px-4 py-3 text-sm font-medium shadow-lg",
-              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white",
             )}
           >
             {toast.message}

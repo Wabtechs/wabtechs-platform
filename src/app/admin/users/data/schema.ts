@@ -6,7 +6,7 @@ export const userRoleSchema = z.object({
 
 export const userFormSchema = z.object({
   name: z.string().min(1, "Le nom est requis").max(100).optional(),
-  email: z.string().email("Adresse email invalide"),
+  email: z.string().email("Veuillez saisir une adresse e-mail valide."),
   role: z.enum(["USER", "ADMIN", "MODERATOR"]),
 });
 

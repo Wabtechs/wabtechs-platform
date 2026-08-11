@@ -47,7 +47,7 @@ export default function AppearancePage() {
       await new Promise((r) => setTimeout(r, 500));
       showToast("Apparence enregistrée !", "success");
     } catch {
-      showToast("Erreur lors de l'enregistrement", "error");
+      showToast("Les modifications n’ont pas pu être enregistrées. Veuillez réessayer.", "error");
     }
   };
 
@@ -57,10 +57,10 @@ export default function AppearancePage() {
       <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <Palette className="h-3.5 w-3.5 text-primary" />
+            <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+              <Palette className="text-primary h-3.5 w-3.5" />
             </div>
-            <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+            <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
               Thème
             </CardTitle>
           </div>
@@ -77,7 +77,7 @@ export default function AppearancePage() {
                     "group relative flex flex-col items-center gap-3 rounded-xl border-2 p-4 transition-all duration-200",
                     active
                       ? "border-primary bg-primary/[0.04]"
-                      : "border-gray-200/80 hover:border-gray-300 dark:border-border dark:hover:border-gray-600"
+                      : "dark:border-border border-gray-200/80 hover:border-gray-300 dark:hover:border-gray-600",
                   )}
                 >
                   <div
@@ -85,29 +85,27 @@ export default function AppearancePage() {
                       "flex h-12 w-12 items-center justify-center rounded-lg transition-colors",
                       active
                         ? "bg-primary/10"
-                        : "bg-gray-100 group-hover:bg-gray-200/80 dark:bg-muted dark:group-hover:bg-muted/80"
+                        : "dark:bg-muted dark:group-hover:bg-muted/80 bg-gray-100 group-hover:bg-gray-200/80",
                     )}
                   >
                     <t.icon
                       className={cn(
                         "h-5 w-5 transition-colors",
-                        active ? "text-primary" : "text-gray-500 dark:text-gray-400"
+                        active ? "text-primary" : "text-gray-500 dark:text-gray-400",
                       )}
                     />
                   </div>
                   <span
                     className={cn(
                       "text-[13px] font-medium",
-                      active
-                        ? "text-primary"
-                        : "text-gray-600 dark:text-gray-400"
+                      active ? "text-primary" : "text-gray-600 dark:text-gray-400",
                     )}
                   >
                     {t.label}
                   </span>
                   {active && (
-                    <div className="absolute right-2 top-2">
-                      <Check className="h-4 w-4 text-primary" />
+                    <div className="absolute top-2 right-2">
+                      <Check className="text-primary h-4 w-4" />
                     </div>
                   )}
                 </button>
@@ -116,10 +114,10 @@ export default function AppearancePage() {
           </div>
 
           {/* Preview */}
-          <div className="mt-4 rounded-lg border border-gray-200/80 bg-gray-50 p-4 dark:border-border dark:bg-muted">
+          <div className="dark:border-border dark:bg-muted mt-4 rounded-lg border border-gray-200/80 bg-gray-50 p-4">
             <p className="text-[12px] font-medium text-gray-500 dark:text-gray-400">Aperçu</p>
             <div className="mt-2 flex gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary" />
+              <div className="bg-primary h-8 w-8 rounded-full" />
               <div className="flex-1 space-y-1.5">
                 <div className="h-2.5 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
                 <div className="h-2.5 w-1/2 rounded bg-gray-200 dark:bg-gray-700" />
@@ -133,10 +131,10 @@ export default function AppearancePage() {
       <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <span className="text-[14px] font-bold text-primary">Aa</span>
+            <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+              <span className="text-primary text-[14px] font-bold">Aa</span>
             </div>
-            <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+            <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
               Police
             </CardTitle>
           </div>
@@ -153,7 +151,7 @@ export default function AppearancePage() {
                     "flex items-center gap-2 rounded-lg border-2 px-4 py-2.5 text-[13px] font-medium transition-all duration-200",
                     active
                       ? "border-primary bg-primary/[0.04] text-primary"
-                      : "border-gray-200/80 text-gray-600 hover:border-gray-300 dark:border-border dark:text-gray-400 dark:hover:border-gray-600"
+                      : "dark:border-border border-gray-200/80 text-gray-600 hover:border-gray-300 dark:text-gray-400 dark:hover:border-gray-600",
                   )}
                 >
                   {f.label}
@@ -168,10 +166,10 @@ export default function AppearancePage() {
       <Card className="border-border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-              <div className="h-3.5 w-3.5 rounded border-2 border-primary" />
+            <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+              <div className="border-primary h-3.5 w-3.5 rounded border-2" />
             </div>
-            <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+            <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
               Rayon de bordure
             </CardTitle>
           </div>
@@ -188,7 +186,7 @@ export default function AppearancePage() {
                     "flex flex-col items-center gap-3 rounded-xl border-2 p-4 transition-all duration-200",
                     active
                       ? "border-primary bg-primary/[0.04]"
-                      : "border-gray-200/80 hover:border-gray-300 dark:border-border dark:hover:border-gray-600"
+                      : "dark:border-border border-gray-200/80 hover:border-gray-300 dark:hover:border-gray-600",
                   )}
                 >
                   <div
@@ -198,7 +196,7 @@ export default function AppearancePage() {
                   <span
                     className={cn(
                       "text-[12px] font-medium",
-                      active ? "text-primary" : "text-gray-500 dark:text-gray-400"
+                      active ? "text-primary" : "text-gray-500 dark:text-gray-400",
                     )}
                   >
                     {r.label}
@@ -216,18 +214,18 @@ export default function AppearancePage() {
           type="button"
           size="sm"
           onClick={handleSave}
-          className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+          className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
         >
           Enregistrer
         </Button>
       </div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed right-6 bottom-6 z-50">
           <div
             className={cn(
               "rounded-lg px-4 py-3 text-sm font-medium shadow-lg",
-              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white"
+              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white",
             )}
           >
             {toast.message}

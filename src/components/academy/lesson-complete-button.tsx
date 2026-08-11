@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, Circle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getErrorMessage } from "@/lib/messages";
 
 export function LessonCompleteButton({
   lessonId,
@@ -25,7 +26,7 @@ export function LessonCompleteButton({
       setWatched(true);
       toast.success(body.completed ? "Cours terminé, félicitations !" : "Leçon validée");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erreur");
+      toast.error(getErrorMessage(e, "Impossible de valider la leçon. Veuillez réessayer."));
     } finally {
       setLoading(false);
     }

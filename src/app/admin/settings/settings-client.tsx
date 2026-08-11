@@ -197,7 +197,10 @@ export function SettingsPageClient() {
       for (const s of data) map[s.key] = s.value;
       setDraft(map);
     } catch {
-      setToast({ message: "Erreur de chargement", type: "error" });
+      setToast({
+        message: "Impossible de charger les paramètres. Veuillez réessayer.",
+        type: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -215,8 +218,7 @@ export function SettingsPageClient() {
     }
   }, [toast]);
 
-  const updateField = (key: string, value: string) =>
-    setDraft((p) => ({ ...p, [key]: value }));
+  const updateField = (key: string, value: string) => setDraft((p) => ({ ...p, [key]: value }));
 
   const saveTab = async () => {
     setSaving(true);
@@ -236,7 +238,10 @@ export function SettingsPageClient() {
       if (!res.ok) throw new Error("Erreur");
       setToast({ message: "Paramètres sauvegardés !", type: "success" });
     } catch {
-      setToast({ message: "Erreur de sauvegarde", type: "error" });
+      setToast({
+        message: "Les paramètres n’ont pas pu être enregistrés. Veuillez réessayer.",
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
@@ -247,7 +252,7 @@ export function SettingsPageClient() {
       const parsed = JSON.parse(draft[key] ?? "[]");
       updateField(key, JSON.stringify(parsed, null, 2));
     } catch {
-      setToast({ message: "JSON invalide", type: "error" });
+      setToast({ message: "Le format JSON est invalide. Vérifiez le contenu.", type: "error" });
     }
   };
 
@@ -256,7 +261,7 @@ export function SettingsPageClient() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="text-primary h-6 w-6 animate-spin" />
       </div>
     );
   }
@@ -264,7 +269,7 @@ export function SettingsPageClient() {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show">
       <motion.div variants={fadeUp} className="mb-8">
-        <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-foreground">
+        <h1 className="dark:text-foreground text-xl font-semibold tracking-tight text-gray-900">
           Paramètres du site
         </h1>
         <p className="mt-0.5 text-[13px] text-gray-500 dark:text-gray-400">
@@ -279,10 +284,10 @@ export function SettingsPageClient() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200 whitespace-nowrap",
+                "flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium whitespace-nowrap transition-all duration-200",
                 activeTab === tab.id
                   ? "bg-primary/[0.08] text-primary dark:bg-primary/[0.12]"
-                  : "text-gray-500 hover:bg-gray-100/80 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-accent/[0.04] dark:hover:text-foreground",
+                  : "dark:hover:bg-accent/[0.04] dark:hover:text-foreground text-gray-500 hover:bg-gray-100/80 hover:text-gray-900 dark:text-gray-400",
               )}
             >
               <tab.icon className="h-4 w-4" />
@@ -294,14 +299,10 @@ export function SettingsPageClient() {
         <Card className="border-border bg-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="flex items-center gap-2">
-              <div
-                className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10"
-              >
-                {currentTab && (
-                  <currentTab.icon className="h-3.5 w-3.5 text-primary" />
-                )}
+              <div className="bg-primary/10 flex h-7 w-7 items-center justify-center rounded-lg">
+                {currentTab && <currentTab.icon className="text-primary h-3.5 w-3.5" />}
               </div>
-              <CardTitle className="text-[14px] font-semibold text-gray-900 dark:text-foreground">
+              <CardTitle className="dark:text-foreground text-[14px] font-semibold text-gray-900">
                 {currentTab?.label}
               </CardTitle>
             </div>
@@ -310,7 +311,7 @@ export function SettingsPageClient() {
                 variant="outline"
                 size="sm"
                 onClick={fetchSettings}
-                className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
+                className="dark:border-border dark:hover:bg-accent/[0.04] h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:text-gray-400"
               >
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
                 Réinitialiser
@@ -319,7 +320,7 @@ export function SettingsPageClient() {
                 size="sm"
                 onClick={saveTab}
                 disabled={saving}
-                className="h-8 bg-primary text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
+                className="bg-primary h-8 text-white shadow-sm shadow-[#842ae3]/20 hover:bg-[#7323c4] hover:shadow-md hover:shadow-[#842ae3]/25"
               >
                 {saving ? (
                   <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
@@ -333,7 +334,7 @@ export function SettingsPageClient() {
           <CardContent className="space-y-6">
             {currentTab?.fields.map((field) => (
               <div key={field.key}>
-                <label className="mb-2 block text-[13px] font-medium text-gray-900 dark:text-foreground">
+                <label className="dark:text-foreground mb-2 block text-[13px] font-medium text-gray-900">
                   {field.label}
                 </label>
                 {field.type === "image" ? (
@@ -341,11 +342,11 @@ export function SettingsPageClient() {
                     <Input
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                      className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                       placeholder="/images/..."
                     />
                     {draft[field.key] && (
-                      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200/80 dark:border-border">
+                      <div className="dark:border-border relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200/80">
                         <Image
                           src={draft[field.key] ?? ""}
                           alt={field.label}
@@ -361,7 +362,7 @@ export function SettingsPageClient() {
                     <textarea
                       value={draft[field.key] ?? ""}
                       onChange={(e) => updateField(field.key, e.target.value)}
-                      className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 font-mono text-[13px] text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                      className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 font-mono text-[13px] text-gray-900 focus:ring-1 focus:outline-none"
                       rows={10}
                       spellCheck={false}
                     />
@@ -369,7 +370,7 @@ export function SettingsPageClient() {
                       variant="outline"
                       size="sm"
                       onClick={() => formatJson(field.key)}
-                      className="h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:border-border dark:text-gray-400 dark:hover:bg-accent/[0.04]"
+                      className="dark:border-border dark:hover:bg-accent/[0.04] h-8 border-gray-200/80 text-gray-500 hover:bg-gray-50 dark:text-gray-400"
                     >
                       Formater JSON
                     </Button>
@@ -378,14 +379,14 @@ export function SettingsPageClient() {
                   <textarea
                     value={draft[field.key] ?? ""}
                     onChange={(e) => updateField(field.key, e.target.value)}
-                    className="w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 text-[13px] text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                    className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground w-full rounded-lg border border-gray-200/80 bg-gray-50 p-3 text-[13px] text-gray-900 focus:ring-1 focus:outline-none"
                     rows={4}
                   />
                 ) : (
                   <Input
                     value={draft[field.key] ?? ""}
                     onChange={(e) => updateField(field.key, e.target.value)}
-                    className="h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900 focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground"
+                    className="focus:border-primary focus:ring-primary/20 dark:border-border dark:bg-muted dark:text-foreground h-9 border-gray-200/80 bg-gray-50 text-[13px] text-gray-900"
                   />
                 )}
               </div>
@@ -395,13 +396,11 @@ export function SettingsPageClient() {
       </motion.div>
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed right-6 bottom-6 z-50">
           <div
             className={cn(
               "rounded-lg px-4 py-3 text-sm font-medium shadow-lg",
-              toast.type === "success"
-                ? "bg-emerald-500 text-white"
-                : "bg-red-500 text-white",
+              toast.type === "success" ? "bg-emerald-500 text-white" : "bg-red-500 text-white",
             )}
           >
             {toast.message}

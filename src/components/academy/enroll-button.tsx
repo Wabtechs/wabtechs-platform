@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Check, Lock, CreditCard } from "lucide-react";
+import { toast } from "sonner";
+import { getErrorMessage, Messages } from "@/lib/messages";
 
 export function EnrollButton({ courseId, price }: { courseId: string; price: number }) {
   const { data: session, status } = useSession();
@@ -55,7 +57,7 @@ export function EnrollButton({ courseId, price }: { courseId: string; price: num
           window.location.href = data.url;
           return;
         }
-        alert(data?.error ?? "Une erreur est survenue");
+        toast.error(getErrorMessage(data?.error, Messages.errors.internal));
       } else {
         const res = await fetch("/api/academy/enroll", {
           method: "POST",
@@ -68,9 +70,11 @@ export function EnrollButton({ courseId, price }: { courseId: string; price: num
         } else {
           const data = await res.json();
           if (data?.error === "Déjà inscrit") setDone(true);
-          else alert(data?.error ?? "Une erreur est survenue");
+          else toast.error(getErrorMessage(data?.error, Messages.errors.internal));
         }
       }
+    } catch (e) {
+      toast.error(getErrorMessage(e, Messages.errors.network));
     } finally {
       setLoading(false);
     }

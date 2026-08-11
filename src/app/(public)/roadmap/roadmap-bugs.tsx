@@ -22,6 +22,7 @@ import {
 import { OsPriorityBadge, OsSeverityBadge } from "@/components/admin/os/os-badge";
 import { OS_STATUS_META } from "@/lib/os-labels";
 import { Bug, ExternalLink, Loader2 } from "lucide-react";
+import { Messages } from "@/lib/messages";
 import type { OsBug } from "./types";
 
 const BUG_STATUSES = ["NEW", "TRIAGED", "IN_PROGRESS", "FIXED", "VERIFIED", "CLOSED", "WONTFIX"];
@@ -47,7 +48,7 @@ export function RoadmapBugs({ bugs, onViewBug }: { bugs: OsBug[]; onViewBug: (b:
       toast.success("Bug mis à jour");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la mise à jour"),
+    onError: () => toast.error(Messages.errors.updateFailed),
     onSettled: () => setUpdatingId(null),
   });
 

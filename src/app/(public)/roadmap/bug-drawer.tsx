@@ -24,6 +24,7 @@ import { OsPriorityBadge, OsStatusBadge, OsSeverityBadge } from "@/components/ad
 import { OS_STATUS_META } from "@/lib/os-labels";
 import { fmtDate } from "@/lib/os-utils";
 import { cn } from "@/lib/utils";
+import { Messages } from "@/lib/messages";
 import { Bug, Calendar, User, Zap, Target, Clock, Save, Copy, Loader2 } from "lucide-react";
 import type { OsBug, BugDuplicate } from "./types";
 
@@ -66,7 +67,7 @@ export function BugDrawer({
       toast.success("Bug mis à jour");
       queryClient.invalidateQueries({ queryKey: ["roadmap-stats"] });
     },
-    onError: () => toast.error("Échec de la mise à jour"),
+    onError: () => toast.error(Messages.errors.updateFailed),
   });
 
   const project = bug.project;

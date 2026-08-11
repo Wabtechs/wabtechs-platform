@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Mail, Loader2, Check, ArrowRight } from "lucide-react";
+import { getErrorMessage, Messages } from "@/lib/messages";
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
@@ -23,9 +24,9 @@ export function NewsletterForm() {
       setStatus(res.ok ? "success" : "error");
       setMessage(data.message ?? data.error ?? "");
       if (res.ok) setEmail("");
-    } catch {
+    } catch (e) {
       setStatus("error");
-      setMessage("Erreur de connexion.");
+      setMessage(getErrorMessage(e, Messages.errors.network));
     }
   }
 
@@ -40,20 +41,23 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex items-end gap-0 border-b border-white/20 pb-3">
-      <Mail className="mb-1 h-4 w-4 text-muted-foreground" />
+      <Mail className="text-muted-foreground mb-1 h-4 w-4" />
       <input
         type="email"
-        placeholder="Email Address"
+        placeholder="Adresse e-mail"
         value={email}
-        onChange={(e) => { setEmail(e.target.value); setStatus("idle"); }}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setStatus("idle");
+        }}
         required
         disabled={status === "loading"}
-        className="flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-white/30"
+        className="text-foreground flex-1 bg-transparent px-3 text-sm outline-none placeholder:text-white/30"
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded-[14px] bg-primary px-5 py-2.5 text-xs font-semibold text-[#1e1e1e] transition-colors hover:bg-[#9333ea] disabled:opacity-50"
+        className="bg-primary rounded-[14px] px-5 py-2.5 text-xs font-semibold text-[#1e1e1e] transition-colors hover:bg-[#9333ea] disabled:opacity-50"
       >
         {status === "loading" ? (
           <Loader2 className="h-3 w-3 animate-spin" />

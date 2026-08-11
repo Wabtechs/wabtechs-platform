@@ -13,6 +13,7 @@ import { RoadmapCharts } from "./roadmap-charts";
 import { FeatureDrawer } from "./feature-drawer";
 import { BugDrawer } from "./bug-drawer";
 import { useRoadmapEvents } from "@/lib/hooks/use-roadmap-events";
+import { Messages } from "@/lib/messages";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import {
@@ -159,7 +160,7 @@ export function RoadmapApp({
     },
     onError: (_err, _vars, context) => {
       if (context?.prev) queryClient.setQueryData(["roadmap-data"], context.prev);
-      toast.error("Échec du déplacement de la feature");
+      toast.error(Messages.errors.moveFeatureFailed);
     },
     onSuccess: () => {
       toast.success("Feature déplacée");
