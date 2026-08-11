@@ -136,7 +136,7 @@ async function upsertIssue(
 ) {
   const data = mapIssue(gh, repositoryId, undefined, undefined, undefined);
   await db.gitHubIssue.upsert({
-    where: { repositoryId_githubId: { repositoryId, githubId: gh.id } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(gh.id) } },
     create: data,
     update: data,
   });
@@ -149,7 +149,7 @@ async function upsertPullRequest(
 ) {
   const data = mapPullRequest(gh, repositoryId, undefined);
   await db.gitHubPullRequest.upsert({
-    where: { repositoryId_githubId: { repositoryId, githubId: gh.id } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(gh.id) } },
     create: data,
     update: data,
   });
@@ -162,7 +162,7 @@ async function upsertRelease(
 ) {
   const data = mapRelease(gh, repositoryId, undefined);
   await db.gitHubRelease.upsert({
-    where: { repositoryId_githubId: { repositoryId, githubId: gh.id } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(gh.id) } },
     create: data,
     update: data,
   });
@@ -175,7 +175,7 @@ async function upsertWorkflowRun(
 ) {
   const data = mapWorkflowRun(gh, repositoryId, undefined);
   await db.gitHubWorkflowRun.upsert({
-    where: { repositoryId_githubId: { repositoryId, githubId: gh.id } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(gh.id) } },
     create: data,
     update: data,
   });

@@ -65,7 +65,7 @@ export const GET = safeHandler(
     return NextResponse.json({
       repository: {
         id: repo.id,
-        githubId: repo.githubId,
+        githubId: Number(repo.githubId),
         owner: repo.owner,
         name: repo.name,
         fullName: repo.fullName,

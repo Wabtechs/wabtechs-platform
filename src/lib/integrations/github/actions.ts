@@ -30,7 +30,7 @@ export function mapWorkflowRun(
   projectId?: string | null,
 ) {
   return {
-    githubId: gh.id,
+    githubId: BigInt(gh.id),
     repositoryId,
     runNumber: gh.run_number,
     name: gh.name ?? null,

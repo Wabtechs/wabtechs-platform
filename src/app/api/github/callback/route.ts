@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       where: { userId: user.id as string },
       create: {
         userId: user.id as string,
-        githubId: ghUser.id,
+        githubId: BigInt(ghUser.id),
         login: ghUser.login,
         name: ghUser.name,
         avatarUrl: ghUser.avatar_url,
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
         scope: token.scope,
       },
       update: {
-        githubId: ghUser.id,
+        githubId: BigInt(ghUser.id),
         login: ghUser.login,
         name: ghUser.name,
         avatarUrl: ghUser.avatar_url,

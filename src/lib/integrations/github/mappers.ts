@@ -70,9 +70,9 @@ export async function getOrCreateRepository(input: {
   const { githubId, owner, name, projectId, ...rest } = input;
   const project = projectId ? { connect: { id: projectId } } : undefined;
   return db.gitHubRepository.upsert({
-    where: { githubId },
+    where: { githubId: BigInt(githubId) },
     create: {
-      githubId,
+      githubId: BigInt(githubId),
       ...rest,
       owner,
       name,

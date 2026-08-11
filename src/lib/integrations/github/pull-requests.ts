@@ -39,7 +39,7 @@ export function mapPullRequest(
   projectId?: string | null,
 ) {
   return {
-    githubId: gh.id,
+    githubId: BigInt(gh.id),
     repositoryId,
     number: gh.number,
     title: gh.title,

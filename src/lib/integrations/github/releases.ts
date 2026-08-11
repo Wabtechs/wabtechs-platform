@@ -30,7 +30,7 @@ export async function unlinkGitHubRelease(osReleaseId: string) {
 
 export function mapRelease(gh: GitHubRelease, repositoryId: string, projectId?: string | null) {
   return {
-    githubId: gh.id,
+    githubId: BigInt(gh.id),
     repositoryId,
     tagName: gh.tag_name,
     name: gh.name ?? gh.tag_name,
@@ -43,6 +43,6 @@ export function mapRelease(gh: GitHubRelease, repositoryId: string, projectId?: 
 
 export async function findGitHubRelease(repositoryId: string, githubId: number) {
   return db.gitHubRelease.findUnique({
-    where: { repositoryId_githubId: { repositoryId, githubId } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(githubId) } },
   });
 }

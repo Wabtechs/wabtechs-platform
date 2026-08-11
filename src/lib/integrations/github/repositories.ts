@@ -139,7 +139,7 @@ export async function linkRepository(input: LinkRepositoryInput) {
     return db.gitHubRepository.update({
       where: { id: existingByFullName.id },
       data: {
-        githubId: repo.id,
+        githubId: BigInt(repo.id),
         fullName: repo.full_name,
         url: repo.html_url,
         defaultBranch: repo.default_branch,
@@ -159,7 +159,7 @@ export async function linkRepository(input: LinkRepositoryInput) {
 
   return db.gitHubRepository.create({
     data: {
-      githubId: repo.id,
+      githubId: BigInt(repo.id),
       owner: repo.owner.login,
       name: repo.name,
       fullName: repo.full_name,

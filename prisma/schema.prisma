@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -49,7 +50,7 @@ model GithubConnection {
   id          String    @id @default(cuid())
   userId      String    @unique
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  githubId    Int
+  githubId    BigInt
   login       String
   name        String?
   avatarUrl   String?
@@ -1081,7 +1082,7 @@ model MetricSnapshot {
 
 model GitHubRepository {
   id            String   @id @default(cuid())
-  githubId      Int      @unique
+  githubId      BigInt   @unique
   owner         String
   name          String
   fullName      String
@@ -1113,7 +1114,7 @@ model GitHubRepository {
 
 model GitHubIssue {
   id           String   @id @default(cuid())
-  githubId     Int
+  githubId     BigInt
   repositoryId String
   number       Int
   title        String
@@ -1144,7 +1145,7 @@ model GitHubIssue {
 
 model GitHubPullRequest {
   id             String   @id @default(cuid())
-  githubId       Int
+  githubId       BigInt
   repositoryId   String
   number         Int
   title          String
@@ -1204,7 +1205,7 @@ model GitHubCommit {
 
 model GitHubRelease {
   id           String   @id @default(cuid())
-  githubId     Int
+  githubId     BigInt
   repositoryId String
   tagName      String
   name         String
@@ -1226,7 +1227,7 @@ model GitHubRelease {
 
 model GitHubWorkflowRun {
   id           String   @id @default(cuid())
-  githubId     Int
+  githubId     BigInt
   repositoryId String
   runNumber    Int
   name         String?

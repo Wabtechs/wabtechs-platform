@@ -49,10 +49,10 @@ export const PATCH = safeHandler(async (req: Request) => {
   }
 
   const issue = await db.gitHubIssue.upsert({
-    where: { repositoryId_githubId: { repositoryId, githubId } },
+    where: { repositoryId_githubId: { repositoryId, githubId: BigInt(githubId) } },
     create: {
       repositoryId,
-      githubId,
+      githubId: BigInt(githubId),
       number: githubId,
       title: `Issue #${githubId}`,
       htmlUrl: `https://github.com/${"_"}/${"_"}/issues/${githubId}`,

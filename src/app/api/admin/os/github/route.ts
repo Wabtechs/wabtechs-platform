@@ -43,7 +43,7 @@ export const GET = safeHandler(async () => {
     },
     linkedRepos: linkedRepos.map((r) => ({
       id: r.id,
-      githubId: r.githubId,
+      githubId: Number(r.githubId),
       owner: r.owner,
       name: r.name,
       fullName: r.fullName,

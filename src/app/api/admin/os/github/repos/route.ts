@@ -18,7 +18,7 @@ export const POST = safeHandler(async (req: Request) => {
   return NextResponse.json(
     {
       id: repo.id,
-      githubId: repo.githubId,
+      githubId: Number(repo.githubId),
       fullName: repo.fullName,
       url: repo.url,
       defaultBranch: repo.defaultBranch,
