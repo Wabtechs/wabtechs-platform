@@ -10,12 +10,18 @@ export const POST = safeHandler(async (req: Request) => {
   const { name, email, password } = await req.json();
 
   if (!name || !email || !password) {
-    return NextResponse.json({ error: "Tous les champs sont requis." }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Veuillez renseigner tous les champs.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const existingUser = await db.user.findUnique({ where: { email } });
   if (existingUser) {
-    return NextResponse.json({ error: "Cet email est déjà utilisé." }, { status: 409 });
+    return NextResponse.json(
+      { success: false, error: "Cet email est déjà utilisé.", code: "CONFLICT" },
+      { status: 409 },
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);

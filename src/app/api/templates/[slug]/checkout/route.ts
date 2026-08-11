@@ -1,21 +1,25 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/prisma";
-import { isAppError } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
 import { findOpenCheckoutUrl, getStripe } from "@/lib/stripe";
+import { safeHandler } from "@/lib/safe-handler";
+import { Messages } from "@/lib/messages";
 
-export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
-  try {
+export const POST = safeHandler(
+  async (req: Request, { params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
     if (!slug) {
-      return NextResponse.json({ error: "Template invalide" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Template invalide", code: "BAD_REQUEST" },
+        { status: 400 },
+      );
     }
 
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json(
-        { error: "Connectez-vous pour acheter ce template" },
+        { success: false, error: Messages.errors.unauthorized, code: "UNAUTHORIZED" },
         { status: 401 },
       );
     }
@@ -26,20 +30,31 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
     const stripe = getStripe();
     if (!stripe) {
       return NextResponse.json(
-        { error: "Paiement temporairement indisponible. Réessayez plus tard." },
+        {
+          success: false,
+          error: "Le paiement est temporairement indisponible. Réessayez plus tard.",
+          code: "PAYMENT_UNAVAILABLE",
+        },
         { status: 503 },
       );
     }
 
     const template = await db.template.findUnique({ where: { slug } });
     if (!template || !template.published) {
-      return NextResponse.json({ error: "Template introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Template introuvable ou supprimé", code: "NOT_FOUND" },
+        { status: 404 },
+      );
     }
 
     const price = Number(template.price);
     if (price <= 0) {
       return NextResponse.json(
-        { error: "Ce template est gratuit, utilisez le bouton de téléchargement" },
+        {
+          success: false,
+          error: "Ce template est gratuit, utilisez le bouton de téléchargement",
+          code: "BAD_REQUEST",
+        },
         { status: 400 },
       );
     }
@@ -48,7 +63,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
       where: { userId, templateId: template.id },
     });
     if (existingPurchase) {
-      return NextResponse.json({ error: "Déjà acheté" }, { status: 409 });
+      return NextResponse.json(
+        { error: "Déjà acheté", code: "CONFLICT", success: false },
+        { status: 409 },
+      );
     }
 
     const origin = new URL(req.url).origin;
@@ -82,20 +100,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
 
     if (!checkoutSession.url) {
       return NextResponse.json(
-        { error: "Impossible de créer la session de paiement" },
+        {
+          success: false,
+          error: "Impossible de créer la session de paiement. Veuillez réessayer.",
+          code: "INTERNAL",
+        },
         { status: 500 },
       );
     }
 
     return NextResponse.json({ url: checkoutSession.url });
-  } catch (error) {
-    if (isAppError(error)) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: error.status, headers: error.headers },
-      );
-    }
-    console.error("[checkout]", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  },
+);

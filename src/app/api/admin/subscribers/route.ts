@@ -38,7 +38,10 @@ export const PATCH = safeHandler(async (req: Request) => {
 
   const { id, active } = await req.json();
   if (!id || typeof active !== "boolean") {
-    return NextResponse.json({ error: "id et active requis" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Identifiant et statut sont requis.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
   const updated = await db.newsletter.update({ where: { id }, data: { active } });
   await createAuditLog({

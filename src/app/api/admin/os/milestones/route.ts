@@ -1,15 +1,18 @@
 import { createOsCrud } from "@/lib/os-crud";
 import { db } from "@/lib/prisma";
+import { safeHandler } from "@/lib/safe-handler";
 
 const crud = createOsCrud({
   model: db.milestone as never,
   label: "Milestone",
+  writable: ["projectId", "title", "description", "date", "status"],
   filterKeys: ["projectId"],
   include: {
     project: { select: { id: true, slug: true, name: true, color: true } },
   },
 });
 
-export const GET = crud.GET;
-export const POST = crud.POST;
-export const DELETE = crud.DELETE;
+export const GET = safeHandler(crud.GET);
+export const POST = safeHandler(crud.POST);
+export const PATCH = safeHandler(crud.PATCH);
+export const DELETE = safeHandler(crud.DELETE);

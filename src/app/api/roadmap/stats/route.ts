@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { cacheGet, cacheSet } from "@/lib/cache";
+import { safeHandler } from "@/lib/safe-handler";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,7 @@ function statusProgress(status: string): number {
   return map[status] ?? 0;
 }
 
-export async function GET() {
+export const GET = safeHandler(async () => {
   const cached = await cacheGet<Record<string, unknown>>("stats");
   if (cached) return NextResponse.json(cached);
 
@@ -88,4 +89,4 @@ export async function GET() {
 
   await cacheSet("stats", result, 8);
   return NextResponse.json(result);
-}
+});

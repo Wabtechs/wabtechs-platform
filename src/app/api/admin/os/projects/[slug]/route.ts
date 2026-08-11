@@ -1,8 +1,43 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { db } from "@/lib/prisma";
 import { safeHandler } from "@/lib/safe-handler";
 import { requireAdmin } from "@/lib/auth-guard";
 import { AppError, ErrorCode } from "@/lib/errors";
+import { createAuditLog } from "@/lib/audit";
+
+const nullableUrl = z
+  .string()
+  .trim()
+  .url("L’URL doit être valide.")
+  .nullable()
+  .optional()
+  .or(z.literal("").transform(() => null));
+
+const projectPatchSchema = z
+  .object({
+    slug: z.string().min(2).max(120).optional(),
+    name: z.string().min(1).max(200).optional(),
+    description: z.string().max(5000).optional(),
+    logo: z.string().max(500).nullable().optional(),
+    color: z.string().max(40).optional(),
+    type: z.enum(["PLATFORM", "APP", "LIBRARY", "TOOL", "SERVICE", "OTHER"]).optional(),
+    status: z.enum(["PLANNING", "ACTIVE", "PAUSED", "MAINTENANCE", "ARCHIVED"]).optional(),
+    version: z.string().max(40).optional(),
+    environment: z.string().max(80).optional(),
+    repoUrl: nullableUrl,
+    docsUrl: nullableUrl,
+    websiteUrl: nullableUrl,
+    technologies: z.string().max(1000).nullable().optional(),
+    githubStars: z.number().int().min(0).max(100000).optional(),
+    githubForks: z.number().int().min(0).max(100000).optional(),
+    githubIssues: z.number().int().min(0).max(100000).optional(),
+    githubPrs: z.number().int().min(0).max(100000).optional(),
+    githubCommits: z.number().int().min(0).max(10000000).optional(),
+    healthScore: z.number().int().min(0).max(100).optional(),
+    mrr: z.number().min(0).optional(),
+  })
+  .strict();
 
 function extractSlug(req: Request): string {
   const url = new URL(req.url);
@@ -12,7 +47,7 @@ function extractSlug(req: Request): string {
     const slug = pathParts[projectsIndex + 1];
     if (slug) return slug;
   }
-  throw new AppError("Slug manquant", 400, ErrorCode.BAD_REQUEST);
+  throw new AppError("Identifiant du projet manquant.", 400, ErrorCode.BAD_REQUEST);
 }
 
 export const GET = safeHandler(async (req: Request) => {
@@ -51,22 +86,30 @@ export const GET = safeHandler(async (req: Request) => {
   });
 
   if (!project) {
-    throw new AppError("Projet introuvable", 404, ErrorCode.NOT_FOUND);
+    throw new AppError("Projet introuvable ou supprimé.", 404, ErrorCode.NOT_FOUND);
   }
   return NextResponse.json(project);
 });
 
 export const PATCH = safeHandler(async (req: Request) => {
-  await requireAdmin();
+  const user = await requireAdmin();
 
   const slug = extractSlug(req);
   const body = await req.json();
-  const strip = new Set(["id", "createdAt", "updatedAt", "owner", "members", "epics", "sprints", "modules", "features", "bugs", "objectives", "releases", "milestones", "roadmapItems", "metricSnapshots"]);
-  const data: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(body)) {
-    if (!strip.has(key) && value !== undefined) data[key] = value;
+  const data = projectPatchSchema.parse(body);
+
+  const existing = await db.osProject.findUnique({ where: { slug } });
+  if (!existing) {
+    throw new AppError("Projet introuvable ou supprimé.", 404, ErrorCode.NOT_FOUND);
   }
 
   const project = await db.osProject.update({ where: { slug }, data });
+  await createAuditLog({
+    action: "UPDATE",
+    entity: "Projet OS",
+    entityId: project.id,
+    userId: user.id as string,
+    details: JSON.stringify(data),
+  });
   return NextResponse.json(project);
 });

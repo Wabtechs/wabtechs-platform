@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { cacheGet, cacheSet, assertCacheKey } from "@/lib/cache";
+import { safeHandler } from "@/lib/safe-handler";
 
 export const dynamic = "force-dynamic";
 
 const MAX_LIMIT = 100;
 
-export async function GET(req: Request) {
+export const GET = safeHandler(async (req: Request) => {
   const url = new URL(req.url);
   const entity = url.searchParams.get("entity") ?? undefined;
   const entityId = url.searchParams.get("entityId") ?? undefined;
@@ -80,4 +81,4 @@ export async function GET(req: Request) {
 
   await cacheSet(cacheKey, result, 8);
   return NextResponse.json(result);
-}
+});

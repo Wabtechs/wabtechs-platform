@@ -47,10 +47,10 @@ export const PATCH = safeHandler(async (req: Request) => {
 
   const { id, role } = await req.json();
   if (!id || !role) {
-    throw new AppError("id et role requis", 400, ErrorCode.BAD_REQUEST);
+    throw new AppError("Identifiant et rôle sont requis.", 400, ErrorCode.BAD_REQUEST);
   }
   if (!["USER", "ADMIN", "MODERATOR"].includes(role)) {
-    throw new AppError("Role invalide", 400, ErrorCode.BAD_REQUEST);
+    throw new AppError("Le rôle sélectionné n’est pas valide.", 400, ErrorCode.BAD_REQUEST);
   }
   const updated = await db.user.update({ where: { id }, data: { role } });
   await createAuditLog({
@@ -70,7 +70,7 @@ export const DELETE = safeHandler(async (req: Request) => {
   const currentUser = user.id as string;
   if (id === currentUser) {
     throw new AppError(
-      "Vous ne pouvez pas supprimer votre propre compte",
+      "Vous ne pouvez pas supprimer votre propre compte.",
       400,
       ErrorCode.BAD_REQUEST,
     );

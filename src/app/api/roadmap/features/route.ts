@@ -61,7 +61,11 @@ export const PATCH = safeHandler(async (req: Request) => {
 
   const url = new URL(req.url);
   const id = url.searchParams.get("id") ?? url.searchParams.get("featureId");
-  if (!id) return NextResponse.json({ error: "id manquant" }, { status: 400 });
+  if (!id)
+    return NextResponse.json(
+      { success: false, error: "Identifiant manquant.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
 
   const body = await req.json();
   const data: Record<string, unknown> = {};
@@ -69,14 +73,25 @@ export const PATCH = safeHandler(async (req: Request) => {
     if (body[key] !== undefined) data[key] = body[key];
   }
   if (Object.keys(data).length === 0) {
-    return NextResponse.json({ error: "Aucun champ modifiable fourni" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Aucune modification fournie.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const previous = await db.feature.findUnique({
     where: { id },
     select: { id: true, title: true, status: true, priority: true, moduleId: true, points: true },
   });
-  if (!previous) return NextResponse.json({ error: "Feature introuvable" }, { status: 404 });
+  if (!previous)
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Cette fonctionnalité est introuvable ou a peut-être été supprimée.",
+        code: "NOT_FOUND",
+      },
+      { status: 404 },
+    );
 
   const updated = await db.feature.update({ where: { id }, data });
 

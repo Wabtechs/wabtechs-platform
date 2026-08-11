@@ -21,7 +21,10 @@ export const POST = safeHandler(async (req: Request) => {
   const session = await auth();
   const role = (session?.user as { role?: string } | undefined)?.role;
   if (!session?.user || role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Veuillez vous connecter pour continuer.", code: "UNAUTHORIZED" },
+      { status: 401 },
+    );
   }
   const user = session.user;
 
@@ -82,7 +85,10 @@ export const DELETE = safeHandler(async (req: Request) => {
   const session = await auth();
   const role = (session?.user as { role?: string } | undefined)?.role;
   if (!session?.user || role !== "ADMIN") {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    return NextResponse.json(
+      { success: false, error: "Veuillez vous connecter pour continuer.", code: "UNAUTHORIZED" },
+      { status: 401 },
+    );
   }
   const user = session.user;
 

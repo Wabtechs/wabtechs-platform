@@ -13,7 +13,10 @@ export const POST = safeHandler(async (req: Request) => {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   if (!file) {
-    return NextResponse.json({ error: "Aucun fichier" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Aucun fichier n’a été sélectionné.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
 
   const validationError = validateUpload(file);

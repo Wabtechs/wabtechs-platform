@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { isAppError } from "@/lib/errors";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { safeHandler } from "@/lib/safe-handler";
+import { Messages } from "@/lib/messages";
 
-export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export const POST = safeHandler(
+  async (req: Request, { params }: { params: Promise<{ slug: string }> }) => {
+    const { slug } = await params;
 
-  try {
     await rateLimit(`download:${getClientIp(req)}`, { windowMs: 60_000, max: 30 });
 
     const template = await db.template.findUnique({ where: { slug } });
     if (!template) {
-      return NextResponse.json({ error: "Template introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Template introuvable ou supprimé", code: "NOT_FOUND" },
+        { status: 404 },
+      );
     }
 
     const paid = Number(template.price) > 0;
@@ -20,7 +24,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
       const session = await auth();
       if (!session?.user) {
         return NextResponse.json(
-          { error: "Connectez-vous pour télécharger ce template" },
+          { success: false, error: Messages.errors.unauthorized, code: "UNAUTHORIZED" },
           { status: 401 },
         );
       }
@@ -30,7 +34,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
       });
       if (!purchase) {
         return NextResponse.json(
-          { error: "Achat requis pour télécharger ce template" },
+          { success: false, error: "Achat requis pour télécharger ce template", code: "FORBIDDEN" },
           { status: 403 },
         );
       }
@@ -44,13 +48,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
     return NextResponse.json({
       url: template.downloadUrl ?? template.repoUrl ?? null,
     });
-  } catch (error) {
-    if (isAppError(error)) {
-      return NextResponse.json(
-        { error: error.message, code: error.code },
-        { status: error.status, headers: error.headers },
-      );
-    }
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
-  }
-}
+  },
+);

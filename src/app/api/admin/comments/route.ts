@@ -38,7 +38,7 @@ export const POST = safeHandler(async (req: Request) => {
   if (id) {
     const existing = await db.comment.findUnique({ where: { id }, select: { id: true } });
     if (!existing) {
-      throw new AppError("Commentaire introuvable", 404, ErrorCode.NOT_FOUND);
+      throw new AppError("Commentaire introuvable ou supprimé.", 404, ErrorCode.NOT_FOUND);
     }
 
     const updated = await db.comment.update({
@@ -62,7 +62,7 @@ export const POST = safeHandler(async (req: Request) => {
   }
 
   if (!postId) {
-    throw new AppError("postId requis", 400, ErrorCode.BAD_REQUEST);
+    throw new AppError("L’identifiant de la publication est requis.", 400, ErrorCode.BAD_REQUEST);
   }
 
   const created = await db.comment.create({
@@ -77,8 +77,8 @@ export const POST = safeHandler(async (req: Request) => {
     action: "CREATE",
     entity: "Comment",
     entityId: created.id,
-      userId: user.id as string,
-    });
+    userId: user.id as string,
+  });
 
   return NextResponse.json(created, { status: 201 });
 });
@@ -88,7 +88,7 @@ export const DELETE = safeHandler(async (req: Request) => {
 
   const { id } = await req.json();
   if (!id) {
-    throw new AppError("id requis", 400, ErrorCode.BAD_REQUEST);
+    throw new AppError("Identifiant requis.", 400, ErrorCode.BAD_REQUEST);
   }
 
   const comment = await db.comment.findUnique({
@@ -96,7 +96,7 @@ export const DELETE = safeHandler(async (req: Request) => {
     select: { id: true, postId: true },
   });
   if (!comment) {
-    throw new AppError("Commentaire introuvable", 404, ErrorCode.NOT_FOUND);
+    throw new AppError("Commentaire introuvable ou supprimé.", 404, ErrorCode.NOT_FOUND);
   }
 
   await db.comment.deleteMany({ where: { parentId: id } });

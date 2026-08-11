@@ -37,7 +37,10 @@ export const POST = safeHandler(async (req: Request) => {
 
   const { name } = await req.json();
   if (!name || typeof name !== "string") {
-    return NextResponse.json({ error: "Nom requis" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: "Le nom est obligatoire.", code: "BAD_REQUEST" },
+      { status: 400 },
+    );
   }
   const slug = name
     .toLowerCase()
