@@ -1,0 +1,147 @@
+---
+title: "Middleware et Proxy"
+description: "Protégez les routes avec le proxy Next.js 16 — authentification, rate limiting et logging."
+order: 6
+---
+
+## Next.js 16 Proxy
+
+Next.js 16 remplace le middleware par le concept de **proxy**. Le fichier `src/proxy.ts` est automatiquement chargé pour les routes correspondantes.
+
+## Configuration
+
+### Fichier proxy.ts
+
+```typescript
+// src/proxy.ts
+import { auth } from "@/auth";
+
+export const proxy = auth;
+
+export const config = {
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
+};
+```
+
+### Routes Protégées
+
+```typescript
+export const config = {
+  matcher: [
+    "/dashboard/:path*",    // Tout le dashboard
+    "/admin/:path*",        // Tout l'admin
+    "/api/protected/:path*",
+  ],
+};
+```
+
+## Authentification
+
+### Simple Auth Check
+
+```typescript
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export function proxy(req) {
+  const session = auth();
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+  return NextResponse.next();
+}
+```
+
+### Role-Based Access
+
+```typescript
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export function proxy(req) {
+  const session = auth();
+  if (!session) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+  if (session.user.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+  return NextResponse.next();
+}
+```
+
+## Rate Limiting
+
+### Avec Redis
+
+```typescript
+import { NextResponse } from "next/server";
+import { redis } from "@/lib/redis";
+
+export async function proxy(req) {
+  const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+  const key = `rate:${ip}`;
+
+  const current = await redis.incr(key);
+  if (current === 1) {
+    await redis.expire(key, 60);
+  }
+
+  if (current > 100) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
+  return NextResponse.next();
+}
+```
+
+## Logging
+
+```typescript
+import { NextResponse } from "next/server";
+
+export function proxy(req) {
+  console.log(`${req.method} ${req.nextUrl.pathname}`);
+  return NextResponse.next();
+}
+```
+
+## Headers de Sécurité
+
+```typescript
+import { NextResponse } from "next/server";
+
+export function proxy(req) {
+  const res = NextResponse.next();
+  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("Referrer-Policy", "origin-when-cross-origin");
+  return res;
+}
+```
+
+## Redirections
+
+```typescript
+import { NextResponse } from "next/server";
+
+const redirects = {
+  "/old-page": "/new-page",
+  "/docs": "/docs/getting-started",
+};
+
+export function proxy(req) {
+  const path = req.nextUrl.pathname;
+  if (redirects[path]) {
+    return NextResponse.redirect(new URL(redirects[path], req.url));
+  }
+  return NextResponse.next();
+}
+```
+
+## Bonnes Pratiques
+
+1. **Gardez le proxy léger** — pas de requêtes lourdes
+2. **Utilisez le cache** — les résultats sont réutilisables
+3. **Testez les routes** — vérifiez que la protection fonctionne
+4. **Log les accès** — pour le debugging et la sécurité

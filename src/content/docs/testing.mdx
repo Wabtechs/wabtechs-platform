@@ -1,0 +1,221 @@
+---
+title: "Testing"
+description: "Stratégie de test complète pour Next.js — unit tests, integration tests, end-to-end et snapshot testing."
+order: 9
+---
+
+## Stratégie
+
+```
+Unit Tests (60%)     → composants, hooks, utilitaires
+Integration Tests (30%) → API routes, bases de données
+E2E Tests (10%)       → flux utilisateur complets
+```
+
+## Unit Tests avec Vitest
+
+### Installation
+
+```bash
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+```
+
+### Configuration
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import path from "path";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./tests/setup.ts"],
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+});
+```
+
+### Setup
+
+```typescript
+// tests/setup.ts
+import "@testing-library/jest-dom";
+```
+
+### Exemple de Test
+
+```typescript
+// components/button.test.tsx
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Button } from "@/components/ui/button";
+
+describe("Button", () => {
+  it("renders correctly", () => {
+    render(<Button>Cliquez ici</Button>);
+    expect(screen.getByText("Cliquez ici")).toBeInTheDocument();
+  });
+
+  it("calls onClick when clicked", () => {
+    const handleClick = vi.fn();
+    render(<Button onClick={handleClick}>Cliquez</Button>);
+    fireEvent.click(screen.getByText("Cliquez"));
+    expect(handleClick).toHaveBeenCalledOnce();
+  });
+
+  it("is disabled when disabled prop is true", () => {
+    render(<Button disabled>Cliquez</Button>);
+    expect(screen.getByText("Cliquez")).toBeDisabled();
+  });
+});
+```
+
+## Hook Tests
+
+```typescript
+// hooks/use-debounce.test.ts
+import { renderHook, act } from "@testing-library/react";
+import { useDebounce } from "@/hooks/use-debounce";
+
+describe("useDebounce", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("debounces value", () => {
+    const { result, rerender } = renderHook(
+      ({ value }) => useDebounce(value, 500),
+      { initialProps: { value: "test" } },
+    );
+
+    expect(result.current).toBe("test");
+
+    act(() => {
+      rerender({ value: "updated" });
+    });
+
+    expect(result.current).toBe("test");
+
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    expect(result.current).toBe("updated");
+  });
+});
+```
+
+## API Route Tests
+
+```typescript
+// app/api/newsletter/route.test.ts
+import { createMocks } from "node-mocks-http";
+import { POST } from "./route";
+
+describe("Newsletter API", () => {
+  it("subscribes email", async () => {
+    const req = new Request("http://localhost/api/newsletter", {
+      method: "POST",
+      body: JSON.stringify({ email: "test@example.com" }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(201);
+  });
+
+  it("rejects invalid email", async () => {
+    const req = new Request("http://localhost/api/newsletter", {
+      method: "POST",
+      body: JSON.stringify({ email: "invalid" }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+});
+```
+
+## E2E Tests avec Playwright
+
+### Installation
+
+```bash
+npm install -D @playwright/test
+npx playwright install
+```
+
+### Configuration
+
+```typescript
+// playwright.config.ts
+import { defineConfig } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./e2e",
+  timeout: 30000,
+  use: {
+    baseURL: "http://localhost:3000",
+    headless: true,
+  },
+  webServer: {
+    command: "npm run dev",
+    port: 3000,
+    reuseExistingServer: true,
+  },
+});
+```
+
+### Exemple E2E
+
+```typescript
+// e2e/navigation.spec.ts
+import { test, expect } from "@playwright/test";
+
+test("homepage loads", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("h1")).toBeVisible();
+});
+
+test("blog navigation", async ({ page }) => {
+  await page.goto("/blog");
+  await expect(page.locator("text=Articles")).toBeVisible();
+
+  await page.click("text=Voir l'article");
+  await expect(page).toHaveURL(/\/blog\//);
+});
+```
+
+## Commands
+
+```bash
+# Unit tests
+npx vitest
+
+# Unit tests with coverage
+npx vitest --coverage
+
+# E2E tests
+npx playwright test
+
+# E2E tests with UI
+npx playwright test --ui
+```
+
+## Bonnes Pratiques
+
+1. **Testez le comportement**, pas l'implémentation
+2. **Utilisez des data-testid** pour les sélecteurs
+3. **Isolez les tests** — chaque test doit être indépendant
+4. **Couverture minimale** : 80% pour les composants critiques
+5. **Testez les edge cases** : erreurs, loading, vide

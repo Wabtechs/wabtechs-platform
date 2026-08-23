@@ -1,0 +1,176 @@
+---
+title: "Git workflow : Branches, commits et collaboration"
+description: "Adoptez un workflow Git professionnel — branching strategy, conventional commits, et bonnes pratiques de collaboration."
+date: "2026-06-20"
+tags: ["Git", "Workflow", "Best Practices"]
+author: "Emmanuel Mulonda"
+readTime: 9
+featured: false
+---
+
+## Introduction
+
+Un bon workflow Git est la clé d'une collaboration efficace. Voici les pratiques que j'applique dans chaque projet.
+
+## Branching Strategy
+
+### Naming Convention
+
+```
+main          → production
+develop       → développement intégré
+feature/*     → nouvelles fonctionnalités
+fix/*         → corrections de bugs
+hotfix/*      → corrections urgentes en production
+release/*     → préparation de release
+```
+
+### Exemple
+
+```bash
+git checkout develop
+git checkout -b feature/user-authentication
+# ... travail ...
+git commit -m "feat(auth): add login page with NextAuth"
+git push origin feature/user-authentication
+# → Créer une Pull Request
+```
+
+## Conventional Commits
+
+### Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Types
+
+| Type | Description |
+|---|---|
+| `feat` | Nouvelle fonctionnalité |
+| `fix` | Correction de bug |
+| `docs` | Documentation |
+| `style` | Formatage (pas de changement de logique) |
+| `refactor` | Refactoring sans changement de comportement |
+| `perf` | Amélioration de performance |
+| `test` | Ajout ou modification de tests |
+| `chore` | Tâches de maintenance |
+| `ci` | Configuration CI/CD |
+| `revert` | Annulation d'un commit précédent |
+
+### Exemples
+
+```bash
+git commit -m "feat(blog): add MDX rendering with compileMDX"
+git commit -m "fix(auth): redirect loop on expired session"
+git commit -m "docs(readme): update installation instructions"
+git commit -m "perf(homepage): memoize blog post queries"
+git commit -m "chore(deps): update next.js to 16.2.11"
+```
+
+## Pull Requests
+
+### Template
+
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Unit tests pass
+- [ ] Manual testing done
+- [ ] No TypeScript errors
+
+## Checklist
+- [ ] Code follows project style
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Documentation updated
+- [ ] No console.logs left
+```
+
+### Title Convention
+
+```
+feat(auth): add OAuth providers (#42)
+fix(blog): correct MDX rendering on dark mode (#38)
+```
+
+## Git Hooks
+
+### Husky + lint-staged
+
+```json
+// package.json
+{
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md}": ["prettier --write"]
+  }
+}
+```
+
+```bash
+npm install -D husky lint-staged
+npx husky init
+echo "npx lint-staged" > .husky/pre-commit
+```
+
+## Rebasing vs Merging
+
+### Rebasing (Linear History)
+
+```bash
+git checkout feature/my-feature
+git rebase develop
+# Résoudre les conflits
+git checkout develop
+git merge feature/my-feature --ff-only
+```
+
+### Merging (Merge Commits)
+
+```bash
+git checkout develop
+git merge --no-ff feature/my-feature
+```
+
+**Règle** : utilisez le rebase pour les features, le merge pour les releases.
+
+## Commands Essentielles
+
+```bash
+# Annuler le dernier commit (garder les changements)
+git reset --soft HEAD~1
+
+# Annuler le dernier commit (supprimer les changements)
+git reset --hard HEAD~1
+
+# Voir l'historique compact
+git log --oneline --graph --all
+
+# Stasher temporairement
+git stash push -m "WIP: feature X"
+git stash pop
+
+# Cherry-pick un commit
+git cherry-pick abc123
+
+# Révertir un commit
+git revert abc123
+```
+
+## Conclusion
+
+Ces pratiques garantissent un historique Git propre, une collaboration efficace et une release sans surprises. Adoptez-les dès le premier commit.

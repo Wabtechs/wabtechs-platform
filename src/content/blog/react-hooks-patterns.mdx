@@ -1,0 +1,181 @@
+---
+title: "React Hooks : Patterns avancés pour la production"
+description: "Découvrez les patterns de hooks les plus utiles — debounce, localStorage, media queries, et custom hooks réutilisables."
+date: "2026-07-05"
+tags: ["React", "Hooks", "TypeScript"]
+author: "Emmanuel Mulonda"
+readTime: 8
+featured: false
+---
+
+## Introduction
+
+Les hooks sont le cœur de React. Voici les patterns que j'utilise dans chaque projet de production.
+
+## useDebounce
+
+Délayez une valeur pour éviter les appels API excessifs :
+
+```typescript
+import { useState, useEffect } from "react";
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Usage
+const [search, setSearch] = useState("");
+const debouncedSearch = useDebounce(search, 300);
+```
+
+## useLocalStorage
+
+Persistance dans le localStorage avec typage :
+
+```typescript
+import { useState, useEffect } from "react";
+
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? (JSON.parse(item) as T) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+```
+
+## useMediaQuery
+
+Écoutez les changements de viewport :
+
+```typescript
+import { useEffect, useState } from "react";
+
+export function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia(query).matches;
+  });
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
+
+  return matches;
+}
+
+// Usage
+const isMobile = useMediaQuery("(max-width: 768px)");
+const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+```
+
+## useIntersectionObserver
+
+Détection de visibilité pour le lazy loading :
+
+```typescript
+import { useEffect, useRef, useState } from "react";
+
+export function useIntersectionObserver(threshold = 0.1) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold },
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, isVisible };
+}
+```
+
+## useFetch
+
+Wrapper fetch avec loading, error et data :
+
+```typescript
+import { useState, useEffect } from "react";
+
+export function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(url, { signal: controller.signal })
+      .then((res) => res.json())
+      .then(setData)
+      .catch((err) => {
+        if (err.name !== "AbortError") setError(err.message);
+      })
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, error, loading };
+}
+```
+
+## useTimeout
+
+Exécution différée avec cleanup automatique :
+
+```typescript
+import { useEffect, useRef } from "react";
+
+export function useTimeout(callback: () => void, delay: number | null) {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+
+  useEffect(() => {
+    if (delay === null) return;
+    const timer = setTimeout(() => callbackRef.current(), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+}
+```
+
+## Règles d'Or
+
+1. **Nommez vos hooks** avec le préfixe `use`
+2. **Ne conditionnez pas** les appels de hooks
+3. **Utilisez les dépendances** correctement dans `useEffect`
+4. **Nettoyez** toujours les side effects
+5. **Extrayez** les hooks personnalisés quand la logique se répète
+
+## Conclusion
+
+Ces hooks sont la base de tout projet React solide. Réutilisez-les, adaptez-les, et n'hésitez pas à en créer de nouveaux quand le besoin se présente.
