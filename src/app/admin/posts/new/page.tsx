@@ -123,10 +123,14 @@ export default function NewPostPage() {
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
-								<Label className="text-gray-900 dark:text-foreground">
+								<Label
+									htmlFor="post-title"
+									className="text-gray-900 dark:text-foreground"
+								>
 									Titre
 								</Label>
 								<Input
+									id="post-title"
 									value={form.title}
 									onChange={(e) => {
 										updateForm("title", e.target.value);
@@ -143,10 +147,14 @@ export default function NewPostPage() {
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label className="text-gray-900 dark:text-foreground">
+								<Label
+									htmlFor="post-slug"
+									className="text-gray-900 dark:text-foreground"
+								>
 									Slug
 								</Label>
 								<Input
+									id="post-slug"
 									value={form.slug}
 									onChange={(e) => updateForm("slug", e.target.value)}
 									className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
@@ -154,10 +162,14 @@ export default function NewPostPage() {
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label className="text-gray-900 dark:text-foreground">
+								<Label
+									htmlFor="post-description"
+									className="text-gray-900 dark:text-foreground"
+								>
 									Description
 								</Label>
 								<Textarea
+									id="post-description"
 									value={form.description}
 									onChange={(e) => updateForm("description", e.target.value)}
 									className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"
@@ -184,10 +196,14 @@ export default function NewPostPage() {
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
-								<Label className="text-gray-900 dark:text-foreground">
+								<Label
+									htmlFor="post-tags"
+									className="text-gray-900 dark:text-foreground"
+								>
 									Tags (séparés par des virgules)
 								</Label>
 								<Input
+									id="post-tags"
 									value={form.tags}
 									onChange={(e) => updateForm("tags", e.target.value)}
 									placeholder="Next.js, React, TypeScript"
@@ -195,10 +211,14 @@ export default function NewPostPage() {
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label className="text-gray-900 dark:text-foreground">
+								<Label
+									htmlFor="post-cover"
+									className="text-gray-900 dark:text-foreground"
+								>
 									Image de couverture (URL)
 								</Label>
 								<Input
+									id="post-cover"
 									value={form.coverImage}
 									onChange={(e) => updateForm("coverImage", e.target.value)}
 									className="border-gray-200 bg-gray-50 text-gray-900 dark:border-border dark:bg-muted dark:text-foreground"

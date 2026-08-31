@@ -11,12 +11,9 @@ import { Breadcrumb } from "@/components/shared/breadcrumb";
 import { ShareButtons } from "@/components/shared/share-buttons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/mdx";
+import { getBlogPostBySlug, getRelatedBlogPosts } from "@/lib/blog";
 
-export async function generateStaticParams() {
-	const posts = getAllPosts();
-	return posts.map((post) => ({ slug: post.slug }));
-}
+export const revalidate = 60;
 
 export async function generateMetadata({
 	params,
@@ -24,18 +21,18 @@ export async function generateMetadata({
 	params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
 	const { slug } = await params;
-	const post = getPostBySlug(slug);
+	const post = await getBlogPostBySlug(slug);
 	if (!post) return { title: "Article non trouvé" };
 
 	return {
-		title: post.meta.title,
-		description: post.meta.description,
+		title: post.title,
+		description: post.description,
 		openGraph: {
-			title: post.meta.title,
-			description: post.meta.description,
+			title: post.title,
+			description: post.description,
 			type: "article",
-			publishedTime: post.meta.date,
-			tags: post.meta.tags,
+			publishedTime: post.date,
+			tags: post.tags,
 		},
 	};
 }
@@ -46,7 +43,7 @@ export default async function BlogPostPage({
 	params: Promise<{ slug: string }>;
 }) {
 	const { slug } = await params;
-	const post = getPostBySlug(slug);
+	const post = await getBlogPostBySlug(slug);
 
 	if (!post) notFound();
 
@@ -61,13 +58,13 @@ export default async function BlogPostPage({
 		},
 	});
 
-	const relatedPosts = getRelatedPosts(slug, 3);
+	const relatedPosts = await getRelatedBlogPosts(slug, 3);
 
 	return (
 		<div className="pt-24 pb-16">
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<Breadcrumb
-					items={[{ label: "Blog", href: "/blog" }, { label: post.meta.title }]}
+					items={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
 					className="mb-6"
 				/>
 
@@ -80,16 +77,16 @@ export default async function BlogPostPage({
 
 				<div className="grid grid-cols-1 gap-12 xl:grid-cols-[1fr_220px]">
 					<article className="mx-auto max-w-3xl">
-						<PostHeader post={post.meta} />
+						<PostHeader post={post} />
 						<div className="mt-12">
 							<article className="prose prose-neutral dark:prose-invert max-w-none">
 								{content}
 							</article>
 						</div>
 
-						{post.meta.tags.length > 0 && (
+						{post.tags.length > 0 && (
 							<div className="mt-12 flex flex-wrap gap-2">
-								{post.meta.tags.map((tag) => (
+								{post.tags.map((tag) => (
 									<Badge key={tag} variant="secondary">
 										{tag}
 									</Badge>
@@ -99,7 +96,7 @@ export default async function BlogPostPage({
 
 						<div className="mt-8 border-t pt-6">
 							<ShareButtons
-								title={post.meta.title}
+								title={post.title}
 								url={`https://wabtechs.com/blog/${slug}`}
 							/>
 						</div>

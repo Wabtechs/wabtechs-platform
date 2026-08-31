@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { requireAdmin } from "@/lib/auth-guard";
 import { db } from "@/lib/prisma";
 
 export async function GET() {
 	try {
 		const session = await auth();
-		if (
-			!session?.user ||
-			(session.user as { role?: string }).role !== "ADMIN"
-		) {
-			return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
-		}
+		const admin = await requireAdmin(session);
+		if (admin instanceof NextResponse) return admin;
 
 		const now = new Date();
 		const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);

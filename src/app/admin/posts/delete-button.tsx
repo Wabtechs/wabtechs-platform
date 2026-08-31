@@ -30,6 +30,7 @@ export function DeletePostButton({ id }: { id: string }) {
 			size="icon"
 			onClick={handleDelete}
 			disabled={loading}
+			aria-label="Supprimer l'article"
 		>
 			{loading ? (
 				<Loader2 className="h-4 w-4 animate-spin" />

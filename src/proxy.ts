@@ -9,16 +9,6 @@ function isProtectedRoute(pathname: string): boolean {
 	);
 }
 
-function hasSessionCookie(request: NextRequest): boolean {
-	const cookies = request.cookies;
-	return (
-		cookies.has("authjs.session-token") ||
-		cookies.has("__Secure-authjs.session-token") ||
-		cookies.has("next-auth.session-token") ||
-		cookies.has("__Secure-next-auth.session-token")
-	);
-}
-
 export async function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
@@ -26,14 +16,23 @@ export async function proxy(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	if (hasSessionCookie(request)) {
-		return NextResponse.next();
+	try {
+		const { auth } = await import("@/auth");
+		const session = await auth();
+
+		if (session?.user) {
+			return NextResponse.next();
+		}
+	} catch (error) {
+		console.error("[proxy] Erreur lors de la vérification de session:", error);
 	}
 
 	const loginUrl = new URL("/login", request.url);
 	loginUrl.searchParams.set("callbackUrl", pathname);
 	return NextResponse.redirect(loginUrl);
 }
+
+export default proxy;
 
 export const config = {
 	matcher: ["/admin/:path*"],

@@ -7,7 +7,7 @@ import { StatsSection } from "@/components/home/stats-section";
 import { AnimateOnScroll } from "@/components/shared/animate-on-scroll";
 import { BgLines } from "@/components/shared/bg-lines";
 import { Badge } from "@/components/ui/badge";
-import { getAllPosts } from "@/lib/mdx";
+import { getAllBlogPosts } from "@/lib/blog";
 import { formatDate } from "@/lib/utils";
 
 const SERVICES = [
@@ -130,7 +130,7 @@ const TESTIMONIALS = [
 	{
 		name: "Marie Dupont",
 		role: "Directrice Marketing, InnovateCo",
-		text: "Une collaboration extraordinaire. La qualité du code, le respect des délais et la communicationwere were parfait tout au long du projet.",
+		text: "Une collaboration extraordinaire. La qualité du code, le respect des délais et la communication ont été parfaits tout au long du projet.",
 		img: "/images/testimonials/author2.png",
 	},
 ];
@@ -142,8 +142,9 @@ const CLIENT_LOGOS = Array.from(
 	(_, i) => `/images/client-logos/client-logo${i + 1}.png`,
 );
 
-export default function HomePage() {
-	const posts = getAllPosts().slice(0, 2);
+export default async function HomePage() {
+	const allPosts = await getAllBlogPosts();
+	const posts = allPosts.slice(0, 2);
 
 	return (
 		<>
