@@ -1,0 +1,63 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+  "extends": ["./biome.base.json"],
+  "files": {
+    "includes": [
+      "**/*.{ts,tsx,mjs,cjs,js,json,jsonc}",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.next",
+      "!**/coverage",
+      "!**/playwright-report",
+      "!**/test-results",
+      "!**/.turbo"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "useExhaustiveDependencies": "error",
+        "useHookAtTopLevel": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noConsole": "warn",
+        "noShadowRestrictedNames": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "warn",
+        "useConst": "error",
+        "useImportType": "error"
+      },
+      "a11y": {
+        "useAltText": "error",
+        "useAnchorContent": "error",
+        "useValidAriaRole": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["*.test.{ts,tsx}", "*.spec.{ts,tsx}", "**/tests/**", "**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/api/**/*.ts", "**/app/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ]
+}

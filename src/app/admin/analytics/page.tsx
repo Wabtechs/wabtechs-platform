@@ -5,5 +5,5 @@ export const metadata: Metadata = { title: "Analytics | Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AnalyticsPage() {
-  return <AnalyticsClient />;
+	return <AnalyticsClient />;
 }

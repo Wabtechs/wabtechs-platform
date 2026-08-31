@@ -1,0 +1,21 @@
+{
+	"name": "@wabtechs/biome-config",
+	"version": "1.0.0",
+	"description": "Shared Biome configuration for Wabtechs ecosystem",
+	"private": true,
+	"license": "UNLICENSED",
+	"files": [
+		"biome.base.json",
+		"biome.next.json",
+		"biome.react.json",
+		"biome.node.json",
+		"biome.library.json"
+	],
+	"exports": {
+		"./biome.base.json": "./biome.base.json",
+		"./biome.next.json": "./biome.next.json",
+		"./biome.react.json": "./biome.react.json",
+		"./biome.node.json": "./biome.node.json",
+		"./biome.library.json": "./biome.library.json"
+	}
+}

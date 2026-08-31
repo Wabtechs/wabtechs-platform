@@ -6,9 +6,9 @@ export const metadata: Metadata = { title: "Abonnés newsletter" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminSubscribersPage() {
-  const subscribers = await db.newsletter.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+	const subscribers = await db.newsletter.findMany({
+		orderBy: { createdAt: "desc" },
+	});
 
-  return <SubscribersClient subscribers={subscribers} />;
+	return <SubscribersClient subscribers={subscribers} />;
 }

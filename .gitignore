@@ -51,3 +51,6 @@ _backup-old-Dashboard/
 
 .vercel
 .opencode/
+
+.vercel
+.env*

@@ -1,0 +1,26 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+	"extends": ["@wabtechs/biome-config/biome.next.json"],
+	"files": {
+		"includes": [
+			"**/*.{ts,tsx,mjs,cjs,js,json,jsonc,css}",
+			"!**/node_modules",
+			"!**/dist",
+			"!**/.next",
+			"!**/coverage",
+			"!**/playwright-report",
+			"!**/test-results",
+			"!**/.turbo"
+		]
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.css"],
+			"css": {
+				"parser": {
+					"tailwindDirectives": true
+				}
+			}
+		}
+	]
+}
